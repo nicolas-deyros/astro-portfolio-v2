@@ -13,6 +13,7 @@
 		"@astrojs/mdx": "^4.3.0",
 		"@astrojs/partytown": "^2.1.4",
 		"@astrojs/sitemap": "^3.4.1",
+		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.1.11",
 		"astro": "^5.11.1",
 		"astro-icon": "^1.1.5",
@@ -20,6 +21,8 @@
 		"tailwindcss": "^4.1.11"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
 		"@eslint/js": "^9.31.0",
 		"@iconify-json/ic": "^1.2.2",
 		"@iconify-json/jam": "^1.2.3",

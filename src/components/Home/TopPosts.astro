@@ -1,0 +1,60 @@
+---
+export const prerender = true
+import { getCollection } from 'astro:content'
+import Section from '../Section.astro'
+
+const posts = await getCollection('blog')
+const sortedPosts = posts.sort(
+	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
+)
+const topPosts = sortedPosts.slice(0, 3)
+---
+
+<Section ariaLabel="New Blog Posts">
+	<h3 class="my-3 w-full text-center text-xl font-bold text-slate-800">
+		Latest Blog Posts
+	</h3>
+
+	<div class="mt-3 flex w-full flex-col items-center gap-4">
+		{
+			topPosts.map((post, i) => (
+				<article
+					class="article-animate flex w-full max-w-xl items-center gap-2 border-b-2 border-slate-200 p-1"
+					style={`animation-delay: ${i * 500}ms`}>
+					<h4 class="mb-1 text-lg font-bold text-slate-900">
+						<a href={`/blog/${post.slug}/`} class="hover:underline">
+							{post.data.title}
+						</a>
+					</h4>
+					<span> - </span>
+					<time
+						class="text-xs text-slate-500"
+						datetime={new Date(post.data.date).toISOString()}>
+						{new Date(post.data.date).toLocaleDateString('en-us', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+				</article>
+			))
+		}
+	</div>
+</Section>
+
+<style>
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+	.article-animate {
+		opacity: 0;
+		animation: fadeInUp 0.6s forwards;
+	}
+</style>
