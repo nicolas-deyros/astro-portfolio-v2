@@ -11,7 +11,8 @@ const topPosts = sortedPosts.slice(0, 3)
 ---
 
 <Section ariaLabel="New Blog Posts">
-	<h3 class="my-3 w-full text-center text-xl font-bold text-slate-800">
+	<h3
+		class="my-3 w-full text-center text-xl font-bold text-slate-800 dark:text-slate-200">
 		Latest Blog Posts
 	</h3>
 
@@ -19,16 +20,18 @@ const topPosts = sortedPosts.slice(0, 3)
 		{
 			topPosts.map((post, i) => (
 				<article
-					class="article-animate flex w-full max-w-xl items-center gap-2 border-b-2 border-slate-200 p-1"
+					class="article-animate flex w-full max-w-xl items-center gap-2 border-b-2 border-slate-200 p-1 dark:border-slate-700"
 					style={`animation-delay: ${i * 500}ms`}>
-					<h4 class="mb-1 text-lg font-bold text-slate-900">
-						<a href={`/blog/${post.slug}/`} class="hover:underline">
+					<h4 class="mb-1 text-lg font-bold text-slate-900 dark:text-slate-100">
+						<a
+							href={`/blog/${post.slug}/`}
+							class="transition-colors hover:text-blue-600 hover:underline dark:hover:text-blue-400">
 							{post.data.title}
 						</a>
 					</h4>
-					<span> - </span>
+					<span class="text-slate-600 dark:text-slate-400"> - </span>
 					<time
-						class="text-xs text-slate-500"
+						class="text-xs text-slate-500 dark:text-slate-400"
 						datetime={new Date(post.data.date).toISOString()}>
 						{new Date(post.data.date).toLocaleDateString('en-us', {
 							year: 'numeric',

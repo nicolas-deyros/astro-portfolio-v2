@@ -5,7 +5,7 @@ import List from '@components/List/List.astro'
 import TopPosts from '@components/Home/TopPosts.astro'
 
 const styles =
-	'flex justify-center items-center font-semibold gap-1 text-gray-500'
+	'flex justify-center items-center font-semibold gap-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300'
 ---
 
 <Layout
@@ -16,7 +16,7 @@ const styles =
 	<section
 		class="flex flex-col items-center justify-center gap-6 px-4 py-8 md:gap-10 lg:gap-12 lg:px-8 lg:py-16">
 		<div class="flex w-[300px] flex-col items-center justify-center md:w-full">
-			<Logo width={340} height={340} fill="grey" />
+			<Logo width={340} height={340} />
 			<div class="h-7 md:h-12 lg:h-20">
 				<h1
 					class="flex flex-col gap-3 text-center text-3xl leading-none md:text-5xl lg:text-7xl"
