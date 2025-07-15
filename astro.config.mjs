@@ -8,13 +8,16 @@ import sitemap from '@astrojs/sitemap'
 
 import icon from 'astro-icon'
 
+import vercel from '@astrojs/vercel'
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://nicolas-deyros.github.io',
-	base: 'my-repo',
+
 	vite: {
 		plugins: [tailwindcss()],
 	},
 
 	integrations: [mdx(), partytown(), sitemap(), icon()],
+	adapter: vercel(),
 })
