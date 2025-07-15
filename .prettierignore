@@ -1,0 +1,22 @@
+# Ignore .gitignore file
+.prettierignore
+.gitignore
+.prettierrc
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore build output directories
+dist/
+.astro/
+
+# Ignore logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Ignore environment variable files
+.env
+.env.production
+.env.local

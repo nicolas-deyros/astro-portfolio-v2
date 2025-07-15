@@ -20,12 +20,12 @@ const { Content } = await render()
 
 import Layout from '@layouts/index.astro'
 import Section from '@components/Section.astro'
-const { title, date, author, image, description, category } = data
+const { title, date, author, description, category } = data
 
-const markdown = post.body // or post.body?.toString() if needed
+const markdown = post.body
 const plainText = markdown
-	.replace(/[#_*>\-\[\]`>]/g, '')
-	.replace(/!\[.*\]\(.*\)/g, '') // remove markdown syntax
+	.replace(/[#_*>\-[\]`>]/g, '')
+	.replace(/!\[.*\]\(.*\)/g, '')
 const wordCount = plainText.trim().split(/\s+/).length
 const wordsPerMinute = 200
 const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
@@ -58,6 +58,9 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 					})
 				}
 			</time>
+		</span>
+		<span class="mb-2 block text-sm text-gray-500">
+			🧔 Author: {author}
 		</span>
 		<span class="mb-2 block text-sm text-gray-500">
 			⏱️ Estimated reading time: {readingTime} min

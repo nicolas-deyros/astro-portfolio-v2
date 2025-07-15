@@ -3,14 +3,12 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import eslintPluginAstro from 'eslint-plugin-astro'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
-import mdx from 'eslint-plugin-mdx'
 
 export default [
 	js.configs.recommended,
 	...tseslint.configs.recommended,
 	...eslintPluginAstro.configs.recommended,
-	...jsxA11y.flatConfigs.recommended,
-	...mdx.configs.recommended,
+
 	{
 		files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
 		languageOptions: {
@@ -23,6 +21,7 @@ export default [
 			globals: globals.browser,
 		},
 	},
+
 	{
 		files: ['**/*.config.{js,ts}', '**/scripts/**/*.{js,ts}'],
 		languageOptions: {
@@ -31,5 +30,12 @@ export default [
 				...globals.node,
 			},
 		},
+	},
+	{
+		files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+		...jsxA11y.flatConfigs.recommended,
+	},
+	{
+		ignores: ['.astro/', 'dist/', 'node_modules/', '.gitignore'],
 	},
 ]
