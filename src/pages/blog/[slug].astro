@@ -1,0 +1,198 @@
+---
+export const prerender = true
+import { type CollectionEntry, getCollection } from 'astro:content'
+
+export async function getStaticPaths() {
+	const blog = await getCollection('blog')
+	return blog.map(post => ({
+		params: { slug: post.slug },
+		props: { post },
+	}))
+}
+
+type Props = {
+	post: CollectionEntry<'blog'>
+}
+
+const { post } = Astro.props
+const { data, render } = post
+const { Content } = await render()
+
+import Layout from '@layouts/index.astro'
+import Section from '@components/Section.astro'
+const { title, date, author, image, description, category } = data
+
+const markdown = post.body // or post.body?.toString() if needed
+const plainText = markdown
+	.replace(/[#_*>\-\[\]`>]/g, '')
+	.replace(/!\[.*\]\(.*\)/g, '') // remove markdown syntax
+const wordCount = plainText.trim().split(/\s+/).length
+const wordsPerMinute = 200
+const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
+---
+
+<Layout title={`Blog | ${title}`} {description} isBlog={true}>
+	<div style="position:relative;">
+		<div
+			id="progress-bar"
+			style="position:fixed;top:0;left:0;height:15px;width:0;background:#06b6d4;z-index:50;transition:width 0.2s;">
+		</div>
+		<span
+			id="progress-percent"
+			style="position:fixed;top:0;right:16px;z-index:51;color:#06b6d4;font-weight:bold;background:white;padding:2px 8px;border-radius:0 0 6px 6px;font-size:0.9rem;">
+			0%
+		</span>
+	</div>
+	<Section>
+		<h1>{title}</h1>
+		<span>{category}</span>
+		<span>
+			<time
+				datetime={typeof date === 'string' ? date : date.toISOString()}
+				class="text-xs font-medium">
+				{
+					new Date(date).toLocaleDateString('en-us', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric',
+					})
+				}
+			</time>
+		</span>
+		<span class="mb-2 block text-sm text-gray-500">
+			⏱️ Estimated reading time: {readingTime} min
+		</span>
+		<div class="flex">
+			<button
+				id="read-aloud-btn"
+				type="button"
+				class="mb-4 flex items-center gap-2 rounded bg-cyan-600 px-4 py-2 text-white hover:bg-cyan-700">
+				<span id="read-aloud-icon">▶️</span>
+				<span id="read-aloud-label">Read Aloud</span>
+			</button>
+
+			<button
+				id="stop-aloud-btn"
+				type="button"
+				style="display:none"
+				class="mb-4 ml-2 flex items-center gap-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700">
+				⏹️ <span>Stop</span>
+			</button>
+		</div>
+
+		<div id="blog-content" class="mb-5">
+			<Content />
+		</div>
+	</Section>
+</Layout>
+<script>
+	window.addEventListener('DOMContentLoaded', () => {
+		const readBtn = document.getElementById('read-aloud-btn')
+		const stopBtn = document.getElementById('stop-aloud-btn')
+		const content = document.getElementById('blog-content')
+		const iconSpan = document.getElementById('read-aloud-icon')
+		const labelSpan = document.getElementById('read-aloud-label')
+
+		const progressBar = document.getElementById('progress-bar')
+		const blogContent = document.getElementById('blog-content')
+		const progressPercent = document.getElementById('progress-percent')
+
+		function updateProgressBar() {
+			if (!blogContent) return
+			const rect = blogContent.getBoundingClientRect()
+			const scrollTop = window.scrollY || window.pageYOffset
+			const contentTop = rect.top + scrollTop
+			const contentHeight = blogContent.offsetHeight
+			const windowHeight = window.innerHeight
+			const maxScroll = contentTop + contentHeight - windowHeight
+			const percent = Math.min(
+				100,
+				Math.max(
+					0,
+					((scrollTop - contentTop) / (maxScroll - contentTop)) * 100,
+				),
+			)
+			if (progressBar) {
+				progressBar.style.width = percent + '%'
+			}
+			if (progressPercent) {
+				progressPercent.textContent = `${Math.round(percent)}%`
+			}
+		}
+
+		window.addEventListener('scroll', updateProgressBar)
+		window.addEventListener('resize', updateProgressBar)
+		updateProgressBar()
+
+		if (!readBtn || !stopBtn || !content) return
+
+		let utterance = null
+		let isPlaying = false
+		let isPaused = false
+
+		function updateUI() {
+			if (isPlaying) {
+				if (iconSpan) iconSpan.textContent = isPaused ? '▶️' : '⏸️'
+				if (labelSpan) labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
+				if (stopBtn) stopBtn.style.display = ''
+			} else {
+				if (iconSpan) iconSpan.textContent = '▶️'
+				if (labelSpan) labelSpan.textContent = 'Read Aloud'
+				if (stopBtn) stopBtn.style.display = 'none'
+			}
+		}
+
+		readBtn.addEventListener('click', () => {
+			if (!isPlaying) {
+				window.speechSynthesis.cancel()
+				const text = content.innerText
+				utterance = new window.SpeechSynthesisUtterance(text)
+				utterance.lang = 'en-US'
+				utterance.rate = 1
+				utterance.pitch = 1
+
+				utterance.onend = () => {
+					isPlaying = false
+					isPaused = false
+					updateUI()
+				}
+				utterance.onerror = () => {
+					isPlaying = false
+					isPaused = false
+					updateUI()
+				}
+				utterance.onpause = () => {
+					isPaused = true
+					updateUI()
+				}
+				utterance.onresume = () => {
+					isPaused = false
+					updateUI()
+				}
+
+				window.speechSynthesis.speak(utterance)
+				isPlaying = true
+				isPaused = false
+				updateUI()
+			} else if (
+				window.speechSynthesis.speaking &&
+				!window.speechSynthesis.paused
+			) {
+				window.speechSynthesis.pause()
+				isPaused = true
+				updateUI()
+			} else if (window.speechSynthesis.paused) {
+				window.speechSynthesis.resume()
+				isPaused = false
+				updateUI()
+			}
+		})
+
+		stopBtn.addEventListener('click', () => {
+			window.speechSynthesis.cancel()
+			isPlaying = false
+			isPaused = false
+			updateUI()
+		})
+	})
+</script>

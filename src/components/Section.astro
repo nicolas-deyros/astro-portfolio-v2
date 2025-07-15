@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+interface Props extends HTMLAttributes<'section'> {
+	ariaLabel?: string
+}
+
+const { ariaLabel, ...props } = Astro.props
+---
+
+<section
+	class="flex h-max flex-col items-center justify-center"
+	aria-label={ariaLabel}>
+	<slot />
+</section>

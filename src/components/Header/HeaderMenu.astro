@@ -1,0 +1,24 @@
+---
+import NavList from '../List/NavList.astro'
+import navData from '@data/navData'
+
+type NavItem = {
+	path: string
+	icon: string
+	text: string
+}
+---
+
+<ul class="lg:flex lg:gap-3">
+	{
+		navData.map((item: NavItem) => (
+			<NavList
+				href={item.path}
+				icon={item.icon}
+				text={item.text}
+				title={item.text}
+				data-navLink
+			/>
+		))
+	}
+</ul>

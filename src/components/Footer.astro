@@ -1,0 +1,20 @@
+---
+import Link from './Link/Link.astro'
+
+const today = new Date()
+---
+
+<footer
+	class="mt-auto flex w-full items-center justify-center gap-5 bg-slate-200 py-3 text-slate-500">
+	<span>&copy; {today.getFullYear()} All rights reserved.</span>
+	<span>
+		<Link
+			href={`https://astro.build`}
+			rel={`nofollow prefetch`}
+			title={`Site build with 🚀Astro`}
+			text={`Astro`}
+			icon={`ic:baseline-rocket-launch`}
+			className="flex items-center justify-center hover:animate-bounce"
+		/>
+	</span>
+</footer>

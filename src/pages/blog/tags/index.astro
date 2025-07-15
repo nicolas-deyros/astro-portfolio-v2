@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@layouts/index.astro'
+import Section from '../../../components/Section.astro'
+import List from '../../../components/List/List.astro'
+const allPosts = await getCollection('blog')
+const tags = [...new Set(allPosts.map(post => post.data.category).flat())]
+const pageTitle = 'Tag Index'
+---
+
+<Layout title={`Blog | ${pageTitle}`}>
+	<Section>
+		<ul class="flex flex-col justify-center gap-1">
+			{
+				tags.map(tag => (
+					<List
+						href={`/blog/tags/${tag}`}
+						text={tag}
+						title={tag}
+						className="flex justify-center items-center font-semibold gap-1 bg-blue-400"
+					/>
+				))
+			}
+		</ul>
+	</Section>
+</Layout>

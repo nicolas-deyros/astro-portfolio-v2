@@ -1,0 +1,40 @@
+---
+import { Icon } from 'astro-icon/components'
+import type { HTMLAttributes } from 'astro/types'
+interface Props extends HTMLAttributes<'a'> {
+	text?: string
+	href: string
+	rel?: 'prefetch' | 'nofollow prefetch'
+	icon?: string
+	target?: '_self' | '_blank'
+	title?: string
+}
+
+const {
+	text,
+	href,
+	rel = 'prefetch',
+	icon,
+	target = '_self',
+	title,
+	...props
+} = Astro.props
+const isActive = href === Astro.url.pathname.replace(/\/$/, '')
+---
+
+<a
+	href={href}
+	rel={rel}
+	title={title}
+	target={target}
+	class:list={[
+		'group flex items-center justify-center gap-1 font-semibold transition-all duration-300',
+		{ 'lg:underline lg:underline-offset-2': isActive },
+		{ ...props },
+	]}
+	{...props}>
+	{icon ? <Icon name={icon} class="h-5" /> : ''}<span
+		class="hidden translate-x-2 opacity-0 transition-all transition-discrete delay-300 duration-300 ease-in-out group-hover:translate-x-0 group-hover:opacity-100 lg:inline">
+		{text}
+	</span>
+</a>

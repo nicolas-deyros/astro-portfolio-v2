@@ -1,0 +1,16 @@
+---
+import NavLink from '../Link/NavLink.astro'
+
+const { text, href, rel, icon, target, title } = Astro.props
+---
+
+<li class="flex list-none items-center justify-center">
+	<NavLink
+		href={href}
+		target={target}
+		rel={rel}
+		icon={icon}
+		title={title}
+		text={text}
+	/>
+</li>

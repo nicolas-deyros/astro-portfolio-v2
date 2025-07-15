@@ -1,0 +1,17 @@
+---
+import Link from '../Link/Link.astro'
+
+const { text, href, rel, icon, target, title, className } = Astro.props
+---
+
+<li class="flex list-none items-center justify-center">
+	<Link
+		href={href}
+		target={target}
+		rel={rel}
+		icon={icon}
+		title={title}
+		text={text}
+		class={className}
+	/>
+</li>

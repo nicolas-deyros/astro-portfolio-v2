@@ -1,16 +1,114 @@
 ---
+import Layout from '@layouts/index.astro'
+import Logo from '@assets/logo.svg'
+import List from '@components/List/List.astro'
 
+const styles =
+	'flex justify-center items-center font-semibold gap-1 text-gray-500'
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+	title={'Home'}
+	description="Welcome to my personal website. Here you can find information about me, my projects, and how to contact me."
+	noindex={false}
+	nofollow={false}>
+	<section
+		class="flex h-full flex-col items-center justify-center gap-6 px-4 py-8 md:gap-10 lg:gap-12 lg:px-8 lg:py-16">
+		<div class="flex w-[300px] flex-col items-center justify-center md:w-full">
+			<Logo width={340} height={340} fill="grey" />
+			<div class="h-7 md:h-12 lg:h-20">
+				<h1
+					class="flex flex-col gap-3 text-center text-3xl leading-none md:text-5xl lg:text-7xl"
+					aria-label="Developer, Project Manager, Advertiser, a.k.a Problem solver">
+					Nicolás Deyros
+					<span
+						class="txt-type font-semibold text-slate-500 md:text-2xl lg:text-3xl"
+						data-wait="1000"
+						data-words='["Developer", "Project Manager", "Advertiser", "a.k.a Problem Solver"]'
+						aria-hidden="true">
+					</span>
+				</h1>
+			</div>
+		</div>
+		<ul class="flex flex-row justify-center gap-3">
+			<List
+				href="https://github.com/nicolas-deyros"
+				icon="jam:github"
+				target="_blank"
+				title="Github"
+				className={styles}
+			/>
+			<List
+				href="https://www.linkedin.com/in/nicolasdeyros/"
+				icon="jam:linkedin"
+				target="_blank"
+				title="Linkedin"
+				className={styles}
+			/>
+			<List
+				href="https://www.youtube.com/@ndeyros"
+				icon="jam:youtube"
+				target="_blank"
+				title="Youtube"
+				className={styles}
+			/>
+		</ul>
+	</section>
+</Layout>
+
+<script type="module">
+	const TypeWriter = function (txtElement, words, wait = 3000) {
+		this.txtElement = txtElement
+		this.words = words
+		this.txt = ''
+		this.wordIndex = 0
+		this.wait = parseInt(wait, 10)
+		this.type()
+		this.isDeleting = false
+	}
+
+	TypeWriter.prototype.type = function () {
+		const current = this.wordIndex % this.words.length
+		const fullTxt = this.words[current]
+		if (this.isDeleting) {
+			this.txt = fullTxt.substring(0, this.txt.length - 1)
+		} else {
+			this.txt = fullTxt.substring(0, this.txt.length + 1)
+		}
+		this.txtElement.innerHTML = `<span class="txt">${this.txt}</span>`
+		let typeSpeed = 100
+		if (this.isDeleting) {
+			typeSpeed /= 2
+		}
+		if (!this.isDeleting && this.txt === fullTxt) {
+			typeSpeed = this.wait
+			this.isDeleting = true
+		} else if (this.isDeleting && this.txt === '') {
+			this.isDeleting = false
+			this.wordIndex++
+			typeSpeed = 500
+		}
+		setTimeout(() => this.type(), typeSpeed)
+	}
+
+	document.addEventListener('DOMContentLoaded', init)
+
+	function init() {
+		const txtElement = document.querySelector('.txt-type')
+		const words = JSON.parse(txtElement.getAttribute('data-words'))
+		const wait = txtElement.getAttribute('data-wait')
+		new TypeWriter(txtElement, words, wait)
+	}
+
+	const words = document.querySelectorAll('.word')
+	words.forEach(word => {
+		const letters = word.textContent.split('')
+		word.textContent = ''
+		letters.forEach(letter => {
+			const span = document.createElement('span')
+			span.textContent = letter
+			span.className = 'letter'
+			word.append(span)
+		})
+	})
+</script>
