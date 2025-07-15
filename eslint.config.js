@@ -1,25 +1,35 @@
 import js from '@eslint/js'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
-import { defineConfig } from 'eslint/config'
 import eslintPluginAstro from 'eslint-plugin-astro'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import mdx from 'eslint-plugin-mdx'
-import eslintPluginAstro from 'eslint-plugin-astro'
 
-export default defineConfig([
+export default [
+	js.configs.recommended,
+	...tseslint.configs.recommended,
+	...eslintPluginAstro.configs.recommended,
+	...jsxA11y.flatConfigs.recommended,
+	...mdx.configs.recommended,
 	{
 		files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
-		plugins: { js },
-		extends: ['js/recommended'],
+		languageOptions: {
+			globals: globals.browser,
+		},
 	},
 	{
-		files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
-		languageOptions: { globals: globals.browser },
+		files: ['**/*.astro'],
+		languageOptions: {
+			globals: globals.browser,
+		},
 	},
-	tseslint.configs.recommended,
-	eslintPluginAstro.configs.recommended,
-	jsxA11y.flatConfigs.recommended,
-	mdx.configs.recommended,
-	eslintPluginAstro.configs.recommended,
-])
+	{
+		files: ['**/*.config.{js,ts}', '**/scripts/**/*.{js,ts}'],
+		languageOptions: {
+			globals: {
+				...globals.browser,
+				...globals.node,
+			},
+		},
+	},
+]
