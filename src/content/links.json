@@ -1,12 +1,14 @@
 [
 	{
-		"title": "Google",
-		"url": "wwww.google.com",
-		"date": "2023-10-01"
+		"title": "Context Engineering Framework",
+		"url": "https://www.linkedin.com/posts/ruben-hassid_context-engineering-is-the-new-prompting-activity-7351203962965979136-JWwu",
+		"tags": "LinkedIn, AI",
+		"date": "2025-07-16"
 	},
 	{
-		"title": "Yahoo",
-		"url": "wwww.yahoo.com",
-		"date": "2023-10-01"
+		"title": "Modern Books for Software Engineering Managers",
+		"url": "https://dev.to/sibprogrammer/modern-books-for-software-engineering-managers-199p",
+		"tags": "Dev, AI",
+		"date": "2025-02-22"
 	}
 ]
