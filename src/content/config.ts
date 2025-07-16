@@ -1,6 +1,7 @@
 import { z, defineCollection } from 'astro:content'
 
 const blog = defineCollection({
+	type: 'content',
 	schema: z.object({
 		title: z.string().max(60, 'For SEO provide a title of 60 caracter or less'),
 		description: z
@@ -16,6 +17,15 @@ const blog = defineCollection({
 		author: z.string().default('Nicolás Deyros'),
 	}),
 })
+const link = defineCollection({
+	type: 'content',
+	schema: z.object({
+		title: z.string(),
+		url: z.string(),
+		date: z.string().transform(str => new Date(str)),
+	}),
+})
 export const collections = {
 	blog,
+	link,
 }

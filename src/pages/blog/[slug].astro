@@ -115,7 +115,7 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 <script>
 	window.addEventListener('DOMContentLoaded', () => {
 		let voices = []
-		let selectedVoice = null
+		let selectedVoice: SpeechSynthesisVoice | null = null
 		const readBtn = document.getElementById('read-aloud-btn')
 		const stopBtn = document.getElementById('stop-aloud-btn')
 		const content = document.getElementById('blog-content')

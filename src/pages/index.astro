@@ -3,6 +3,7 @@ import Layout from '@layouts/index.astro'
 import Logo from '@assets/logo.svg'
 import List from '@components/List/List.astro'
 import TopPosts from '@components/Home/TopPosts.astro'
+import TopLinks from '@components/Home/TopLinks.astro'
 
 const styles =
 	'flex justify-center items-center font-semibold gap-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300'
@@ -55,7 +56,10 @@ const styles =
 			/>
 		</ul>
 	</section>
-	<TopPosts />
+	<section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+		<TopPosts />
+		<TopLinks />
+	</section>
 </Layout>
 
 <script type="module">
