@@ -9,6 +9,7 @@ interface Props extends HTMLAttributes<'a'> {
 	target?: '_self' | '_blank'
 	title?: string
 	className?: string
+	iconSize?: number
 }
 
 const {
@@ -16,6 +17,7 @@ const {
 	href,
 	rel = 'prefetch',
 	icon,
+	iconSize,
 	target = '_self',
 	title,
 	class: className,
@@ -30,7 +32,7 @@ const {
 	target={target}
 	class={className}
 	{...props}>
-	{icon ? <Icon name={icon} class="h-5" /> : null}
+	{icon ? <Icon name={icon} size={iconSize} /> : null}
 	{text ? <span>{text}</span> : null}
 	{Astro.slots.default}
 </a>

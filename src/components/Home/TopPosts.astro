@@ -14,7 +14,12 @@ const topPosts = sortedPosts.slice(0, 3)
 <Section ariaLabel="New Blog Posts">
 	<h3
 		class="my-3 w-full text-center text-xl font-bold text-slate-800 dark:text-slate-200">
-		Latest Blog Posts
+		<Link
+			href="/blog/"
+			title="Latest Blog Posts"
+			text="Latest Blog Posts"
+			class="hover:text-blue-600 hover:underline dark:hover:text-blue-400"
+		/>
 	</h3>
 
 	<div class="mt-3 flex w-full flex-col items-center gap-4">

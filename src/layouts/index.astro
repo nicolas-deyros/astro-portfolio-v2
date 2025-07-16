@@ -12,7 +12,7 @@ const { isBlog } = Astro.props
 	<body
 		class={`flex flex-col bg-white dark:bg-gray-900 text-black dark:text-white font-sans ${isBlog ? 'h-max' : 'h-screen'}`}>
 		<Header />
-		<main class="container mx-auto mt-20 h-full w-full flex-grow px-5 md:px-10">
+		<main class="container mx-auto my-20 h-full w-full flex-grow px-5 md:px-10">
 			<slot />
 		</main>
 		<Footer />

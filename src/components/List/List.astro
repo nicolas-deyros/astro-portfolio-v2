@@ -1,7 +1,8 @@
 ---
-import Link from '../Link/Link.astro'
+import Link from '@components/Link/Link.astro'
 
-const { text, href, rel, icon, target, title, className } = Astro.props
+const { text, href, rel, icon, iconSize, target, title, className } =
+	Astro.props
 ---
 
 <li class="flex list-none items-center justify-center">
@@ -10,6 +11,7 @@ const { text, href, rel, icon, target, title, className } = Astro.props
 		target={target}
 		rel={rel}
 		icon={icon}
+		iconSize={iconSize}
 		title={title}
 		text={text}
 		class={className}

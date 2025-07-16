@@ -18,13 +18,13 @@ const styles =
 		class="flex flex-col items-center justify-center gap-6 px-4 py-8 md:gap-10 lg:gap-12 lg:px-8 lg:py-16">
 		<div class="flex w-[300px] flex-col items-center justify-center md:w-full">
 			<Logo width={340} height={340} />
-			<div class="h-7 md:h-12 lg:h-20">
+			<div class="h-max md:h-12 lg:h-20">
 				<h1
 					class="flex flex-col gap-3 text-center text-3xl leading-none md:text-5xl lg:text-7xl"
 					aria-label="Developer, Project Manager, Advertiser, a.k.a Problem solver">
 					Nicolás Deyros
 					<span
-						class="txt-type font-semibold text-slate-500 md:text-2xl lg:text-3xl"
+						class="txt-type h-7 font-semibold text-slate-500 md:text-2xl lg:text-3xl"
 						data-wait="1000"
 						data-words='["Developer", "Project Manager", "Advertiser", "a.k.a Problem Solver"]'
 						aria-hidden="true">
@@ -36,6 +36,7 @@ const styles =
 			<List
 				href="https://github.com/nicolas-deyros"
 				icon="jam:github"
+				iconSize={25}
 				target="_blank"
 				title="Github"
 				className={styles}
@@ -43,6 +44,7 @@ const styles =
 			<List
 				href="https://www.linkedin.com/in/nicolasdeyros/"
 				icon="jam:linkedin"
+				iconSize={25}
 				target="_blank"
 				title="Linkedin"
 				className={styles}
@@ -50,6 +52,7 @@ const styles =
 			<List
 				href="https://www.youtube.com/@ndeyros"
 				icon="jam:youtube"
+				iconSize={25}
 				target="_blank"
 				title="Youtube"
 				className={styles}
