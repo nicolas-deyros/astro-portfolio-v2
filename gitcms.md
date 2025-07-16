@@ -1,22 +1,22 @@
 ---
-repo: nicolas-deyros/astro-portfolio-v2
-media_path: /src/content/link
-website_url: https://astro-portfolio-v2-ten.vercel.app/
 collections:
-  - name: Links
-    git_path: /src/content/link
+  - file_extension: .md
     filename_pattern: Title-Date
-    file_extension: .md
+    git_path: /src/content/link
     metadata_schema:
       - name: Title
+        required: true
         type: title
-        required: true
       - name: URL
+        required: true
         type: singleline
-        required: true
       - name: Date
-        type: datetime
         required: true
+        type: datetime
+    name: Links
+media_path: /src/assets
+repo: nicolas-deyros/astro-portfolio-v2
+website_url: https://astro-portfolio-v2-ten.vercel.app/
 ---
 # GitCMS Configuration File
 > [!WARNING]
