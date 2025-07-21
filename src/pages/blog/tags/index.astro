@@ -1,26 +1,283 @@
 ---
 import { getCollection } from 'astro:content'
 import Layout from '@layouts/index.astro'
-import Section from '../../../components/Section.astro'
-import List from '../../../components/List/List.astro'
+import Section from '@components/Section.astro'
+
+export const prerender = true
+
 const allPosts = await getCollection('blog')
-const tags = [...new Set(allPosts.map(post => post.data.category).flat())]
-const pageTitle = 'Tag Index'
+const sortedPosts = allPosts.sort(
+	(a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+)
+
+// Extract all unique tags from categories (assuming category is the tag system)
+const allTags = [...new Set(allPosts.map(post => post.data.category))].sort()
+
+// Badge color variants
+const badgeColors = [
+	'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20',
+	'bg-yellow-50 text-yellow-800 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:ring-yellow-400/20',
+	'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20',
+	'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20',
+	'bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20',
+	'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/20',
+	'bg-pink-50 text-pink-700 ring-pink-600/20 dark:bg-pink-400/10 dark:text-pink-400 dark:ring-pink-400/20',
+	'bg-gray-50 text-gray-600 ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20',
+	'bg-orange-50 text-orange-700 ring-orange-600/20 dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20',
+	'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-400 dark:ring-teal-400/20',
+]
+
+// Function to get consistent color for a tag
+const getTagColor = (tag: string) => {
+	const colorIndex =
+		tag.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+		badgeColors.length
+	return badgeColors[colorIndex]
+}
+
+const pageTitle = 'Tags Index'
 ---
 
-<Layout title={`Blog | ${pageTitle}`}>
-	<Section>
-		<ul class="flex flex-col justify-center gap-1">
-			{
-				tags.map(tag => (
-					<List
-						href={`/blog/tags/${tag}`}
-						text={tag}
-						title={tag}
-						className="flex justify-center items-center font-semibold gap-1 bg-blue-400"
-					/>
-				))
-			}
-		</ul>
+<Layout
+	title={`Blog | ${pageTitle}`}
+	description="Browse all blog posts by category.">
+	<Section ariaLabel="Tags Index">
+		<h3
+			class="my-3 w-full text-center text-xl font-bold text-slate-800 dark:text-slate-200">
+			{pageTitle}
+		</h3>
+
+		<!-- Mobile Filter Section (visible on mobile only) -->
+		<aside class="mb-6 w-full md:hidden">
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<span class="text-sm font-medium text-slate-700 dark:text-slate-300">
+					Filter by category:
+				</span>
+				<button
+					id="clear-filter-mobile"
+					class="hidden rounded-md bg-red-100 px-3 py-1 text-xs font-medium text-red-800 transition-colors hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+					Clear Filter
+				</button>
+			</div>
+			<div class="flex flex-wrap justify-center gap-2">
+				{
+					allTags.map(tag => (
+						<button
+							class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag)}`}
+							data-tag={tag}>
+							{tag}
+						</button>
+					))
+				}
+			</div>
+		</aside>
+
+		<!-- Desktop Layout with Sidebar -->
+		<div class="flex w-full gap-6">
+			<!-- Main Content Area -->
+			<section class="min-w-0 flex-1">
+				<div
+					class="flex w-full flex-col items-center gap-4"
+					id="posts-container">
+					{
+						sortedPosts.map((post, i) => (
+							<article
+								class="article-animate post-item flex w-full max-w-4xl flex-col gap-3 border-b-2 border-slate-200 p-4 dark:border-slate-700"
+								style={`animation-delay: ${i * 100}ms`}
+								data-category={post.data.category}>
+								<div class="flex items-start justify-between">
+									<div class="flex-1">
+										<h4 class="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100">
+											<a
+												href={`/blog/${post.slug}`}
+												class="transition-colors hover:text-blue-600 hover:underline dark:hover:text-blue-400">
+												{post.data.title}
+											</a>
+										</h4>
+
+										{post.data.description && (
+											<p class="mb-3 text-slate-600 dark:text-slate-400">
+												{post.data.description}
+											</p>
+										)}
+
+										<div class="flex flex-wrap items-center gap-3">
+											<time
+												class="text-sm text-slate-500 dark:text-slate-400"
+												datetime={new Date(post.data.date).toISOString()}>
+												{new Date(post.data.date).toLocaleDateString('en-us', {
+													year: 'numeric',
+													month: 'long',
+													day: 'numeric',
+												})}
+											</time>
+
+											{post.data.author && (
+												<span class="text-sm text-slate-500 dark:text-slate-400">
+													by {post.data.author}
+												</span>
+											)}
+
+											<a
+												href={`/blog/tags/${post.data.category}`}
+												class={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(post.data.category)}`}>
+												{post.data.category}
+											</a>
+										</div>
+									</div>
+								</div>
+							</article>
+						))
+					}
+				</div>
+
+				<!-- No results message -->
+				<div
+					id="no-results"
+					class="mt-8 hidden text-center text-gray-500 dark:text-gray-400">
+					<p>No blog posts found for the selected category.</p>
+				</div>
+			</section>
+
+			<!-- Desktop Sidebar Filter (visible on desktop only) -->
+			<aside class="hidden w-64 flex-shrink-0 md:block">
+				<div class="sticky top-6">
+					<div class="mb-4 flex items-center justify-between">
+						<h4
+							class="text-sm font-semibold text-slate-900 dark:text-slate-100">
+							Filter by category
+						</h4>
+						<button
+							id="clear-filter-desktop"
+							class="hidden rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-800 transition-colors hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+							Clear
+						</button>
+					</div>
+					<div class="flex flex-col gap-2">
+						{
+							allTags.map(tag => (
+								<button
+									class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag)}`}
+									data-tag={tag}>
+									{tag}
+								</button>
+							))
+						}
+					</div>
+				</div>
+			</aside>
+		</div>
 	</Section>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const tagFilters = document.querySelectorAll('.tag-filter')
+			const clearFilterMobile = document.getElementById('clear-filter-mobile')
+			const clearFilterDesktop = document.getElementById('clear-filter-desktop')
+			const postItems = document.querySelectorAll('.post-item')
+			const noResults = document.getElementById('no-results')
+			let activeFilter: string | null = null
+
+			function filterPosts(selectedTag: string | null) {
+				let visibleCount = 0
+
+				postItems.forEach(item => {
+					const itemCategory =
+						item.getAttribute('data-category')?.toLowerCase() || ''
+					const shouldShow =
+						!selectedTag || itemCategory === selectedTag.toLowerCase()
+
+					if (shouldShow) {
+						;(item as HTMLElement).style.display = 'flex'
+						visibleCount++
+					} else {
+						;(item as HTMLElement).style.display = 'none'
+					}
+				})
+
+				// Show/hide no results message
+				if (visibleCount === 0 && selectedTag) {
+					noResults?.classList.remove('hidden')
+				} else {
+					noResults?.classList.add('hidden')
+				}
+
+				// Update active filter styling
+				tagFilters.forEach(filter => {
+					filter.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2')
+				})
+
+				if (selectedTag) {
+					const activeButtons = document.querySelectorAll(
+						`[data-tag="${selectedTag}"]`,
+					)
+					activeButtons.forEach(button => {
+						button.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2')
+					})
+					clearFilterMobile?.classList.remove('hidden')
+					clearFilterDesktop?.classList.remove('hidden')
+				} else {
+					clearFilterMobile?.classList.add('hidden')
+					clearFilterDesktop?.classList.add('hidden')
+				}
+			}
+
+			// Add click listeners to tag filters
+			tagFilters.forEach(filter => {
+				filter.addEventListener('click', () => {
+					const tag = filter.getAttribute('data-tag')
+					activeFilter = activeFilter === tag ? null : tag
+					filterPosts(activeFilter)
+				})
+			})
+
+			// Clear filter buttons (both mobile and desktop)
+			clearFilterMobile?.addEventListener('click', () => {
+				activeFilter = null
+				filterPosts(null)
+			})
+
+			clearFilterDesktop?.addEventListener('click', () => {
+				activeFilter = null
+				filterPosts(null)
+			})
+
+			// Initialize with all posts visible
+			filterPosts(null)
+		})
+	</script>
+
+	<style>
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+		.article-animate {
+			opacity: 0;
+			animation: fadeInUp 0.6s forwards;
+		}
+
+		.tag-filter {
+			cursor: pointer;
+			user-select: none;
+		}
+
+		.tag-filter:hover {
+			transform: translateY(-1px);
+		}
+
+		/* Ensure sidebar doesn't interfere with main content */
+		@media (min-width: 768px) {
+			.sticky {
+				position: sticky;
+				top: 1.5rem;
+			}
+		}
+	</style>
 </Layout>
