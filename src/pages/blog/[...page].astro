@@ -16,6 +16,48 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 	return paginate(sortedPosts, { pageSize: 10 })
 }
 const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> }
+
+// Get all posts for tag calculations
+const allPosts = await getCollection('blog')
+
+// Calculate tag counts
+const tagCounts = allPosts.reduce(
+	(acc, post) => {
+		const category = post.data.category
+		if (category) {
+			acc[category] = (acc[category] || 0) + 1
+		}
+		return acc
+	},
+	{} as Record<string, number>,
+)
+
+// Get top 10 tags sorted by count
+const topTags = Object.entries(tagCounts)
+	.sort(([, a], [, b]) => b - a)
+	.slice(0, 10)
+
+// Badge color variants
+const badgeColors = [
+	'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20',
+	'bg-yellow-50 text-yellow-800 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:ring-yellow-400/20',
+	'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20',
+	'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20',
+	'bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/20',
+	'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/20',
+	'bg-pink-50 text-pink-700 ring-pink-600/20 dark:bg-pink-400/10 dark:text-pink-400 dark:ring-pink-400/20',
+	'bg-gray-50 text-gray-600 ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20',
+	'bg-orange-50 text-orange-700 ring-orange-600/20 dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20',
+	'bg-teal-50 text-teal-700 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-400 dark:ring-teal-400/20',
+]
+
+// Function to get consistent color for a tag
+const getTagColor = (tag: string) => {
+	const colorIndex =
+		tag.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+		badgeColors.length
+	return badgeColors[colorIndex]
+}
 ---
 
 <Layout title="Blog">
@@ -61,5 +103,50 @@ const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> }
 			currentUrl={page.url.current}
 			lastUrl={page.lastPage}
 		/>
+	</Section>
+	<Section ariaLabel="Blog Top Tags">
+		<h3
+			class="mb-6 text-center text-2xl font-bold text-slate-800 dark:text-slate-200">
+			Popular Categories
+		</h3>
+
+		<div class="mx-auto max-w-4xl">
+			<div class="flex flex-wrap justify-center gap-3">
+				{
+					topTags.map(([tag, count]) => (
+						<a href={`/blog/tags/${tag}`} class="group">
+							<div
+								class={`inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ring-1 transition-all ring-inset hover:scale-105 hover:shadow-md ${getTagColor(tag)}`}>
+								<span class="font-semibold">{tag}</span>
+								<span class="rounded-full bg-white/20 px-2 py-1 text-xs font-bold dark:bg-black/20">
+									{count}
+								</span>
+							</div>
+						</a>
+					))
+				}
+			</div>
+
+			{/* Link to view all categories */}
+			<div class="mt-6 text-center">
+				<a
+					href="/blog/tags/"
+					class="inline-flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+					View All Categories
+					<svg
+						class="h-4 w-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17 8l4 4m0 0l-4 4m4-4H3">
+						</path>
+					</svg>
+				</a>
+			</div>
+		</div>
 	</Section>
 </Layout>
