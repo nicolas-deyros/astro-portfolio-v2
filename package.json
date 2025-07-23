@@ -11,16 +11,26 @@
 		"test": "vitest"
 	},
 	"dependencies": {
+		"@astrojs/db": "^0.15.0",
 		"@astrojs/mdx": "^4.3.1",
 		"@astrojs/partytown": "^2.1.4",
+		"@astrojs/react": "^4.3.0",
 		"@astrojs/sitemap": "^3.4.1",
-		"@astrojs/vercel": "^8.2.2",
+		"@astrojs/vercel": "^8.0.4",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.1.11",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
 		"astro": "^5.12.0",
 		"astro-icon": "^1.1.5",
 		"astro-seo": "^0.8.4",
-		"tailwindcss": "^4.1.11"
+		"formik": "^2.4.6",
+		"framer-motion": "^12.23.7",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"resend": "^4.7.0",
+		"tailwindcss": "^4.1.11",
+		"yup": "^1.6.1"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.1",
