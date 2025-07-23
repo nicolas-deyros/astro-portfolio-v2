@@ -19,4 +19,5 @@ export const BasicSchema = Yup.object().shape({
 			excludeEmptyString: true,
 		})
 		.required('Email is a required field and cannot be empty'),
+	message: Yup.string().min(10, 'Message must be at least 10 characters long'),
 })
