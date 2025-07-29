@@ -5,7 +5,7 @@ date: May 31 2018
 author: Nicolas Deyros
 image:
   {
-    src: '@/assets/programatic-advertising.png',
+    src: '../../assets/programatic-advertising.png',
     alt: 'Programmatic Advertising Guide',
   }
 description: A comprehensive guide for Digital Project Managers on setting up programmatic advertising campaigns, including roles, responsibilities, and best practices.
@@ -22,6 +22,15 @@ tags:
     'AdTech',
   ]
 ---
+
+import { Image } from 'astro:assets'
+import programmaticImage from '../../assets/programatic-advertising.png'
+
+<Image
+	src={programmaticImage}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
 
 ## Introduction
 
