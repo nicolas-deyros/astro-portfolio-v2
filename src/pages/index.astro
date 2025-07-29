@@ -100,7 +100,7 @@ const styles =
 		setTimeout(() => this.type(), typeSpeed)
 	}
 
-	document.addEventListener('DOMContentLoaded', init)
+	document.addEventListener('astro:page-load', init)
 
 	function init() {
 		const txtElement = document.querySelector('.txt-type')

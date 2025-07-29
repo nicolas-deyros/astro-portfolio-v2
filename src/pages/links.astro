@@ -172,7 +172,7 @@ const getTagColor = (tag: string) => {
 	</Section>
 
 	<script>
-		document.addEventListener('DOMContentLoaded', () => {
+		document.addEventListener('astro:page-load', () => {
 			const tagFilters = document.querySelectorAll('.tag-filter')
 			const clearFilterMobile = document.getElementById('clear-filter-mobile')
 			const clearFilterDesktop = document.getElementById('clear-filter-desktop')

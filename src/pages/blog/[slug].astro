@@ -115,7 +115,7 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 	</Section>
 </Layout>
 <script>
-	window.addEventListener('DOMContentLoaded', () => {
+	window.addEventListener('astro:page-load', () => {
 		let voices = []
 		let selectedVoice: SpeechSynthesisVoice | null = null
 		const readBtn = document.getElementById('read-aloud-btn')

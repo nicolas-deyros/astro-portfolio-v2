@@ -21,7 +21,7 @@ const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> }
 const allPosts = await getCollection('blog')
 
 // Calculate tag counts
-const tagCounts = allPosts.reduce(
+const categoryCounts = allPosts.reduce(
 	(acc, post) => {
 		const category = post.data.category
 		if (category) {
@@ -33,7 +33,7 @@ const tagCounts = allPosts.reduce(
 )
 
 // Get top 10 tags sorted by count
-const topTags = Object.entries(tagCounts)
+const topCategories = Object.entries(categoryCounts)
 	.sort(([, a], [, b]) => b - a)
 	.slice(0, 10)
 
@@ -104,7 +104,7 @@ const getTagColor = (tag: string) => {
 			lastUrl={page.lastPage}
 		/>
 	</Section>
-	<Section ariaLabel="Blog Top Tags">
+	<Section ariaLabel="Blog Top Categories">
 		<h3
 			class="mb-6 text-center text-2xl font-bold text-slate-800 dark:text-slate-200">
 			Popular Categories
@@ -113,11 +113,11 @@ const getTagColor = (tag: string) => {
 		<div class="mx-auto max-w-4xl">
 			<div class="flex flex-wrap justify-center gap-3">
 				{
-					topTags.map(([tag, count]) => (
-						<a href={`/blog/tags/${tag}`} class="group">
+					topCategories.map(([cat, count]) => (
+						<a href={`/blog/categories/${cat}`} class="group">
 							<div
-								class={`inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ring-1 transition-all ring-inset hover:scale-105 hover:shadow-md ${getTagColor(tag)}`}>
-								<span class="font-semibold">{tag}</span>
+								class={`inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ring-1 transition-all ring-inset hover:scale-105 hover:shadow-md ${getTagColor(cat)}`}>
+								<span class="font-semibold">{cat}</span>
 								<span class="rounded-full bg-white/20 px-2 py-1 text-xs font-bold dark:bg-black/20">
 									{count}
 								</span>
