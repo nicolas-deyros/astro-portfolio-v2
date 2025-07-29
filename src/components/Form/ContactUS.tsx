@@ -99,21 +99,21 @@ const ContactUs = () => {
             `
 
 			const emailText = `
-Hello ${values.name}!
+Hello admin!
+
+New submission from ${values.name}!
 
 Thank you for reaching out through my portfolio contact form.
 I've received your message and will get back to you as soon as possible.
 
 Your submission details:
-Name: ${values.name}
 Email: ${values.email}
 Submitted: ${new Date().toLocaleString()}
 
 ${values.message ? `Your Message:\n${values.message}\n` : ''}
 
+Get in touch with him ASAP!
 Best regards,
-Nicolás Deyros
-Full Stack Developer
             `.trim()
 
 			// Validate email content

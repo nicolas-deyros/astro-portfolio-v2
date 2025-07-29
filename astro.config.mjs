@@ -23,5 +23,9 @@ export default defineConfig({
 	},
 
 	integrations: [mdx(), partytown(), sitemap(), icon(), db(), react()],
-	adapter: vercel(),
+	adapter: vercel({
+		webAnalytics: {
+			enabled: true,
+		},
+	}),
 })

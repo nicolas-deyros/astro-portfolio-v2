@@ -1,21 +1,21 @@
-import { defineAction } from 'astro:actions'
-import { db, FormSubmissions } from 'astro:db'
-import { z } from 'astro:schema'
+import { defineAction } from 'astro:actions';
+import { db, FormSubmissions } from 'astro:db';
+import { z } from 'astro:schema';
 
 export const server = {
 	addSubmission: defineAction({
 		accepts: 'form',
 		input: z.object({
-			id: column.number({ primaryKey: true }),
-			fullName: column.text(),
-			email: column.text(),
-			message: column.text({ optional: true }),
+			fullName: z.string(),
+			email: z.string().email(),
+			message: z.string().optional(),
 		}),
-		handler: async ({ id, fullName, email, message }) => {
-			const submission = await db
-				.insert(FormSubmissions)
-				.values({ id, fullName, email, message })
-			return submission
+		handler: async ({ fullName, email, message }) => {
+			await db.insert(FormSubmissions).values({ fullName, email, message });
+			return {
+				success: true,
+				message: 'Form submitted successfully!',
+			};
 		},
 	}),
-}
+};
