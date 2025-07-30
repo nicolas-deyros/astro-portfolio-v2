@@ -940,19 +940,6 @@ test(seo): add meta tag validation tests
 
 ---
 
-## 📞 Contact & Support
-
-**Nicolas Deyros**  
-eCommerce Production Manager at Lenovo  
-AI Development Enthusiast
-
-- **Portfolio**: [Your Portfolio URL]
-- **LinkedIn**: [Your LinkedIn Profile]
-- **GitHub**: [Your GitHub Profile]
-- **Email**: [Your Email]
-
----
-
 **Built with ❤️ using Astro, TypeScript, and modern web technologies.**
 
 _Last updated: July 30, 2025_
