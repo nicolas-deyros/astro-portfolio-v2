@@ -1,0 +1,82 @@
+{
+	"filters": {
+		"comments": true
+	},
+	"rules": {
+		"common-misspellings": {
+			"severity": "error"
+		},
+		"write-good": {
+			"severity": "warning",
+			"passive": true,
+			"illusion": true,
+			"so": true,
+			"thereIs": true,
+			"weasel": true,
+			"adverb": true,
+			"tooWordy": true,
+			"cliches": true,
+			"eprime": false
+		},
+		"alex": {
+			"severity": "warning",
+			"allow": ["special", "simple", "just", "easy"]
+		},
+		"terminology": {
+			"severity": "error",
+			"defaultTerms": true,
+			"terms": {
+				"JavaScript": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"TypeScript": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"React": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"Astro": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"Node.js": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"VS Code": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				},
+				"GitHub": {
+					"exactMatch": false,
+					"allowPartialMatches": true
+				}
+			}
+		},
+		"en-capitalization": {
+			"severity": "warning",
+			"allowHeading": true,
+			"allowFigures": true,
+			"allowLists": true,
+			"allowWords": [
+				"API",
+				"UI",
+				"UX",
+				"CSS",
+				"HTML",
+				"JSON",
+				"MDX",
+				"SEO",
+				"PWA",
+				"CDN",
+				"CLI",
+				"npm",
+				"yarn",
+				"pnpm"
+			]
+		}
+	}
+}

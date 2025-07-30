@@ -1,0 +1,6 @@
+#!/bin/sh
+# Run commitlint
+npx --no -- commitlint --edit $1
+
+# Run custom grammar checking
+node scripts/check-commit-grammar.js $1

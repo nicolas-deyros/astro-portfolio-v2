@@ -1,6 +1,6 @@
-# 🚀 Nicolás Deyros - Portfolio Website
+# 🚀 Nicolás Deyros - Portfolio site
 
-A modern, high-performance portfolio website built with Astro, featuring comprehensive testing, SEO optimization, and advanced blog functionality. Showcasing work as a Developer, Project Manager, and AI Enthusiast.
+A modern, high-performance portfolio site built with Astro, featuring comprehensive testing, SEO optimization, and advanced blog functionality. Showcasing work as a Developer, Project Manager, and AI Enthusiast.
 
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -162,7 +162,7 @@ A modern, high-performance portfolio website built with Astro, featuring compreh
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- npm or yarn
+- npm or Yarn
 
 ### Installation
 
@@ -408,7 +408,7 @@ The site uses Tailwind's class-based dark mode with system preference detection:
 **Theme Toggle Features:**
 
 - System preference detection on first visit
-- Local storage persistence
+- LocalStorage persistence
 - Smooth transitions between themes
 - Icon animations for theme switcher
 
@@ -734,8 +734,8 @@ Add your analytics scripts in `src/layouts/index.astro`:
 // Google Analytics 4
 ---
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
-></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID">
+</script>
 <script>
 	window.dataLayer = window.dataLayer || []
 	function gtag() {
@@ -833,7 +833,7 @@ Using [Conventional Commits](https://www.conventionalcommits.org/):
 **Types:**
 
 - `feat`: New features
-- `fix`: Bug fixes
+- `fix`: bugfixes
 - `docs`: Documentation updates
 - `style`: Code style changes
 - `refactor`: Code refactoring
@@ -915,7 +915,7 @@ test(seo): add meta tag validation tests
 
 ### **Internal Documentation**
 
-- Comprehensive README (this file)
+- Comprehensive readme (this file)
 - Inline code comments
 - TypeScript type definitions
 - Component documentation

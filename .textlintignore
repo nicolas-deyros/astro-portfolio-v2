@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.npm/
+.yarn/
+
+# Build outputs
+dist/
+build/
+.next/
+.astro/
+
+# Environment files
+.env*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+.temp*
+tmp/
+
+# Package lock files (often contain auto-generated content)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Configuration files that don't need grammar checking
+*.config.js
+*.config.ts
+*.config.mjs
+.eslintrc*
+.prettierrc*
+tsconfig.json
+vitest.config.ts
+
+# Astro specific
+public/
+src/env.d.ts
