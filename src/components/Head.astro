@@ -11,36 +11,13 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 
 <head>
 	<!-- Theme initialization script - runs before page render to prevent flash -->
-	<script is:inline>
-		;(function () {
-			function getStoredTheme() {
-				if (
-					typeof localStorage !== 'undefined' &&
-					localStorage.getItem('theme')
-				) {
-					return localStorage.getItem('theme')
-				}
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					return 'dark'
-				}
-				return 'light'
-			}
-
-			const theme = getStoredTheme()
-			if (theme === 'dark') {
-				document.documentElement.classList.add('dark')
-			} else {
-				document.documentElement.classList.remove('dark')
-			}
-		})()
-	</script>
 
 	<!-- Google tag (gtag.js) -->
 	<script
 		type="text/partytown"
 		async
-		src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
-	></script>
+		src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH">
+	</script>
 	<script type="text/partytown">
 		window.dataLayer = window.dataLayer || []
 		function gtag(...args) {

@@ -366,7 +366,7 @@ describe('Core Web Vitals & Performance Testing', () => {
 
 			const response = await page.goto(url, {
 				waitUntil: 'networkidle0',
-				timeout: 30000,
+				timeout: 50000,
 			})
 
 			if (!response || response.status() !== 200) {

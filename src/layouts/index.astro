@@ -17,5 +17,27 @@ const { title, description, noindex, nofollow } = Astro.props
 			<slot />
 		</main>
 		<Footer />
+		<script>
+			// Initialize theme immediately to prevent FOUC
+			function initTheme() {
+				const theme =
+					localStorage.getItem('theme') ||
+					(window.matchMedia('(prefers-color-scheme: dark)').matches
+						? 'dark'
+						: 'light')
+
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark')
+				} else {
+					document.documentElement.classList.remove('dark')
+				}
+			}
+
+			// Initialize immediately
+			initTheme()
+
+			// Handle view transitions
+			document.addEventListener('astro:after-swap', initTheme)
+		</script>
 	</body>
 </html>
