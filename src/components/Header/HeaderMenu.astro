@@ -124,11 +124,20 @@ type NavItem = {
 				</a>
 			))
 		}
-		<button
-			id="toggle-theme"
-			class="rounded border bg-slate-800 p-3 text-slate-200 dark:bg-slate-200 dark:text-slate-800">
-			Toggle Dark Theme
-		</button>
+		<label
+			id="mobile-toggle-theme"
+			for="mobile-theme-toggle-checkbox"
+			class="relative inline-flex cursor-pointer items-center">
+			<input
+				type="checkbox"
+				value=""
+				id="mobile-theme-toggle-checkbox"
+				class="peer sr-only"
+			/>
+			<div
+				class="peer relative h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-800 peer-focus:ring-4 peer-focus:ring-slate-300 peer-focus:outline-none before:absolute before:top-[2px] before:left-[2px] before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:border before:border-slate-300 before:bg-white before:text-xs before:text-yellow-600 before:transition-all before:duration-300 before:content-['☀'] peer-checked:before:translate-x-full peer-checked:before:border-white peer-checked:before:opacity-0 after:absolute after:top-[2px] after:left-[2px] after:flex after:h-5 after:w-5 after:items-center after:justify-center after:rounded-full after:border after:border-white after:bg-gray-900 after:text-xs after:text-blue-200 after:opacity-0 after:transition-all after:duration-300 after:content-['☽'] peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:opacity-100 dark:bg-gray-700 dark:peer-checked:bg-slate-200 dark:peer-focus:ring-slate-600 dark:before:border-gray-600 dark:before:bg-gray-300">
+			</div>
+		</label>
 	</div>
 </nav>
 
@@ -208,23 +217,30 @@ type NavItem = {
 			}
 		})
 
-		// Theme toggle functionality - now properly inside astro:page-load
+		// Theme toggle functionality - handle both desktop and mobile
 		const themeToggleCheckbox = document.getElementById(
 			'theme-toggle-checkbox',
 		) as HTMLInputElement
+		const mobileThemeToggleCheckbox = document.getElementById(
+			'mobile-theme-toggle-checkbox',
+		) as HTMLInputElement
 		const htmlElement = document.documentElement
 
-		// Sync checkbox state with current theme (don't reinitialize theme)
-		function syncCheckboxState() {
+		// Sync checkbox states with current theme
+		function syncCheckboxStates() {
+			const isDark = htmlElement.classList.contains('dark')
 			if (themeToggleCheckbox) {
-				const isDark = htmlElement.classList.contains('dark')
 				themeToggleCheckbox.checked = isDark
+			}
+			if (mobileThemeToggleCheckbox) {
+				mobileThemeToggleCheckbox.checked = isDark
 			}
 		}
 
-		// Sync checkbox state on load (theme is already set by layout)
-		syncCheckboxState()
+		// Sync checkbox states on load (theme is already set by layout)
+		syncCheckboxStates()
 
+		// Handle desktop toggle
 		if (themeToggleCheckbox) {
 			themeToggleCheckbox.addEventListener('change', () => {
 				if (themeToggleCheckbox.checked) {
@@ -234,24 +250,26 @@ type NavItem = {
 					htmlElement.classList.remove('dark')
 					localStorage.setItem('theme', 'light')
 				}
+				// Sync the other checkbox
+				if (mobileThemeToggleCheckbox) {
+					mobileThemeToggleCheckbox.checked = themeToggleCheckbox.checked
+				}
 			})
 		}
 
-		// Handle the mobile toggle button
-		const mobileThemeToggle = document.querySelector(
-			'#mobile-menu button[id="toggle-theme"]',
-		)
-		if (mobileThemeToggle) {
-			mobileThemeToggle.addEventListener('click', () => {
-				const isDark = htmlElement.classList.contains('dark')
-				if (isDark) {
-					htmlElement.classList.remove('dark')
-					localStorage.setItem('theme', 'light')
-					if (themeToggleCheckbox) themeToggleCheckbox.checked = false
-				} else {
+		// Handle mobile toggle
+		if (mobileThemeToggleCheckbox) {
+			mobileThemeToggleCheckbox.addEventListener('change', () => {
+				if (mobileThemeToggleCheckbox.checked) {
 					htmlElement.classList.add('dark')
 					localStorage.setItem('theme', 'dark')
-					if (themeToggleCheckbox) themeToggleCheckbox.checked = true
+				} else {
+					htmlElement.classList.remove('dark')
+					localStorage.setItem('theme', 'light')
+				}
+				// Sync the other checkbox
+				if (themeToggleCheckbox) {
+					themeToggleCheckbox.checked = mobileThemeToggleCheckbox.checked
 				}
 			})
 		}
