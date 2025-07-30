@@ -3,4 +3,4 @@
 npx --no -- commitlint --edit $1
 
 # Run custom grammar checking
-node scripts/check-commit-grammar.js $1
+npx tsx scripts/check-commit-grammar.ts $1

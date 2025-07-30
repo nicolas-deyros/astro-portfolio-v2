@@ -5,7 +5,7 @@ import fs from 'fs'
 /**
  * Check commit message grammar - to be used with husky
  */
-async function checkCommitMessage() {
+async function checkCommitMessage(): Promise<void> {
 	const commitMsgFile = process.argv[2]
 
 	if (!commitMsgFile) {
@@ -29,12 +29,13 @@ async function checkCommitMessage() {
 			process.exit(0)
 		} else {
 			console.log('❌ Grammar issues found in commit message:')
-			result.errors.forEach(error => console.log(`   • ${error}`))
+			result.errors.forEach((error: string) => console.log(`   • ${error}`))
 			console.log('\n💡 Please fix these issues and commit again.')
 			process.exit(1)
 		}
 	} catch (error) {
-		console.error('❌ Error checking commit message:', error.message)
+		const errorMessage = error instanceof Error ? error.message : String(error)
+		console.error('❌ Error checking commit message:', errorMessage)
 		process.exit(1)
 	}
 }

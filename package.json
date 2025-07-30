@@ -13,10 +13,10 @@
 		"lint:text:smart": "npm run lint:text:fix && npm run lint:text",
 		"test": "vitest",
 		"test:performance": "vitest run performance",
-		"test:performance:help": "node scripts/test-performance.mjs",
+		"test:performance:help": "tsx scripts/test-performance.ts",
 		"test:grammar": "vitest run test/grammar-checker.test.ts",
 		"check:grammar": "npm run lint:text && echo \"✅ Grammar check passed\"",
-		"check:commit": "node scripts/test-grammar.js",
+		"check:commit": "tsx scripts/test-grammar.ts",
 		"check:all": "npm run lint && npm run lint:text:smart && npm run test",
 		"fix:text": "npm run lint:text:fix"
 	},
@@ -74,6 +74,7 @@
 		"textlint-rule-en-capitalization": "^2.0.3",
 		"textlint-rule-terminology": "^5.2.14",
 		"textlint-rule-write-good": "^2.0.0",
+		"tsx": "^4.20.3",
 		"typescript-eslint": "^8.37.0",
 		"vitest": "^3.2.4",
 		"web-vitals": "^5.0.3"

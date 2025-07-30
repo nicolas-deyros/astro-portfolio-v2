@@ -9,7 +9,10 @@
  * 3. Providing helpful instructions if something goes wrong
  */
 
-async function checkServer() {
+import process from 'process'
+import { spawn } from 'child_process'
+
+async function checkServer(): Promise<boolean> {
 	try {
 		const response = await fetch('http://localhost:4321')
 		return response.ok
@@ -18,9 +21,7 @@ async function checkServer() {
 	}
 }
 
-import process from 'process'
-
-async function main() {
+async function main(): Promise<void> {
 	console.log('🔍 Checking if Astro dev server is running...')
 
 	const isServerRunning = await checkServer()
@@ -45,20 +46,17 @@ async function main() {
 	console.log('✅ Dev server is running!')
 	console.log('🚀 Running performance tests...')
 
-	// Import and run the test command
-	const { spawn } = await import('child_process')
-
 	const testProcess = spawn('npm', ['run', 'test:performance'], {
 		stdio: 'inherit',
 		shell: true,
 	})
 
-	testProcess.on('close', code => {
+	testProcess.on('close', (code: number | null) => {
 		if (code === 0) {
 			console.log('✅ Performance tests completed successfully!')
 		} else {
 			console.log('❌ Performance tests failed')
-			process.exit(code)
+			process.exit(code || 1)
 		}
 	})
 }

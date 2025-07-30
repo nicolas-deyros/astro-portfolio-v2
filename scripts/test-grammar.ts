@@ -4,10 +4,10 @@ import { checkCommitGrammar, runTextlintOnCommit } from './grammar-checker.ts'
 /**
  * Test the grammar checker with sample commit messages
  */
-async function testGrammarChecker() {
+async function testGrammarChecker(): Promise<void> {
 	console.log('🔍 Testing Grammar Checker\n')
 
-	const testMessages = [
+	const testMessages: string[] = [
 		'feat: add new user authentication system',
 		'fix: resolve issue with data validation.',
 		'Feat: Add new feature',
@@ -28,7 +28,7 @@ async function testGrammarChecker() {
 			console.log('✅ Valid commit message')
 		} else {
 			console.log('❌ Issues found:')
-			result.errors.forEach(error => console.log(`   • ${error}`))
+			result.errors.forEach((error: string) => console.log(`   • ${error}`))
 		}
 	}
 
@@ -44,7 +44,7 @@ async function testGrammarChecker() {
 			console.log('✅ No textlint issues found')
 		} else {
 			console.log('❌ Textlint issues found:')
-			textlintResult.errors.forEach(error => console.log(`   • ${error}`))
+			textlintResult.errors.forEach((error: string) => console.log(`   • ${error}`))
 		}
 	} catch {
 		console.log('⚠️  Textlint test failed, falling back to basic checks')
