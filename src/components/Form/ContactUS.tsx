@@ -193,7 +193,7 @@ Best regards,
 			return `${baseClasses} border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500`
 		}
 
-		return `${baseClasses} border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 focus:bg-white`
+		return `${baseClasses} border-slate-300 bg-slate-50 text-slate-900 placeholder-slate-500 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 focus:bg-white`
 	}
 
 	const getLabelClasses = (fieldName: keyof FormValues) => {
@@ -202,7 +202,7 @@ Best regards,
 
 		return hasError
 			? `${baseClasses} text-red-700`
-			: `${baseClasses} text-gray-700`
+			: `${baseClasses} text-slate-700 dark:text-slate-200`
 	}
 
 	const getButtonState = () => {
@@ -251,7 +251,7 @@ Best regards,
 
 		return (
 			<div className="mb-4 text-center">
-				<h3 className="text-lg font-semibold text-gray-700">
+				<h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">
 					💬 Get in touch with me
 				</h3>
 			</div>
@@ -263,7 +263,7 @@ Best regards,
 
 		const buttonClasses = {
 			enabled: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 text-white',
-			disabled: 'bg-gray-400 text-gray-200 cursor-not-allowed',
+			disabled: 'bg-slate-400 text-slate-200 cursor-not-allowed',
 			submitting: 'bg-blue-600 text-white cursor-wait',
 			success: 'bg-green-600 text-white cursor-default',
 		}

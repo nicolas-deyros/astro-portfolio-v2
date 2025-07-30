@@ -44,7 +44,9 @@ async function testGrammarChecker(): Promise<void> {
 			console.log('✅ No textlint issues found')
 		} else {
 			console.log('❌ Textlint issues found:')
-			textlintResult.errors.forEach((error: string) => console.log(`   • ${error}`))
+			textlintResult.errors.forEach((error: string) =>
+				console.log(`   • ${error}`),
+			)
 		}
 	} catch {
 		console.log('⚠️  Textlint test failed, falling back to basic checks')

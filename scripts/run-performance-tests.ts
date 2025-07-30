@@ -12,11 +12,15 @@ import { spawn } from 'child_process'
 async function runPerformanceTests(): Promise<void> {
 	console.log('🚀 Starting performance tests...')
 
-	const testProcess = spawn('npx', ['vitest', 'run', 'test/performance.test.ts'], {
-		stdio: 'inherit',
-		shell: true,
-		cwd: process.cwd(),
-	})
+	const testProcess = spawn(
+		'npx',
+		['vitest', 'run', 'test/performance.test.ts'],
+		{
+			stdio: 'inherit',
+			shell: true,
+			cwd: process.cwd(),
+		},
+	)
 
 	testProcess.on('close', (code: number | null) => {
 		if (code === 0) {
