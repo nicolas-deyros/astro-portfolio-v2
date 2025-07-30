@@ -11,10 +11,12 @@ const blog = defineCollection({
 		category: z.string(),
 		tags: z.array(z.string()).optional(),
 		date: z.string().transform(str => new Date(str)),
-		image: z.object({
-			src: z.string(),
-			alt: z.string(),
-		}),
+		image: z
+			.object({
+				src: z.string().optional(),
+				alt: z.string().optional(),
+			})
+			.optional(),
 		author: z.string().default('Nicolás Deyros'),
 	}),
 })

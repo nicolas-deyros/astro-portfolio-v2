@@ -1,0 +1,168 @@
+---
+title: 'Relative Mobile Conversion Rate Dashboard'
+description: "A comprehensive guide to building a Relative Mobile Conversion Rate dashboard in Google Data Studio, based on Lina Hansson's speed optimization concepts."
+date: '2020-03-16'
+draft: false
+slug: 'relative-mobile-conversion-rate-dashboard'
+author: 'Nicolas Deyros'
+category: 'Analytics'
+tags: ['analytics', 'conversion-rate', 'mobile', 'data-studio', 'ecommerce']
+---
+
+import { Image } from 'astro:assets'
+import RelmCvRCover from '../../assets/blog/Relative Mobile Conversion Rate Dashboard.jpeg'
+import RelmCvRCover1 from '../../assets/blog/Rel mCvR - 1.jpeg'
+import RelmCvRCover2 from '../../assets/blog/Rel mCvR - 2.png'
+import RelmCvRCover3 from '../../assets/blog/Rel mCvR - 3.png'
+import RelmCvRCover4 from '../../assets/blog/Rel mCvR - 4.png'
+import RelmCvRCover5 from '../../assets/blog/Rel mCvR - 5.png'
+import RelmCvRCover6 from '../../assets/blog/Rel mCvR - 6.png'
+import RelmCvRCover7 from '../../assets/blog/Rel mCvR - 7.png'
+
+<Image
+	src={RelmCvRCover}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+In a really interesting post [The value of speed](https://web.dev/value-of-speed/), written by Lina Hansson, she develops the concept of **Relative Mobile Conversion Rate (Rel mCvR)**.
+
+> Since you're interested in how site speed affects conversions, the mobile site is most relevant—that's where you're most likely to see the benefits of speed improvements. Rather than looking at the mobile conversion rate alone, though, you'll be analyzing the relative mobile conversion rate (Rel mCvr), which is calculated by dividing the mobile conversion rate by the desktop conversion rate. This approach reduces the noise from external factors, which tend to affect both desktop and mobile, and makes it easier to see whether any increases in the mobile site's effectiveness were actually caused by the speed improvements.
+
+<Image
+	src={RelmCvRCover1}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+I'm not going to cover all the posts written by Lina because she does a great job. Her post is a must-read. I'm just going to present my approach for developing her dashboard in Google Data Studio.
+
+## Relative Mobile Conversion Rate Data Studio Dashboard
+
+<Image
+	src={RelmCvRCover2}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+Below you'll find a step by step procedure for reproducing Rel mCvr report in
+Google Data Studio. In order to create this dashboard you need to take into
+consideration the following steps:
+
+### 1. Data Source
+
+You should use the **blended data** of the same data source.
+
+<Image
+	src={RelmCvRCover3}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+The join keys you should select are:
+
+- Date
+- Week of year and Week of the year
+- Month of year and Month of the year
+
+After that you should proceed and select the following metrics:
+
+- **Speed Metrics Sample**
+- **Ecommerce Conversion Rate**
+- **Sessions**
+- **Avg. Page Load Time (sec)**
+- **Revenue**
+
+As you can see, you should rename the metrics adding "Mobile" or "Desktop" for differentiation purposes.
+
+<Image
+	src={RelmCvRCover4}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-1/3 rounded-lg shadow-lg"
+/>
+
+### 2. Filters
+
+You should apply filters to each data source before you blend them.
+
+<Image
+	src={RelmCvRCover5}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+You should create two filters, one for mobile and the other for desktop. To perform this task, just include the information from the metric "Device Category" equal to mobile or desktop.
+
+<Image
+	src={RelmCvRCover6}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+**Filter Configuration:**
+
+- Mobile Filter: `Device Category = mobile`
+- Desktop Filter: `Device Category = desktop`
+
+### 3. Relative Mobile Conversion Rate Formula
+
+The process, for calculating the formula of the Rel mCvR, is that you should create a custom field. The formula is the following:
+
+```
+SUM(NARY_MAX(Mobile Ecommerce Conversion Rate,0))/SUM(NARY_MAX(Desktop Ecommerce Conversion Rate,0))
+```
+
+The process for creating a custom calculated field involves:
+
+1. Adding the formula above
+2. Defining the type as a **percent**
+3. Naming the field "Relative Mobile Conversion Rate"
+
+The image below shows you the process for creating a custom calculated field, adding the formula and the define the type as a percent.
+
+<Image
+	src={RelmCvRCover7}
+	alt="Programmatic Advertising Guide"
+	class="mb-8 w-1/2 rounded-lg shadow-lg"
+/>
+
+### Video Tutorial
+
+<div class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
+	<iframe
+		src="https://player.vimeo.com/video/399945616?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=584790&amp;loop=0&amp;autoplay=0"
+		class="absolute inset-0 h-full w-full"
+		frameborder="0"
+		allow="autoplay; fullscreen; picture-in-picture"
+		allowfullscreen
+		loading="lazy"
+		title="Relative Mobile Conversion Rate Dashboard Tutorial"></iframe>
+</div>
+
+## Implementation Steps
+
+Here's a quick checklist for implementation:
+
+- [ ] Set up blended data source in Google Data Studio
+- [ ] Configure join keys (Date, Week, Month)
+- [ ] Apply device category filters
+- [ ] Rename metrics with Mobile/Desktop prefixes
+- [ ] Create custom calculated field for Rel mCvR
+- [ ] Set field type to percentage
+- [ ] Build dashboard visualizations
+
+## Final Thoughts
+
+As mentioned at the beginning of this article, Lina's post is a must-read in order to get a deep understanding of the Relative Mobile Conversion Rate (Rel mCvR).
+
+This dashboard approach allows you to:
+
+- **Isolate mobile performance** from external factors
+- **Track speed optimization impact** on conversions
+- **Make data-driven decisions** about mobile improvements
+- **Benchmark mobile against desktop** performance
+
+Don't hesitate to contact me if you have any doubts or if you need help implementing this dashboard.
+
+---
+
+_Originally published on [Nicolas Deyros' LinkedIn](https://www.linkedin.com/pulse/relative-mobile-conversion-rate-dashboard-nicolas-deyros/)_
