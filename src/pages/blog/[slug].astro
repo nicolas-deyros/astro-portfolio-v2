@@ -40,7 +40,7 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		</div>
 		<div
 			id="progress-percent"
-			class="fixed top-0 right-4 z-51 rounded-b-md border-r border-b border-l border-gray-200 bg-white px-3 py-1 text-sm font-bold text-cyan-600 shadow-lg dark:border-gray-600 dark:bg-gray-800 dark:text-cyan-400">
+			class="fixed top-0 left-4 z-51 rounded-b-md border-r border-b border-l border-gray-200 bg-white px-3 py-1 text-sm font-bold text-cyan-600 shadow-lg md:right-4 md:left-auto dark:border-gray-600 dark:bg-gray-800 dark:text-cyan-400">
 			0%
 		</div>
 	</div>
@@ -115,7 +115,17 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 	</Section>
 </Layout>
 <script>
-	window.addEventListener('astro:page-load', () => {
+	// Global state to prevent multiple initializations
+	let isInitialized = false
+	let cleanup: (() => void) | null = null
+
+	// Initialize functionality immediately and on page load
+	function initializeBlogFeatures() {
+		// Prevent multiple initializations
+		if (isInitialized) {
+			return cleanup
+		}
+
 		let voices = []
 		let selectedVoice: SpeechSynthesisVoice | null = null
 		const readBtn = document.getElementById('read-aloud-btn')
@@ -128,34 +138,41 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		const blogContent = document.getElementById('blog-content')
 		const progressPercent = document.getElementById('progress-percent')
 
+		// Progress bar functionality
 		function updateProgressBar() {
-			if (!blogContent) return
+			if (!blogContent || !progressBar || !progressPercent) return
+
 			const rect = blogContent.getBoundingClientRect()
 			const scrollTop = window.scrollY || window.pageYOffset
 			const contentTop = rect.top + scrollTop
 			const contentHeight = blogContent.offsetHeight
 			const windowHeight = window.innerHeight
-			const maxScroll = contentTop + contentHeight - windowHeight
+
+			// Calculate progress based on how much of the content has been scrolled through
+			const contentStart = contentTop
+			const contentEnd = contentTop + contentHeight - windowHeight
+			const scrollProgress = Math.max(0, scrollTop - contentStart)
+			const maxScroll = Math.max(1, contentEnd - contentStart)
 			const percent = Math.min(
 				100,
-				Math.max(
-					0,
-					((scrollTop - contentTop) / (maxScroll - contentTop)) * 100,
-				),
+				Math.max(0, (scrollProgress / maxScroll) * 100),
 			)
-			if (progressBar) {
-				progressBar.style.width = percent + '%'
-			}
-			if (progressPercent) {
-				progressPercent.textContent = `${Math.round(percent)}%`
-			}
+
+			progressBar.style.width = percent + '%'
+			progressPercent.textContent = `${Math.round(percent)}%`
 		}
 
-		window.addEventListener('scroll', updateProgressBar)
-		window.addEventListener('resize', updateProgressBar)
+		// Add scroll listeners
+		const handleScroll = () => updateProgressBar()
+		const handleResize = () => updateProgressBar()
+
+		window.addEventListener('scroll', handleScroll)
+		window.addEventListener('resize', handleResize)
+
+		// Initial update
 		updateProgressBar()
 
-		// Load voices
+		// Load voices for text-to-speech
 		function loadVoices() {
 			voices = window.speechSynthesis.getVoices()
 
@@ -173,32 +190,57 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		}
 
 		// Load voices when available
-		if (voices.length === 0) {
-			window.speechSynthesis.onvoiceschanged = loadVoices
-		} else {
-			loadVoices()
+		if (window.speechSynthesis) {
+			if (window.speechSynthesis.getVoices().length === 0) {
+				window.speechSynthesis.onvoiceschanged = loadVoices
+			} else {
+				loadVoices()
+			}
 		}
 
-		if (!readBtn || !stopBtn || !content) return
+		// Text-to-speech functionality
+		if (!readBtn || !stopBtn || !content) {
+			console.warn('Text-to-speech elements not found')
+			isInitialized = true
+			return () => {
+				window.removeEventListener('scroll', handleScroll)
+				window.removeEventListener('resize', handleResize)
+			}
+		}
 
-		let utterance = null
+		let utterance: SpeechSynthesisUtterance | null = null
 		let isPlaying = false
 		let isPaused = false
 
 		function updateUI() {
+			if (!readBtn || !stopBtn || !iconSpan || !labelSpan) return
+
 			if (isPlaying) {
-				if (iconSpan) iconSpan.textContent = isPaused ? '▶️' : '⏸️'
-				if (labelSpan) labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
-				if (stopBtn) stopBtn.style.display = ''
+				iconSpan.textContent = isPaused ? '▶️' : '⏸️'
+				labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
+				stopBtn.style.display = 'flex' // Use flex to match button styling
 			} else {
-				if (iconSpan) iconSpan.textContent = '▶️'
-				if (labelSpan) labelSpan.textContent = 'Read Aloud'
-				if (stopBtn) stopBtn.style.display = 'none'
+				iconSpan.textContent = '▶️'
+				labelSpan.textContent = 'Read Aloud'
+				stopBtn.style.display = 'none'
 			}
 		}
 
-		readBtn.addEventListener('click', () => {
+		// Clean up any existing speech synthesis
+		if (window.speechSynthesis.speaking) {
+			window.speechSynthesis.cancel()
+		}
+
+		const handleReadClick = () => {
+			console.log(
+				'Read button clicked, isPlaying:',
+				isPlaying,
+				'isPaused:',
+				isPaused,
+			)
+
 			if (!isPlaying) {
+				// Start reading
 				window.speechSynthesis.cancel()
 				const text = content.innerText
 				utterance = new window.SpeechSynthesisUtterance(text)
@@ -207,30 +249,45 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 					utterance.voice = selectedVoice
 				}
 				utterance.lang = 'en-US'
-				utterance.rate = 0.9 // Slightly slower for better comprehension
+				utterance.rate = 0.9
 				utterance.pitch = 1
 				utterance.volume = 0.8
 
+				utterance.onstart = () => {
+					console.log('Speech started')
+					isPlaying = true
+					isPaused = false
+					updateUI()
+				}
+
 				utterance.onend = () => {
+					console.log('Speech ended')
 					isPlaying = false
 					isPaused = false
 					updateUI()
 				}
-				utterance.onerror = () => {
+
+				utterance.onerror = event => {
+					console.log('Speech error:', event)
 					isPlaying = false
 					isPaused = false
 					updateUI()
 				}
+
 				utterance.onpause = () => {
+					console.log('Speech paused')
 					isPaused = true
 					updateUI()
 				}
+
 				utterance.onresume = () => {
+					console.log('Speech resumed')
 					isPaused = false
 					updateUI()
 				}
 
 				window.speechSynthesis.speak(utterance)
+				// Set state immediately and update UI
 				isPlaying = true
 				isPaused = false
 				updateUI()
@@ -238,21 +295,89 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 				window.speechSynthesis.speaking &&
 				!window.speechSynthesis.paused
 			) {
+				// Pause reading
 				window.speechSynthesis.pause()
 				isPaused = true
 				updateUI()
 			} else if (window.speechSynthesis.paused) {
+				// Resume reading
 				window.speechSynthesis.resume()
 				isPaused = false
 				updateUI()
 			}
-		})
+		}
 
-		stopBtn.addEventListener('click', () => {
+		const handleStopClick = () => {
+			console.log('Stop button clicked')
 			window.speechSynthesis.cancel()
 			isPlaying = false
 			isPaused = false
 			updateUI()
-		})
+		}
+
+		// Add event listeners
+		readBtn.addEventListener('click', handleReadClick)
+		stopBtn.addEventListener('click', handleStopClick)
+
+		// Initialize UI
+		updateUI()
+		isInitialized = true
+
+		// Cleanup function for view transitions
+		return () => {
+			console.log('Cleaning up blog features')
+			window.removeEventListener('scroll', handleScroll)
+			window.removeEventListener('resize', handleResize)
+
+			// Remove event listeners
+			readBtn.removeEventListener('click', handleReadClick)
+			stopBtn.removeEventListener('click', handleStopClick)
+
+			// Stop speech synthesis
+			if (window.speechSynthesis.speaking) {
+				window.speechSynthesis.cancel()
+			}
+
+			// Reset state
+			isInitialized = false
+		}
+	}
+
+	// Clean up before navigation
+	document.addEventListener('astro:before-preparation', () => {
+		console.log('Before navigation - cleaning up')
+		if (cleanup) {
+			cleanup()
+			cleanup = null
+		}
+		// Force stop any ongoing speech synthesis
+		if (window.speechSynthesis.speaking) {
+			window.speechSynthesis.cancel()
+		}
+		isInitialized = false
 	})
+
+	// Initialize on page load
+	document.addEventListener('astro:page-load', () => {
+		console.log('Page loaded - initializing features')
+		// Clean up previous instance if it exists
+		if (cleanup) {
+			cleanup()
+		}
+		// Initialize new instance
+		cleanup = initializeBlogFeatures()
+	})
+
+	// Fallback for initial page load (no view transition)
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', () => {
+			if (!isInitialized) {
+				cleanup = initializeBlogFeatures()
+			}
+		})
+	} else {
+		if (!isInitialized) {
+			cleanup = initializeBlogFeatures()
+		}
+	}
 </script>
