@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { checkCommitGrammar, runTextlintOnCommit } from './grammar-checker.js'
+import { checkCommitGrammar, runTextlintOnCommit } from './grammar-checker.ts'
 
 /**
  * Test the grammar checker with sample commit messages

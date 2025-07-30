@@ -127,7 +127,7 @@ type NavItem = {
 		<button
 			id="toggle-theme"
 			class="rounded border bg-slate-800 p-3 text-slate-200 dark:bg-slate-200 dark:text-slate-800">
-			Tooggle Dark Theme
+			Toggle Dark Theme
 		</button>
 	</div>
 </nav>
@@ -207,67 +207,55 @@ type NavItem = {
 				closeMobileMenu()
 			}
 		})
-	})
 
-	const themeToggleCheckbox = document.getElementById(
-		'theme-toggle-checkbox',
-	) as HTMLInputElement
-	const htmlElement = document.documentElement
+		// Theme toggle functionality - now properly inside astro:page-load
+		const themeToggleCheckbox = document.getElementById(
+			'theme-toggle-checkbox',
+		) as HTMLInputElement
+		const htmlElement = document.documentElement
 
-	// Initialize theme and checkbox state
-	function initTheme() {
-		const theme =
-			localStorage.getItem('theme') ||
-			(window.matchMedia('(prefers-color-scheme: dark)').matches
-				? 'dark'
-				: 'light')
-
-		if (theme === 'dark') {
-			htmlElement.classList.add('dark')
+		// Sync checkbox state with current theme (don't reinitialize theme)
+		function syncCheckboxState() {
 			if (themeToggleCheckbox) {
-				themeToggleCheckbox.checked = true
-			}
-		} else {
-			htmlElement.classList.remove('dark')
-			if (themeToggleCheckbox) {
-				themeToggleCheckbox.checked = false
+				const isDark = htmlElement.classList.contains('dark')
+				themeToggleCheckbox.checked = isDark
 			}
 		}
-	}
 
-	// Initialize theme on load
-	initTheme()
+		// Sync checkbox state on load (theme is already set by layout)
+		syncCheckboxState()
 
-	if (themeToggleCheckbox) {
-		themeToggleCheckbox.addEventListener('change', () => {
-			if (themeToggleCheckbox.checked) {
-				htmlElement.classList.add('dark')
-				localStorage.setItem('theme', 'dark')
-			} else {
-				htmlElement.classList.remove('dark')
-				localStorage.setItem('theme', 'light')
-			}
-		})
-	}
+		if (themeToggleCheckbox) {
+			themeToggleCheckbox.addEventListener('change', () => {
+				if (themeToggleCheckbox.checked) {
+					htmlElement.classList.add('dark')
+					localStorage.setItem('theme', 'dark')
+				} else {
+					htmlElement.classList.remove('dark')
+					localStorage.setItem('theme', 'light')
+				}
+			})
+		}
 
-	// Handle the old mobile toggle button (if it exists)
-	const mobileThemeToggle = document.querySelector(
-		'#mobile-menu button[id="toggle-theme"]',
-	)
-	if (mobileThemeToggle) {
-		mobileThemeToggle.addEventListener('click', () => {
-			const isDark = htmlElement.classList.contains('dark')
-			if (isDark) {
-				htmlElement.classList.remove('dark')
-				localStorage.setItem('theme', 'light')
-				if (themeToggleCheckbox) themeToggleCheckbox.checked = false
-			} else {
-				htmlElement.classList.add('dark')
-				localStorage.setItem('theme', 'dark')
-				if (themeToggleCheckbox) themeToggleCheckbox.checked = true
-			}
-		})
-	}
+		// Handle the mobile toggle button
+		const mobileThemeToggle = document.querySelector(
+			'#mobile-menu button[id="toggle-theme"]',
+		)
+		if (mobileThemeToggle) {
+			mobileThemeToggle.addEventListener('click', () => {
+				const isDark = htmlElement.classList.contains('dark')
+				if (isDark) {
+					htmlElement.classList.remove('dark')
+					localStorage.setItem('theme', 'light')
+					if (themeToggleCheckbox) themeToggleCheckbox.checked = false
+				} else {
+					htmlElement.classList.add('dark')
+					localStorage.setItem('theme', 'dark')
+					if (themeToggleCheckbox) themeToggleCheckbox.checked = true
+				}
+			})
+		}
+	})
 </script>
 
 <style>

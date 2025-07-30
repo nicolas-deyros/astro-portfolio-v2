@@ -2,16 +2,40 @@ import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 
+export interface GrammarResult {
+	valid: boolean
+	errors: string[]
+}
+
+interface GrammarRule {
+	test: RegExp
+	message: string
+	shouldNotMatch?: boolean
+}
+
+interface CommonMisspellings {
+	[key: string]: string
+}
+
+interface TextlintMessage {
+	message: string
+	ruleId: string
+}
+
+interface TextlintResult {
+	messages?: TextlintMessage[]
+}
+
 /**
  * Grammar checker using textlint for commit messages
- * @param {string} message - The commit message to check
- * @returns {Promise<{valid: boolean, errors: string[]}>}
  */
-export async function checkCommitGrammar(message) {
-	const errors = []
+export async function checkCommitGrammar(
+	message: string,
+): Promise<GrammarResult> {
+	const errors: string[] = []
 
 	// Basic grammar checks
-	const grammarRules = [
+	const grammarRules: GrammarRule[] = [
 		{
 			test: /^[a-z]/,
 			message:
@@ -30,7 +54,7 @@ export async function checkCommitGrammar(message) {
 	]
 
 	// Common misspellings
-	const commonMisspellings = {
+	const commonMisspellings: CommonMisspellings = {
 		teh: 'the',
 		seperate: 'separate',
 		occured: 'occurred',
@@ -88,7 +112,9 @@ export async function checkCommitGrammar(message) {
 /**
  * Textlint-based grammar checking for commit messages
  */
-export async function runTextlintOnCommit(message) {
+export async function runTextlintOnCommit(
+	message: string,
+): Promise<GrammarResult> {
 	try {
 		// Create temporary file for textlint
 		const tempFile = path.join(process.cwd(), '.temp-commit-msg.md')
@@ -103,12 +129,14 @@ export async function runTextlintOnCommit(message) {
 		// Clean up
 		fs.unlinkSync(tempFile)
 
-		const lintResults = JSON.parse(result)
+		const lintResults: TextlintResult[] = JSON.parse(result)
 		const errors = lintResults[0]?.messages || []
 
 		return {
 			valid: errors.length === 0,
-			errors: errors.map(err => `${err.message} (${err.ruleId})`),
+			errors: errors.map(
+				(err: TextlintMessage) => `${err.message} (${err.ruleId})`,
+			),
 		}
 	} catch {
 		// If textlint fails, fall back to basic checks

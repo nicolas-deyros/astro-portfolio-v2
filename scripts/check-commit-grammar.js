@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { checkCommitGrammar } from './grammar-checker.js'
+import { checkCommitGrammar } from './grammar-checker.ts'
 import fs from 'fs'
 
 /**

@@ -31,6 +31,14 @@ const { title, description, noindex, nofollow } = Astro.props
 				} else {
 					document.documentElement.classList.remove('dark')
 				}
+
+				// Sync checkbox state after theme is set
+				const themeToggleCheckbox = document.getElementById(
+					'theme-toggle-checkbox',
+				) as HTMLInputElement
+				if (themeToggleCheckbox) {
+					themeToggleCheckbox.checked = theme === 'dark'
+				}
 			}
 
 			// Initialize immediately

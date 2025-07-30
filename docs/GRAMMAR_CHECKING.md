@@ -31,10 +31,13 @@ npm run lint:text
 npm run lint:text:fix
 npm run fix:text
 
+# Smart fix (fix first, then report remaining issues)
+npm run lint:text:smart
+
 # Test commit message grammar checker
 npm run check:commit
 
-# Test grammar checker unit tests
+# Test grammar checker unit tests (TypeScript)
 npm run test:grammar
 
 # Run all checks (code + grammar + tests)
@@ -76,6 +79,14 @@ Enhanced commitlint configuration with:
 - Subject length limits (10-72 characters)
 - Body/footer line length limits
 - Proper casing and punctuation rules
+
+#### TypeScript Implementation
+
+All grammar checking logic is implemented in TypeScript for better type safety:
+
+- `scripts/grammar-checker.ts` - Core grammar checking functions with type definitions
+- `test/grammar-checker.test.ts` - Unit tests with proper TypeScript interfaces
+- Exported `GrammarResult` interface for consistent return types
 
 ## Grammar Rules
 
