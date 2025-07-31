@@ -25,107 +25,110 @@
 <script>
 	// Back to top functionality - only for blog pages
 	function initBackToTop() {
-		const backToTopButton = document.getElementById('back-to-top')
-		if (!backToTopButton) return
+		// Small delay to avoid conflicts with other components
+		setTimeout(() => {
+			const backToTopButton = document.getElementById('back-to-top')
+			if (!backToTopButton) return
 
-		// Check if we're on a blog page
-		const isBlogPage =
-			window.location.pathname.startsWith('/blog/') ||
-			window.location.pathname === '/blog' ||
-			window.location.pathname.startsWith('/blog?')
+			// Check if we're on a blog page
+			const isBlogPage =
+				window.location.pathname.startsWith('/blog/') ||
+				window.location.pathname === '/blog' ||
+				window.location.pathname.startsWith('/blog?')
 
-		if (!isBlogPage) {
-			backToTopButton.style.display = 'none'
-			return
-		}
-
-		let ticking = false
-
-		// Show/hide button based on scroll position
-		function toggleBackToTop() {
-			if (!ticking) {
-				requestAnimationFrame(() => {
-					if (!backToTopButton) return
-
-					const scrollTop =
-						window.pageYOffset || document.documentElement.scrollTop
-					const documentHeight =
-						document.documentElement.scrollHeight - window.innerHeight
-					const scrollPercentage = Math.min(
-						(scrollTop / documentHeight) * 100,
-						100,
-					)
-
-					if (scrollPercentage >= 25) {
-						// Show button with smooth animation
-						backToTopButton.classList.remove(
-							'opacity-0',
-							'translate-y-2',
-							'pointer-events-none',
-						)
-						backToTopButton.classList.add(
-							'opacity-100',
-							'translate-y-0',
-							'pointer-events-auto',
-						)
-					} else {
-						// Hide button with smooth animation
-						backToTopButton.classList.add(
-							'opacity-0',
-							'translate-y-2',
-							'pointer-events-none',
-						)
-						backToTopButton.classList.remove(
-							'opacity-100',
-							'translate-y-0',
-							'pointer-events-auto',
-						)
-					}
-					ticking = false
-				})
-				ticking = true
-			}
-		}
-
-		// Smooth scroll to top with progress tracking
-		function scrollToTop() {
-			// Use native smooth scroll as primary method
-			if ('scrollBehavior' in document.documentElement.style) {
-				window.scrollTo({
-					top: 0,
-					behavior: 'smooth',
-				})
+			if (!isBlogPage) {
+				backToTopButton.style.display = 'none'
 				return
 			}
 
-			// Fallback to manual animation for older browsers
-			const scrollDuration = 800 // milliseconds
-			const scrollStep = -window.scrollY / (scrollDuration / 15)
+			let ticking = false
 
-			function scrollInterval() {
-				if (window.scrollY !== 0) {
-					window.scrollBy(0, scrollStep)
-					setTimeout(scrollInterval, 15)
+			// Show/hide button based on scroll position
+			function toggleBackToTop() {
+				if (!ticking) {
+					requestAnimationFrame(() => {
+						if (!backToTopButton) return
+
+						const scrollTop =
+							window.pageYOffset || document.documentElement.scrollTop
+						const documentHeight =
+							document.documentElement.scrollHeight - window.innerHeight
+						const scrollPercentage = Math.min(
+							(scrollTop / documentHeight) * 100,
+							100,
+						)
+
+						if (scrollPercentage >= 25) {
+							// Show button with smooth animation
+							backToTopButton.classList.remove(
+								'opacity-0',
+								'translate-y-2',
+								'pointer-events-none',
+							)
+							backToTopButton.classList.add(
+								'opacity-100',
+								'translate-y-0',
+								'pointer-events-auto',
+							)
+						} else {
+							// Hide button with smooth animation
+							backToTopButton.classList.add(
+								'opacity-0',
+								'translate-y-2',
+								'pointer-events-none',
+							)
+							backToTopButton.classList.remove(
+								'opacity-100',
+								'translate-y-0',
+								'pointer-events-auto',
+							)
+						}
+						ticking = false
+					})
+					ticking = true
 				}
 			}
 
-			scrollInterval()
-		}
+			// Smooth scroll to top with progress tracking
+			function scrollToTop() {
+				// Use native smooth scroll as primary method
+				if ('scrollBehavior' in document.documentElement.style) {
+					window.scrollTo({
+						top: 0,
+						behavior: 'smooth',
+					})
+					return
+				}
 
-		// Add event listeners
-		window.addEventListener('scroll', toggleBackToTop, { passive: true })
-		backToTopButton.addEventListener('click', scrollToTop)
+				// Fallback to manual animation for older browsers
+				const scrollDuration = 800 // milliseconds
+				const scrollStep = -window.scrollY / (scrollDuration / 15)
 
-		// Handle keyboard navigation
-		backToTopButton.addEventListener('keydown', e => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault()
-				scrollToTop()
+				function scrollInterval() {
+					if (window.scrollY !== 0) {
+						window.scrollBy(0, scrollStep)
+						setTimeout(scrollInterval, 15)
+					}
+				}
+
+				scrollInterval()
 			}
-		})
 
-		// Initial check
-		toggleBackToTop()
+			// Add event listeners
+			window.addEventListener('scroll', toggleBackToTop, { passive: true })
+			backToTopButton.addEventListener('click', scrollToTop)
+
+			// Handle keyboard navigation
+			backToTopButton.addEventListener('keydown', e => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault()
+					scrollToTop()
+				}
+			})
+
+			// Initial check
+			toggleBackToTop()
+		}, 50) // Small delay to avoid conflicts
 	}
 
 	// Initialize on page load
