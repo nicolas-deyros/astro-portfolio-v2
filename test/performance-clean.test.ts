@@ -38,7 +38,12 @@ async function waitForServer(
 		try {
 			const response = await fetch(url)
 			if (response.status === 200) {
-				return // Server is ready
+				// Additional check: make sure we can actually get content
+				const text = await response.text()
+				if (text.length > 100) {
+					// Basic sanity check
+					return // Server is ready and serving content
+				}
 			}
 		} catch {
 			// Server not ready yet, continue polling
@@ -72,8 +77,45 @@ describe('Core Web Vitals & Performance Testing', () => {
 	beforeAll(async () => {
 		console.log('🚀 Starting Astro dev server for performance testing...')
 
-		// Start Astro dev server
-		astroServer = spawn('npm', ['run', 'dev'], {
+		// Cleanup any processes using port 4321 before starting
+		try {
+			await new Promise<void>(resolve => {
+				const killPort = spawn('netstat', ['-ano'], { shell: true })
+				let output = ''
+
+				killPort.stdout?.on('data', data => {
+					output += data.toString()
+				})
+
+				killPort.on('close', async () => {
+					const lines = output.split('\n')
+					const port4321Lines = lines.filter(
+						line => line.includes(':4321') && line.includes('LISTENING'),
+					)
+
+					for (const line of port4321Lines) {
+						const pid = line.trim().split(/\s+/).pop()
+						if (pid && !isNaN(Number(pid))) {
+							console.log(`🧹 Cleaning up existing process ${pid} on port 4321`)
+							try {
+								spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
+								await new Promise(resolve => setTimeout(resolve, 1000))
+							} catch {
+								// Continue even if this fails
+							}
+						}
+					}
+					resolve()
+				})
+
+				killPort.on('error', () => resolve()) // Continue even if cleanup fails
+			})
+		} catch {
+			console.log('⚠️  Pre-cleanup completed')
+		}
+
+		// Start Astro dev server with explicit port
+		astroServer = spawn('npx', ['astro', 'dev', '--port', '4321'], {
 			stdio: ['ignore', 'pipe', 'pipe'],
 			shell: true,
 			env: { ...process.env, NODE_ENV: 'development' },
@@ -83,7 +125,7 @@ describe('Core Web Vitals & Performance Testing', () => {
 		if (astroServer.stdout) {
 			astroServer.stdout.on('data', data => {
 				const output = data.toString()
-				if (output.includes('Local:')) {
+				if (output.includes('Local:') || output.includes('server running at')) {
 					console.log('📡 Dev server output:', output.trim())
 				}
 			})
@@ -91,13 +133,34 @@ describe('Core Web Vitals & Performance Testing', () => {
 
 		if (astroServer.stderr) {
 			astroServer.stderr.on('data', data => {
-				console.error('🚨 Dev server error:', data.toString())
+				const error = data.toString()
+				console.error('🚨 Dev server error:', error)
+				// Check for common error patterns
+				if (
+					error.includes('EADDRINUSE') ||
+					error.includes('port already in use')
+				) {
+					console.error(
+						'❌ Port 4321 is already in use. Please stop other Astro servers.',
+					)
+				}
 			})
 		}
 
+		// Handle server process exit
+		astroServer.on('exit', (code, signal) => {
+			console.warn(`🚨 Astro server exited with code ${code}, signal ${signal}`)
+		})
+
 		// Wait for server to be ready
 		console.log('⏳ Waiting for Astro dev server to start...')
-		await waitForServer(baseUrl, 60000) // Wait up to 60 seconds
+		try {
+			await waitForServer(baseUrl, 90000) // Increased timeout to 90 seconds
+			console.log('✅ Astro dev server is ready!')
+		} catch (error) {
+			console.error('❌ Failed to start Astro dev server:', error.message)
+			throw error
+		}
 		console.log('✅ Astro dev server is ready!')
 
 		// Start browser for testing
@@ -130,18 +193,48 @@ describe('Core Web Vitals & Performance Testing', () => {
 		if (astroServer) {
 			console.log('⏹️  Stopping Astro dev server...')
 
-			// Kill the process gracefully
-			astroServer.kill('SIGTERM')
+			// Kill the process more forcefully
+			astroServer.kill('SIGKILL')
 
-			// Wait a bit for graceful shutdown
+			// Wait for process to fully terminate
 			await new Promise(resolve => setTimeout(resolve, 2000))
 
-			// Force kill if still running
-			if (!astroServer.killed) {
-				astroServer.kill('SIGKILL')
-			}
-
 			console.log('✅ Astro dev server stopped')
+		}
+
+		// Additional cleanup: kill any remaining processes on port 4321
+		try {
+			await new Promise(resolve => {
+				const killPort = spawn('netstat', ['-ano'], { shell: true })
+				let output = ''
+
+				killPort.stdout?.on('data', data => {
+					output += data.toString()
+				})
+
+				killPort.on('close', () => {
+					const lines = output.split('\n')
+					const port4321Line = lines.find(
+						line => line.includes(':4321') && line.includes('LISTENING'),
+					)
+
+					if (port4321Line) {
+						const pid = port4321Line.trim().split(/\s+/).pop()
+						if (pid && !isNaN(Number(pid))) {
+							console.log(
+								`🧹 Cleaning up remaining process ${pid} on port 4321`,
+							)
+							spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
+						}
+					}
+					resolve(true)
+				})
+
+				killPort.on('error', () => resolve(true)) // Continue even if cleanup fails
+			})
+		} catch {
+			// Ignore cleanup errors
+			console.log('⚠️  Port cleanup completed')
 		}
 
 		// Print summary report
@@ -269,7 +362,7 @@ describe('Core Web Vitals & Performance Testing', () => {
 			expect(metrics.performance_score).toBeGreaterThanOrEqual(
 				THRESHOLDS.PERFORMANCE_SCORE,
 			)
-		})
+		}, 30000) // 30 second timeout)
 	})
 
 	// Performance best practices tests

@@ -4,6 +4,7 @@ import Head from '@components/Head.astro'
 import { ClientRouter } from 'astro:transitions'
 import Header from '@components/Header/Header.astro'
 import Footer from '@components/Footer.astro'
+import BackToTop from '@components/BackToTop.astro'
 const { title, description, noindex, nofollow } = Astro.props
 ---
 
@@ -17,6 +18,7 @@ const { title, description, noindex, nofollow } = Astro.props
 			<slot />
 		</main>
 		<Footer />
+		<BackToTop />
 		<script>
 			// Initialize theme immediately to prevent FOUC
 			function initTheme() {
@@ -36,8 +38,15 @@ const { title, description, noindex, nofollow } = Astro.props
 				const themeToggleCheckbox = document.getElementById(
 					'theme-toggle-checkbox',
 				) as HTMLInputElement
+				const mobileThemeToggleCheckbox = document.getElementById(
+					'mobile-theme-toggle-checkbox',
+				) as HTMLInputElement
+
 				if (themeToggleCheckbox) {
 					themeToggleCheckbox.checked = theme === 'dark'
+				}
+				if (mobileThemeToggleCheckbox) {
+					mobileThemeToggleCheckbox.checked = theme === 'dark'
 				}
 			}
 
