@@ -12,9 +12,14 @@ import db from '@astrojs/db'
 
 import react from '@astrojs/react'
 
+import vercel from '@astrojs/vercel'
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://nicolas-deyros.github.io/astro-portfolio-v2',
+
+	output: 'server', // Use hybrid mode for mixed static/server rendering
+	adapter: vercel(),
 
 	vite: {
 		plugins: [tailwindcss()],
