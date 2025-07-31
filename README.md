@@ -734,8 +734,8 @@ Add your analytics scripts in `src/layouts/index.astro`:
 // Google Analytics 4
 ---
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
-></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID">
+</script>
 <script>
 	window.dataLayer = window.dataLayer || []
 	function gtag() {

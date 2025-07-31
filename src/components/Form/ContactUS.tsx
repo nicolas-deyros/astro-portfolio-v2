@@ -131,6 +131,7 @@ Best regards,
 					to: values.email,
 					subject: `Hi ${values.name}! Thanks for reaching out`,
 					name: values.name,
+					message: values.message, // Add the message field for database storage
 					html: emailHtml,
 					text: emailText,
 				}),

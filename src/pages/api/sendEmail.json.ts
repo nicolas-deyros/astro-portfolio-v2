@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
 			)
 		}
 
-		const { to, name, from, html, subject, text } = body
+		const { to, name, from, html, subject, text, message } = body
 
 		// Validate required fields
 		if (!to || !from || !html || !subject || !text) {
@@ -101,7 +101,7 @@ export const POST: APIRoute = async ({ request }) => {
 			await db.insert(FormSubmissions).values({
 				fullName: name || 'Unknown',
 				email: to,
-				message: body.message || null,
+				message: message || null, // Use the extracted message variable
 			})
 		} catch (dbError) {
 			console.error('Database error:', dbError)
