@@ -127,11 +127,12 @@ Best regards,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					from: 'onboarding@resend.dev',
-					to: values.email,
+					// The API will handle the from/to addresses using environment variables
+					recipientEmail: values.email, // User's email for confirmation
+					senderName: values.name,
 					subject: `Hi ${values.name}! Thanks for reaching out`,
 					name: values.name,
-					message: values.message, // Add the message field for database storage
+					message: values.message,
 					html: emailHtml,
 					text: emailText,
 				}),
@@ -194,7 +195,7 @@ Best regards,
 			return `${baseClasses} border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500`
 		}
 
-		return `${baseClasses} border-slate-300 bg-slate-50 text-slate-900 placeholder-slate-500 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 focus:bg-white`
+		return `${baseClasses} border-slate-300 bg-slate-50 text-slate-900 placeholder-slate-500 dark:text-slate-500 focus:border-blue-500 focus:ring-blue-500 focus:bg-white`
 	}
 
 	const getLabelClasses = (fieldName: keyof FormValues) => {

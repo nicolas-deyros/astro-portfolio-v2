@@ -114,59 +114,60 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		</div>
 	</Section>
 </Layout>
+
+<!-- filepath: src/pages/blog/[slug].astro -->
 <script>
-	// Global state to prevent multiple initializations
-	let isInitialized = false
-	let cleanup: (() => void) | null = null
+	// Global state with proper typing
+	let isReading = false
+	let currentUtterance: SpeechSynthesisUtterance | null = null
+	let selectedVoice: SpeechSynthesisVoice | null = null
+	let speechTimeout: ReturnType<typeof setTimeout> | null = null
 
-	// Initialize functionality immediately and on page load
-	function initializeBlogFeatures() {
-		// Prevent multiple initializations
-		if (isInitialized) {
-			return cleanup
+	function initializeBlogFeatures(): (() => void) | null {
+		// console.log('Initializing blog features...')
+
+		// Check browser support first
+		if (!('speechSynthesis' in window)) {
+			console.warn('Text-to-speech not supported in this browser')
+			const readBtn = document.getElementById('read-aloud-btn')
+			if (readBtn) {
+				readBtn.style.display = 'none'
+			}
+			const progressCleanup = initProgressBar()
+			return typeof progressCleanup === 'function' ? progressCleanup : null
 		}
 
-		// Wait for DOM to be fully ready
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', () => {
-				setTimeout(() => initializeBlogFeatures(), 100)
-			})
-			return null
+		// Initialize both features
+		const progressCleanup = initProgressBar()
+		const speechCleanup = initTextToSpeech()
+
+		return () => {
+			if (typeof progressCleanup === 'function') progressCleanup()
+			if (typeof speechCleanup === 'function') speechCleanup()
 		}
+	}
 
-		let voices = []
-		let selectedVoice: SpeechSynthesisVoice | null = null
-		const readBtn = document.getElementById('read-aloud-btn')
-		const stopBtn = document.getElementById('stop-aloud-btn')
-		const content = document.getElementById('blog-content')
-		const iconSpan = document.getElementById('read-aloud-icon')
-		const labelSpan = document.getElementById('read-aloud-label')
-
-		// Check if all required elements exist
-		if (!readBtn || !stopBtn || !content || !iconSpan || !labelSpan) {
-			console.warn('Text-to-speech elements not found, retrying in 500ms')
-			setTimeout(() => {
-				isInitialized = false
-				initializeBlogFeatures()
-			}, 500)
-			return null
-		}
-
+	function initProgressBar() {
 		const progressBar = document.getElementById('progress-bar')
 		const blogContent = document.getElementById('blog-content')
 		const progressPercent = document.getElementById('progress-percent')
 
-		// Progress bar functionality
-		function updateProgressBar() {
-			if (!blogContent || !progressBar || !progressPercent) return
+		if (!progressBar || !blogContent || !progressPercent) {
+			console.warn('Progress bar elements not found')
+			return
+		}
 
+		function updateProgressBar() {
+			if (!blogContent) {
+				console.warn('blogContent is null, cannot update progress bar')
+				return
+			}
 			const rect = blogContent.getBoundingClientRect()
 			const scrollTop = window.scrollY || window.pageYOffset
 			const contentTop = rect.top + scrollTop
 			const contentHeight = blogContent.offsetHeight
 			const windowHeight = window.innerHeight
 
-			// Calculate progress based on how much of the content has been scrolled through
 			const contentStart = contentTop
 			const contentEnd = contentTop + contentHeight - windowHeight
 			const scrollProgress = Math.max(0, scrollTop - contentStart)
@@ -176,75 +177,178 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 				Math.max(0, (scrollProgress / maxScroll) * 100),
 			)
 
-			progressBar.style.width = percent + '%'
-			progressPercent.textContent = `${Math.round(percent)}%`
+			if (progressBar) {
+				progressBar.style.width = percent + '%'
+			}
+			if (progressPercent) {
+				progressPercent.textContent = `${Math.round(percent)}%`
+			}
 		}
 
-		// Add scroll listeners
 		const handleScroll = () => updateProgressBar()
 		const handleResize = () => updateProgressBar()
 
 		window.addEventListener('scroll', handleScroll)
 		window.addEventListener('resize', handleResize)
-
-		// Initial update
 		updateProgressBar()
 
-		// Load voices for text-to-speech
-		function loadVoices() {
-			voices = window.speechSynthesis.getVoices()
+		return () => {
+			window.removeEventListener('scroll', handleScroll)
+			window.removeEventListener('resize', handleResize)
+		}
+	}
 
-			// Filter for English voices
+	function initTextToSpeech() {
+		const readBtn = document.getElementById('read-aloud-btn')
+		const stopBtn = document.getElementById('stop-aloud-btn')
+		const content = document.getElementById('blog-content')
+		const iconSpan = document.getElementById('read-aloud-icon')
+		const labelSpan = document.getElementById('read-aloud-label')
+
+		if (!readBtn || !stopBtn || !content || !iconSpan || !labelSpan) {
+			console.warn('Text-to-speech elements not found')
+			return
+		}
+
+		// Extract clean text content, avoiding video and media elements
+		function getCleanTextContent(element: HTMLElement): string {
+			// console.log('Extracting text content from element:', element.tagName)
+
+			// Clone the element to avoid modifying the original
+			const clone = element.cloneNode(true) as HTMLElement
+
+			// Remove all video, audio, and iframe elements (YouTube embeds)
+			const mediaElements = clone.querySelectorAll(
+				'video, audio, iframe, embed, object',
+			)
+			// console.log(`Removing ${mediaElements.length} media elements`)
+			mediaElements.forEach(el => el.remove())
+
+			// Remove script tags and style tags
+			const scriptElements = clone.querySelectorAll('script, style, noscript')
+			// console.log(`Removing ${scriptElements.length} script/style elements`)
+			scriptElements.forEach(el => el.remove())
+
+			// Remove elements with autoplay attributes or video-related classes
+			const autoplayElements = clone.querySelectorAll(
+				'[autoplay], .video-container, .youtube-container, .media-embed, .aspect-video',
+			)
+			// console.log(
+			// 	`Removing ${autoplayElements.length} autoplay/video container elements`,
+			// )
+			autoplayElements.forEach(el => el.remove())
+
+			// Get clean text content
+			const text = clone.innerText || clone.textContent || ''
+
+			// Clean up extra whitespace and normalize
+			const cleanText = text
+				.replace(/\s+/g, ' ')
+				.replace(/\n\s*\n/g, '\n')
+				.trim()
+
+			// console.log(`Extracted text length: ${cleanText.length} characters`)
+			// console.log('First 200 characters:', cleanText.substring(0, 200))
+
+			return cleanText
+		}
+
+		// Load voices with retry mechanism
+		function loadVoices() {
+			const voices = window.speechSynthesis.getVoices()
+			// console.log('Available voices:', voices.length)
+
+			if (voices.length === 0) return false
+
 			const englishVoices = voices.filter(voice => voice.lang.startsWith('en'))
 
-			// Try to find a preferred voice - prioritize Google voices for better quality
+			// Priority order for voice selection
 			selectedVoice =
 				englishVoices.find(
 					voice =>
-						voice.name.includes('Google') &&
-						voice.name.includes('Female') &&
-						voice.name.includes('US'),
+						voice.name.toLowerCase().includes('google') &&
+						voice.name.toLowerCase().includes('female') &&
+						voice.name.toLowerCase().includes('us'),
 				) ||
 				englishVoices.find(
-					voice => voice.name.includes('Google') && voice.name.includes('US'),
+					voice =>
+						voice.name.toLowerCase().includes('google') &&
+						voice.name.toLowerCase().includes('us'),
 				) ||
-				englishVoices.find(voice => voice.name.includes('Google')) ||
+				englishVoices.find(voice =>
+					voice.name.toLowerCase().includes('google'),
+				) ||
 				englishVoices.find(voice => voice.default) ||
-				englishVoices[0]
+				englishVoices[0] ||
+				voices[0]
 
-			console.log('Selected voice:', selectedVoice)
+			// console.log('Selected voice:', selectedVoice?.name || 'None')
+			return true
 		}
 
-		// Load voices when available
-		if (window.speechSynthesis) {
-			if (window.speechSynthesis.getVoices().length === 0) {
-				window.speechSynthesis.onvoiceschanged = loadVoices
-			} else {
-				loadVoices()
+		// Voice loading with multiple attempts and promise-based approach
+		let voiceLoadAttempts = 0
+		const maxVoiceLoadAttempts = 10
+
+		function waitForVoices(): Promise<boolean> {
+			return new Promise(resolve => {
+				if (loadVoices()) {
+					resolve(true)
+					return
+				}
+
+				const checkVoices = () => {
+					voiceLoadAttempts++
+					if (loadVoices()) {
+						resolve(true)
+					} else if (voiceLoadAttempts >= maxVoiceLoadAttempts) {
+						resolve(false)
+					} else {
+						setTimeout(checkVoices, 200)
+					}
+				}
+
+				// Set up voice change listener
+				const handleVoicesChanged = () => {
+					if (loadVoices()) {
+						window.speechSynthesis.removeEventListener(
+							'voiceschanged',
+							handleVoicesChanged,
+						)
+						resolve(true)
+					}
+				}
+
+				window.speechSynthesis.addEventListener(
+					'voiceschanged',
+					handleVoicesChanged,
+				)
+
+				// Start checking
+				setTimeout(checkVoices, 100)
+			})
+		}
+
+		// Initialize voice loading
+		waitForVoices()
+
+		function resetSpeechState() {
+			isReading = false
+			currentUtterance = null
+			if (speechTimeout) {
+				clearTimeout(speechTimeout)
+				speechTimeout = null
 			}
 		}
-
-		// Text-to-speech functionality
-		if (!readBtn || !stopBtn || !content) {
-			console.warn('Text-to-speech elements not found')
-			isInitialized = true
-			return () => {
-				window.removeEventListener('scroll', handleScroll)
-				window.removeEventListener('resize', handleResize)
-			}
-		}
-
-		let utterance: SpeechSynthesisUtterance | null = null
-		let isPlaying = false
-		let isPaused = false
 
 		function updateUI() {
-			if (!readBtn || !stopBtn || !iconSpan || !labelSpan) return
+			if (!iconSpan || !labelSpan || !stopBtn) return
 
-			if (isPlaying) {
+			if (isReading) {
+				const isPaused = window.speechSynthesis.paused
 				iconSpan.textContent = isPaused ? '▶️' : '⏸️'
 				labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
-				stopBtn.style.display = 'flex' // Use flex to match button styling
+				stopBtn.style.display = 'flex'
 			} else {
 				iconSpan.textContent = '▶️'
 				labelSpan.textContent = 'Read Aloud'
@@ -252,167 +356,373 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 			}
 		}
 
-		// Clean up any existing speech synthesis
-		if (window.speechSynthesis.speaking) {
-			window.speechSynthesis.cancel()
+		// Pause all media elements when starting speech
+		function pauseAllMedia() {
+			const mediaElements = document.querySelectorAll(
+				'video, audio',
+			) as NodeListOf<HTMLMediaElement>
+			mediaElements.forEach(media => {
+				if (!media.paused) {
+					// console.log('Pausing media element:', media.tagName)
+					media.pause()
+				}
+			})
+
+			// Handle YouTube iframes with improved messaging
+			const youtubeIframes = document.querySelectorAll(
+				'iframe[src*="youtube"], iframe[src*="youtu.be"]',
+			) as NodeListOf<HTMLIFrameElement>
+
+			// console.log(`Found ${youtubeIframes.length} YouTube iframes`)
+
+			youtubeIframes.forEach(iframe => {
+				try {
+					// console.log(`Attempting to pause YouTube iframe`)
+
+					// Multiple pause commands to ensure it works
+					const pauseCommands = [
+						'{"event":"command","func":"pauseVideo","args":""}',
+						'{"event":"command","func":"stopVideo","args":""}',
+					]
+
+					pauseCommands.forEach(command => {
+						iframe.contentWindow?.postMessage(command, '*')
+					})
+
+					// Also try to modify the src to remove autoplay and add enablejsapi
+					const currentSrc = iframe.src
+					let newSrc = currentSrc
+
+					if (currentSrc.includes('autoplay=1')) {
+						// console.log('Removing autoplay from YouTube iframe')
+						newSrc = newSrc.replace('autoplay=1', 'autoplay=0')
+					}
+
+					if (!currentSrc.includes('enablejsapi=1')) {
+						// Add enablejsapi for better postMessage support
+						const separator = currentSrc.includes('?') ? '&' : '?'
+						newSrc = newSrc + separator + 'enablejsapi=1'
+					}
+
+					if (newSrc !== currentSrc) {
+						iframe.src = newSrc
+					}
+				} catch {
+					// console.log(`Could not pause YouTube video:`, error)
+				}
+			})
 		}
 
-		const handleReadClick = () => {
+		function handleReadClick() {
 			console.log(
-				'Read button clicked, isPlaying:',
-				isPlaying,
-				'isPaused:',
-				isPaused,
+				'[DEBUG] Read button clicked, isReading:',
+				isReading,
+				'paused:',
+				window.speechSynthesis.paused,
+				'speaking:',
+				window.speechSynthesis.speaking,
 			)
 
-			if (!isPlaying) {
-				// Start reading
-				window.speechSynthesis.cancel()
-				const text = content.innerText
-				utterance = new window.SpeechSynthesisUtterance(text)
+			try {
+				if (!isReading) {
+					// Start reading - pause all media first
+					console.log('[DEBUG] Starting read-aloud process...')
+					pauseAllMedia()
 
-				if (selectedVoice) {
-					utterance.voice = selectedVoice
-				}
-				utterance.lang = 'en-US'
-				utterance.rate = 0.9
-				utterance.pitch = 1
-				utterance.volume = 0.8
+					// Wait a moment for media to pause before starting speech
+					setTimeout(async () => {
+						window.speechSynthesis.cancel() // Clear any existing speech
 
-				utterance.onstart = () => {
-					console.log('Speech started')
-					isPlaying = true
-					isPaused = false
+						if (!content) {
+							console.warn('[DEBUG] No blog content element found')
+							return
+						}
+
+						console.log('[DEBUG] Extracting text content...')
+						const text = getCleanTextContent(content)
+						if (!text.trim()) {
+							console.warn('[DEBUG] No content to read - text is empty')
+							alert('No readable content found in this post.')
+							return
+						}
+
+						// Wait for voices to load before starting speech
+						console.log('[DEBUG] Waiting for voices...')
+						const voicesReady = await waitForVoices()
+						console.log(
+							'[DEBUG] Voices ready:',
+							voicesReady,
+							'Selected voice:',
+							selectedVoice?.name,
+						)
+
+						console.log(
+							'[DEBUG] Starting speech with text length:',
+							text.length,
+						)
+
+						// Split long text into chunks to prevent interruption
+						const maxChunkLength = 32767 // Browser limit for utterance text
+						const chunks =
+							text.length > maxChunkLength
+								? text.match(
+										new RegExp(`.{1,${maxChunkLength}}(?=\\s|$)`, 'g'),
+									) || [text]
+								: [text]
+
+						// console.log(`Text split into ${chunks.length} chunks`)
+						console.log('[DEBUG] Text split into', chunks.length, 'chunks')
+
+						let currentChunkIndex = 0
+
+						const speakChunk = (chunkIndex: number) => {
+							console.log(
+								'[DEBUG] Speaking chunk',
+								chunkIndex + 1,
+								'of',
+								chunks.length,
+							)
+
+							if (chunkIndex >= chunks.length) {
+								console.log('[DEBUG] All chunks completed')
+								resetSpeechState()
+								updateUI()
+								return
+							}
+
+							currentUtterance = new SpeechSynthesisUtterance(
+								chunks[chunkIndex],
+							)
+
+							// Configure voice
+							if (selectedVoice) {
+								currentUtterance.voice = selectedVoice
+								console.log('[DEBUG] Using voice:', selectedVoice.name)
+							} else {
+								console.warn('[DEBUG] No voice selected, using default')
+							}
+
+							currentUtterance.lang = 'en-US'
+							currentUtterance.rate = 0.9
+							currentUtterance.pitch = 1.0
+							currentUtterance.volume = 0.8
+
+							// Enhanced error handling
+							currentUtterance.onstart = () => {
+								console.log('[DEBUG] Speech chunk started successfully')
+								if (chunkIndex === 0) {
+									isReading = true
+									updateUI()
+								}
+							}
+
+							currentUtterance.onend = () => {
+								console.log('[DEBUG] Speech chunk ended normally')
+								currentChunkIndex++
+								if (currentChunkIndex < chunks.length) {
+									// Continue with next chunk
+									setTimeout(() => speakChunk(currentChunkIndex), 100)
+								} else {
+									// All chunks completed
+									resetSpeechState()
+									updateUI()
+								}
+							}
+
+							currentUtterance.onerror = event => {
+								console.log('[DEBUG] Speech error occurred:', event.error)
+
+								// Handle different error types
+								switch (event.error) {
+									case 'interrupted':
+										console.log(
+											'[DEBUG] Speech was interrupted - this is normal during navigation',
+										)
+										break
+									case 'canceled':
+										console.log('[DEBUG] Speech was canceled by user')
+										break
+									case 'not-allowed':
+										console.warn(
+											'[DEBUG] Speech synthesis not allowed - check permissions',
+										)
+										alert(
+											'Speech synthesis is not allowed. Please check your browser permissions.',
+										)
+										break
+									case 'network':
+										console.error(
+											'[DEBUG] Network error during speech synthesis',
+										)
+										alert('Network error occurred during text-to-speech.')
+										break
+									default:
+										console.error(
+											'[DEBUG] Unexpected speech error:',
+											event.error,
+										)
+										alert(
+											'An error occurred during text-to-speech: ' + event.error,
+										)
+								}
+
+								resetSpeechState()
+								updateUI()
+							}
+
+							currentUtterance.onpause = () => {
+								// console.log('Speech paused')
+								updateUI()
+							}
+
+							currentUtterance.onresume = () => {
+								// console.log('Speech resumed')
+								updateUI()
+							}
+
+							// Start speaking this chunk
+							console.log(
+								'[DEBUG] Calling speechSynthesis.speak() for chunk',
+								chunkIndex + 1,
+							)
+							window.speechSynthesis.speak(currentUtterance)
+						}
+
+						// Start with the first chunk
+						speakChunk(0)
+						isReading = true
+						updateUI()
+
+						// Fallback timeout in case speech doesn't start
+						speechTimeout = setTimeout(() => {
+							if (isReading && !window.speechSynthesis.speaking) {
+								console.warn('Speech failed to start - resetting state')
+								alert('Speech failed to start. Please try again.')
+								resetSpeechState()
+								updateUI()
+							}
+						}, 3000) // Increased timeout for slower systems
+					}, 800) // Increased wait time for media to pause
+				} else if (window.speechSynthesis.paused) {
+					// Resume paused speech
+					// console.log('Resuming paused speech')
+					window.speechSynthesis.resume()
 					updateUI()
-				}
-
-				utterance.onend = () => {
-					console.log('Speech ended')
-					isPlaying = false
-					isPaused = false
+				} else if (window.speechSynthesis.speaking) {
+					// Pause active speech
+					// console.log('Pausing active speech')
+					window.speechSynthesis.pause()
 					updateUI()
+				} else {
+					// Edge case: isReading is true but no active speech
+					// console.log('Speech state inconsistent - restarting')
+					resetSpeechState()
+					handleReadClick() // Restart the process
 				}
-
-				utterance.onerror = event => {
-					console.log('Speech error:', event)
-					isPlaying = false
-					isPaused = false
-					updateUI()
-				}
-
-				utterance.onpause = () => {
-					console.log('Speech paused')
-					isPaused = true
-					updateUI()
-				}
-
-				utterance.onresume = () => {
-					console.log('Speech resumed')
-					isPaused = false
-					updateUI()
-				}
-
-				window.speechSynthesis.speak(utterance)
-				// Set state immediately and update UI
-				isPlaying = true
-				isPaused = false
-				updateUI()
-			} else if (
-				window.speechSynthesis.speaking &&
-				!window.speechSynthesis.paused
-			) {
-				// Pause reading
-				window.speechSynthesis.pause()
-				isPaused = true
-				updateUI()
-			} else if (window.speechSynthesis.paused) {
-				// Resume reading
-				window.speechSynthesis.resume()
-				isPaused = false
+			} catch (error) {
+				// console.error('Error in handleReadClick:', error)
+				const errorMessage =
+					error instanceof Error ? error.message : String(error)
+				alert('An unexpected error occurred: ' + errorMessage)
+				resetSpeechState()
 				updateUI()
 			}
 		}
 
-		const handleStopClick = () => {
-			console.log('Stop button clicked')
-			window.speechSynthesis.cancel()
-			isPlaying = false
-			isPaused = false
-			updateUI()
+		function handleStopClick() {
+			// console.log('Stop button clicked')
+			try {
+				window.speechSynthesis.cancel()
+				resetSpeechState()
+				updateUI()
+			} catch {
+				// console.error('Error stopping speech:', error)
+				resetSpeechState()
+				updateUI()
+			}
 		}
 
 		// Add event listeners
 		readBtn.addEventListener('click', handleReadClick)
 		stopBtn.addEventListener('click', handleStopClick)
 
-		// Initialize UI
+		// Initial UI update
 		updateUI()
-		isInitialized = true
 
-		// Cleanup function for view transitions
+		// Cleanup function
 		return () => {
-			console.log('Cleaning up blog features')
-			window.removeEventListener('scroll', handleScroll)
-			window.removeEventListener('resize', handleResize)
-
-			// Remove event listeners
+			// console.log('Cleaning up text-to-speech')
 			readBtn.removeEventListener('click', handleReadClick)
 			stopBtn.removeEventListener('click', handleStopClick)
 
-			// Stop speech synthesis
-			if (window.speechSynthesis.speaking) {
-				window.speechSynthesis.cancel()
+			try {
+				if (window.speechSynthesis.speaking) {
+					window.speechSynthesis.cancel()
+				}
+			} catch {
+				// console.log('Error during TTS cleanup:', error)
 			}
 
-			// Reset state
-			isInitialized = false
+			resetSpeechState()
 		}
 	}
+
+	// Enhanced cleanup for Astro view transitions
+	let cleanup: (() => void) | null = null
 
 	// Clean up before navigation
 	document.addEventListener('astro:before-preparation', () => {
-		console.log('Before navigation - cleaning up')
-		if (cleanup) {
-			cleanup()
-			cleanup = null
-		}
-		// Force stop any ongoing speech synthesis
-		if (typeof window !== 'undefined' && window.speechSynthesis) {
-			if (window.speechSynthesis.speaking) {
+		// console.log('Cleaning up before navigation')
+		try {
+			if (cleanup) {
+				cleanup()
+				cleanup = null
+			}
+			if (window.speechSynthesis?.speaking) {
 				window.speechSynthesis.cancel()
 			}
+		} catch {
+			// console.log('Error during navigation cleanup:', error)
 		}
-		isInitialized = false
+		isReading = false
+		currentUtterance = null
+		if (speechTimeout) {
+			clearTimeout(speechTimeout)
+			speechTimeout = null
+		}
 	})
 
-	// Initialize on page load - with a slight delay to avoid conflicts
+	// Initialize on Astro page load
 	document.addEventListener('astro:page-load', () => {
-		console.log('Page loaded - initializing features')
-		// Clean up previous instance if it exists
-		if (cleanup) {
-			cleanup()
-		}
-		// Initialize new instance with a delay to ensure DOM is ready
+		// console.log('Astro page loaded - initializing')
+		if (cleanup) cleanup()
 		setTimeout(() => {
 			cleanup = initializeBlogFeatures()
-		}, 150)
+		}, 100)
 	})
 
-	// Fallback for initial page load (no view transition)
+	// Fallback for direct page loads (not view transitions)
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', () => {
 			setTimeout(() => {
-				if (!isInitialized) {
+				if (!cleanup) {
 					cleanup = initializeBlogFeatures()
 				}
-			}, 200)
+			}, 100)
 		})
 	} else {
-		// DOM is already ready, but add a small delay to avoid conflicts
 		setTimeout(() => {
-			if (!isInitialized) {
+			if (!cleanup) {
 				cleanup = initializeBlogFeatures()
 			}
-		}, 100)
+		}, 50)
 	}
+
+	// Handle page visibility changes (tab switching)
+	document.addEventListener('visibilitychange', () => {
+		if (document.hidden && window.speechSynthesis?.speaking) {
+			// console.log('Page hidden - pausing speech')
+			window.speechSynthesis.pause()
+		}
+	})
 </script>

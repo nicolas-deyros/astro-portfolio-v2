@@ -104,8 +104,21 @@ const styles =
 
 	function init() {
 		const txtElement = document.querySelector('.txt-type')
-		const words = JSON.parse(txtElement.getAttribute('data-words'))
-		const wait = txtElement.getAttribute('data-wait')
+		if (!txtElement) {
+			console.log('TypeWriter element not found on this page')
+			return
+		}
+
+		const wordsAttr = txtElement.getAttribute('data-words')
+		const waitAttr = txtElement.getAttribute('data-wait')
+
+		if (!wordsAttr || !waitAttr) {
+			console.warn('TypeWriter missing required attributes')
+			return
+		}
+
+		const words = JSON.parse(wordsAttr)
+		const wait = waitAttr
 		new TypeWriter(txtElement, words, wait)
 	}
 

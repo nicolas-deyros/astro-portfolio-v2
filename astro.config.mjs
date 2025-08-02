@@ -16,7 +16,7 @@ import vercel from '@astrojs/vercel'
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://nicolas-deyros.github.io/astro-portfolio-v2',
+	site: 'https://www.nicolasdeyros.dev/',
 
 	output: 'server', // Use hybrid mode for mixed static/server rendering
 	adapter: vercel(),
