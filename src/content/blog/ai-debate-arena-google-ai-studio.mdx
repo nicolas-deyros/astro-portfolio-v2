@@ -20,6 +20,7 @@ tags:
 ---
 
 import { Image } from 'astro:assets'
+import Video from '@components/Video.astro';
 import AI_Debate_Arena from '../../assets/blog/AI Debate Arena Using Google AI Studio.png'
 import AI_Debate_Arena1 from '../../assets/blog/ai-conversation-1.png'
 import AI_Debate_Arena2 from '../../assets/blog/ai-conversation-2.png'
@@ -46,16 +47,7 @@ This web application, powered by the Gemini API, reshapes our interaction with a
 	class="mx-auto mb-8 w-1/2 rounded-lg shadow-lg"
 />
 
-<div class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
-	<iframe
-		src="https://www.youtube.com/embed/KveU2UVJD80?rel=0&modestbranding=1&controls=1"
-		class="absolute inset-0 h-full w-full"
-		frameborder="0"
-		allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-		allowfullscreen
-		loading="lazy"
-		title="AI Debate Arena Demo"></iframe>
-</div>
+<Video platform="youtube" videoId="KveU2UVJD80" />
 
 ## What Makes This Project Special
 
