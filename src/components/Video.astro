@@ -1,20 +1,21 @@
 ---
 interface Props {
-	platform: 'youtube' | 'vimeo';
-	videoId: string;
+	platform: 'youtube' | 'vimeo'
+	videoId: string
 }
 
-const { platform, videoId } = Astro.props;
+const { platform, videoId } = Astro.props
 
 const videoUrls = {
 	youtube: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
 	vimeo: `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`,
-};
+}
 
-const videoUrl = videoUrls[platform];
+const videoUrl = videoUrls[platform]
 ---
 
-<div class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
+<div
+	class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
 	<iframe
 		src={videoUrl}
 		class="absolute inset-0 h-full w-full"
@@ -22,6 +23,6 @@ const videoUrl = videoUrls[platform];
 		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 		allowfullscreen
 		loading="lazy"
-		title="Embedded Video"
-	></iframe>
+		title="Embedded Video">
+	</iframe>
 </div>

@@ -1,19 +1,19 @@
 import { describe, it, expect } from 'vitest'
 
 describe('Video Component', () => {
-    it('should generate a YouTube iframe with the correct src', () => {
-        const platform = 'youtube'
-        const videoId = 'KveU2UVJD80'
-        const expectedSrc = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`
+	it('should generate a YouTube iframe with the correct src', () => {
+		const platform = 'youtube'
+		const videoId = 'KveU2UVJD80'
+		const expectedSrc = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`
 
-        const videoUrls = {
-            youtube: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
-            vimeo: `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`,
-        };
+		const videoUrls = {
+			youtube: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
+			vimeo: `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`,
+		}
 
-        const videoUrl = videoUrls[platform];
+		const videoUrl = videoUrls[platform]
 
-        const renderedComponent = `
+		const renderedComponent = `
 <div class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
 	<iframe
 		src="${videoUrl}"
@@ -26,22 +26,22 @@ describe('Video Component', () => {
 	></iframe>
 </div>
 `
-        expect(renderedComponent).toContain(`src="${expectedSrc}"`)
-    })
+		expect(renderedComponent).toContain(`src="${expectedSrc}"`)
+	})
 
-    it('should generate a Vimeo iframe with the correct src', () => {
-        const platform = 'vimeo'
-        const videoId = '123456789'
-        const expectedSrc = `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`
+	it('should generate a Vimeo iframe with the correct src', () => {
+		const platform = 'vimeo'
+		const videoId = '123456789'
+		const expectedSrc = `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`
 
-        const videoUrls = {
-            youtube: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
-            vimeo: `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`,
-        };
+		const videoUrls = {
+			youtube: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
+			vimeo: `https://player.vimeo.com/video/${videoId}?badge=0&autopause=0`,
+		}
 
-        const videoUrl = videoUrls[platform];
+		const videoUrl = videoUrls[platform]
 
-        const renderedComponent = `
+		const renderedComponent = `
 <div class="relative mb-8 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
 	<iframe
 		src="${videoUrl}"
@@ -54,6 +54,6 @@ describe('Video Component', () => {
 	></iframe>
 </div>
 `
-        expect(renderedComponent).toContain(`src="${expectedSrc}"`)
-    })
+		expect(renderedComponent).toContain(`src="${expectedSrc}"`)
+	})
 })

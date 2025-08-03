@@ -10,7 +10,7 @@ type NavItem = {
 }
 ---
 
-<!-- Mobile Menu Button -->
+<!-- Mobile Hamburger Button -->
 <button
 	id="mobile-menu-button"
 	class="flex items-center rounded-md px-3 py-2 text-gray-500 hover:text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none lg:hidden dark:text-gray-400 dark:hover:text-gray-200"
@@ -30,7 +30,7 @@ type NavItem = {
 			d="M4 6h16M4 12h16M4 18h16">
 		</path>
 	</svg>
-	<!-- Close Icon -->
+	<!-- Close Icon (hidden by default) -->
 	<svg
 		id="close-icon"
 		class="hidden h-6 w-6 transition-transform duration-300"
@@ -47,7 +47,7 @@ type NavItem = {
 </button>
 
 <!-- Desktop Navigation -->
-<nav class="hidden lg:flex lg:gap-3">
+<nav class="hidden lg:flex lg:items-center lg:gap-3">
 	{
 		navData.map((item: NavItem) => (
 			<NavList
