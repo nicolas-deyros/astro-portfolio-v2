@@ -208,28 +208,28 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 
 ## 📜 Available Scripts
 
-| Command                      | Description                                    |
-| ---------------------------- | ---------------------------------------------- |
-| `npm run dev`                | Start development server at `localhost:4321`  |
-| `npm run build`              | Build production site to `./dist/`            |
-| `npm run preview`            | Preview production build locally               |
-| `npm run lint`               | Run ESLint for code quality                    |
-| `npm run lint:fix`           | Fix ESLint issues automatically                |
-| `npm run lint:text`          | Run textlint for grammar and writing quality   |
-| `npm run lint:text:fix`      | Fix textlint issues automatically              |
-| `npm run format`             | Format code with Prettier                      |
-| `npm run type-check`         | Run TypeScript type checking                   |
-| `npm run test`               | Run all test suites                            |
-| `npm run test:fast`          | Run fast test suite with optimized settings    |
-| `npm run test:clean`         | Run performance tests with clean setup        |
-| `npm run test:performance`   | Run Core Web Vitals performance tests          |
-| `npm run test:back-to-top`   | Run back-to-top button functionality tests     |
-| `npm run test:grammar`       | Run grammar and writing quality tests          |
-| `npm run test:watch`         | Run tests in watch mode                        |
-| `npm run check:grammar`      | Check text quality and grammar                 |
-| `npm run check:commit`       | Validate commit message format                 |
-| `npm run check:all`          | Run all quality checks (lint, text, tests)    |
-| `npm run astro ...`          | Run Astro CLI commands                         |
+| Command                    | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| `npm run dev`              | Start development server at `localhost:4321` |
+| `npm run build`            | Build production site to `./dist/`           |
+| `npm run preview`          | Preview production build locally             |
+| `npm run lint`             | Run ESLint for code quality                  |
+| `npm run lint:fix`         | Fix ESLint issues automatically              |
+| `npm run lint:text`        | Run textlint for grammar and writing quality |
+| `npm run lint:text:fix`    | Fix textlint issues automatically            |
+| `npm run format`           | Format code with Prettier                    |
+| `npm run type-check`       | Run TypeScript type checking                 |
+| `npm run test`             | Run all test suites                          |
+| `npm run test:fast`        | Run fast test suite with optimized settings  |
+| `npm run test:clean`       | Run performance tests with clean setup       |
+| `npm run test:performance` | Run Core Web Vitals performance tests        |
+| `npm run test:back-to-top` | Run back-to-top button functionality tests   |
+| `npm run test:grammar`     | Run grammar and writing quality tests        |
+| `npm run test:watch`       | Run tests in watch mode                      |
+| `npm run check:grammar`    | Check text quality and grammar               |
+| `npm run check:commit`     | Validate commit message format               |
+| `npm run check:all`        | Run all quality checks (lint, text, tests)   |
+| `npm run astro ...`        | Run Astro CLI commands                       |
 
 ## 🧪 Testing Infrastructure
 
@@ -458,34 +458,6 @@ The site uses Tailwind's class-based dark mode with system preference detection:
 - LocalStorage persistence
 - Smooth transitions between themes
 - Icon animations for theme switcher
-
-### **Styling System**
-
-#### **Tailwind Configuration**
-
-Custom utilities and components in `tailwind.config.js`:
-
-```js
-module.exports = {
-	darkMode: 'class',
-	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
-	theme: {
-		extend: {
-			animation: {
-				'fade-in': 'fadeIn 0.5s ease-in-out',
-				'slide-up': 'slideUp 0.3s ease-out',
-			},
-			typography: {
-				DEFAULT: {
-					css: {
-						// Custom prose styles
-					},
-				},
-			},
-		},
-	},
-}
-```
 
 #### **Global Styles**
 
@@ -1040,7 +1012,7 @@ test(seo): add meta tag validation tests
 - ✅ **Comprehensive testing** infrastructure with performance regression detection
 - ✅ **Production-ready** deployment pipeline with GitHub Actions automation
 - ✅ **Advanced accessibility** features including text-to-speech and WCAG compliance
-- ✅ **Modern development workflow** with automated quality checks and git hooks
+- ✅ **Modern development workflow** with automated quality checks and Git hooks
 
 ---
 

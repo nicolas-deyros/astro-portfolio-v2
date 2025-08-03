@@ -9,12 +9,14 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 ### 🚀 Performance Testing
 
 #### `test/performance-clean.test.ts`
+
 - **Core Web Vitals**: LCP, FID, CLS measurements
 - **Multi-page Testing**: Homepage, blog pages, static pages
 - **Clean Environment**: Isolated server setup for accurate measurements
 - **Thresholds**: Enforces production-ready performance standards
 
 #### `test/performance.test.ts`
+
 - **Alternative Performance Suite**: Different measurement approach
 - **Comprehensive Coverage**: All page types with detailed metrics
 - **CI/CD Integration**: Optimized for continuous integration
@@ -22,17 +24,20 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 ### 🔍 SEO & Content Validation
 
 #### `test/seo.test.ts`
+
 - **Meta Tags**: Title, description, Open Graph validation
 - **Content Quality**: Heading hierarchy, keyword distribution
 - **Schema Markup**: JSON-LD structured data validation
 - **SEO Best Practices**: URL structure, internal linking
 
 #### `test/mdx.test.ts`
+
 - **Frontmatter Validation**: Required fields, data types
 - **Content Structure**: Blog post schema compliance
 - **Draft Handling**: Proper draft post detection
 
 #### `test/accessibility.test.ts`
+
 - **WCAG Compliance**: Color contrast, heading structure
 - **Image Accessibility**: Alt text validation
 - **Form Accessibility**: Label and input validation
@@ -41,11 +46,13 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 ### 🔗 Link & Content Validation
 
 #### `test/links.test.ts`
+
 - **Internal Links**: Navigation and content links validation
 - **External Links**: Social media and reference links
 - **Blog Content**: Cross-post references and citations
 
 #### `test/page-links.test.ts`
+
 - **Extended Link Testing**: Comprehensive URL validation
 - **Markdown Links**: Proper formatting and structure
 - **Mixed Content**: HTTP/HTTPS validation
@@ -53,21 +60,25 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 ### 🎨 UI Component Testing
 
 #### `test/back-to-top.test.ts`
+
 - **Basic Functionality**: Button presence and click behavior
 - **Scroll Detection**: Visibility based on scroll position
 
 #### `test/back-to-top-isolated.test.ts`
+
 - **Isolated Environment**: Clean test setup for accurate results
 - **Cross-page Testing**: Consistent behavior across pages
 - **Animation Testing**: Smooth scroll and transitions
 
 #### `test/back-to-top-optimized.test.ts`
+
 - **Performance Optimized**: Fast execution for CI/CD
 - **Essential Testing**: Core functionality validation
 
 ### ✍️ Content Quality
 
 #### `test/grammar-checker.test.ts`
+
 - **Commit Message Validation**: Conventional commit format
 - **Text Quality**: Grammar and spelling checks
 - **Textlint Integration**: Automated writing improvement
@@ -113,13 +124,13 @@ npm run test:watch             # Continuous testing
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  test: {
-    environment: 'node',
-    globals: true,
-    timeout: 60000,        // Extended timeout for performance tests
-    include: ['test/**/*.test.ts'],
-    exclude: ['node_modules/', 'dist/', '.astro/']
-  }
+	test: {
+		environment: 'node',
+		globals: true,
+		timeout: 60000, // Extended timeout for performance tests
+		include: ['test/**/*.test.ts'],
+		exclude: ['node_modules/', 'dist/', '.astro/'],
+	},
 })
 ```
 
@@ -155,6 +166,7 @@ All Core Web Vitals: PASSING ✅
 ### GitHub Actions
 
 Tests run automatically on:
+
 - Pull requests to master
 - Pushes to master branch
 - Manual workflow dispatch
@@ -162,6 +174,7 @@ Tests run automatically on:
 ### Pre-commit Hooks
 
 Quality checks run before each commit:
+
 - ESLint code quality
 - Prettier formatting
 - Conventional commit validation
