@@ -1,4 +1,11 @@
-# 🚀 Nicolás Deyros - Portfolio site
+# 🚀 Nicolás Deyros### 📝 **Blog System**
+
+- **📝 MDX Support**: Rich content with embedded components and interactive elements
+- **🎵 Text-to-Speech**: Multi-chunk read-aloud functionality with voice synthesis and controls
+- **📊 Reading Progress**: Visual progress bar tracking article reading progress
+- **🏷️ Tagging System**: Organized content with categories and tags
+- **🔗 Social Sharing**: Easy sharing functionality for blog posts
+- **⬆️ Back-to-Top Button**: Smooth scroll-to-top functionality with visibility detectionfolio site
 
 A modern, high-performance portfolio site built with Astro, featuring comprehensive testing, SEO optimization, and advanced blog functionality. Showcasing work as a Developer, Project Manager, and AI Enthusiast.
 
@@ -35,11 +42,14 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 
 ### 🧪 **Testing & Quality**
 
-- **🔬 Comprehensive Test Suite**: SEO, accessibility, performance, and link validation
+- **🔬 Comprehensive Test Suite**: 11 test files covering SEO, accessibility, performance, and functionality
 - **🎯 Core Web Vitals Testing**: Automated performance monitoring with Puppeteer
 - **🔍 SEO Validation**: Meta tags, headings, and content quality checks
-- **♿ Accessibility Testing**: WCAG compliance and keyboard navigation
-- **🔗 Link Validation**: Automated broken link detection
+- **♿ Accessibility Testing**: WCAG compliance and keyboard navigation validation
+- **🔗 Link Validation**: Automated broken link detection across all pages
+- **📝 Content Testing**: MDX frontmatter validation and blog post structure
+- **🔤 Grammar Testing**: Automated text quality and spelling validation
+- **⬆️ UI Component Testing**: Back-to-top button functionality across multiple test suites
 
 ## 🛠️ Tech Stack
 
@@ -198,21 +208,28 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 
 ## 📜 Available Scripts
 
-| Command                    | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| `npm run dev`              | Start development server at `localhost:4321` |
-| `npm run build`            | Build production site to `./dist/`           |
-| `npm run preview`          | Preview production build locally             |
-| `npm run lint`             | Run ESLint for code quality                  |
-| `npm run lint:fix`         | Fix ESLint issues automatically              |
-| `npm run format`           | Format code with Prettier                    |
-| `npm run type-check`       | Run TypeScript type checking                 |
-| `npm run test`             | Run all test suites                          |
-| `npm run test:seo`         | Run SEO validation tests                     |
-| `npm run test:links`       | Run link validation tests                    |
-| `npm run test:performance` | Run Core Web Vitals performance tests        |
-| `npm run test:watch`       | Run tests in watch mode                      |
-| `npm run astro ...`        | Run Astro CLI commands                       |
+| Command                      | Description                                    |
+| ---------------------------- | ---------------------------------------------- |
+| `npm run dev`                | Start development server at `localhost:4321`  |
+| `npm run build`              | Build production site to `./dist/`            |
+| `npm run preview`            | Preview production build locally               |
+| `npm run lint`               | Run ESLint for code quality                    |
+| `npm run lint:fix`           | Fix ESLint issues automatically                |
+| `npm run lint:text`          | Run textlint for grammar and writing quality   |
+| `npm run lint:text:fix`      | Fix textlint issues automatically              |
+| `npm run format`             | Format code with Prettier                      |
+| `npm run type-check`         | Run TypeScript type checking                   |
+| `npm run test`               | Run all test suites                            |
+| `npm run test:fast`          | Run fast test suite with optimized settings    |
+| `npm run test:clean`         | Run performance tests with clean setup        |
+| `npm run test:performance`   | Run Core Web Vitals performance tests          |
+| `npm run test:back-to-top`   | Run back-to-top button functionality tests     |
+| `npm run test:grammar`       | Run grammar and writing quality tests          |
+| `npm run test:watch`         | Run tests in watch mode                        |
+| `npm run check:grammar`      | Check text quality and grammar                 |
+| `npm run check:commit`       | Validate commit message format                 |
+| `npm run check:all`          | Run all quality checks (lint, text, tests)    |
+| `npm run astro ...`          | Run Astro CLI commands                         |
 
 ## 🧪 Testing Infrastructure
 
@@ -243,9 +260,24 @@ This project includes extensive testing to ensure quality, performance, and SEO 
 
 #### **📝 Content Testing** (`test/mdx.test.ts`)
 
-- **MDX Validation**: Ensures all blog posts have proper frontmatter
-- **Content Structure**: Validates required fields and data types
-- **Draft Detection**: Handles draft posts appropriately
+- **MDX Validation**: Ensures all blog posts have proper frontmatter structure
+- **Content Structure**: Validates required fields and data types across all posts
+- **Draft Detection**: Handles draft posts appropriately in build process
+- **Schema Compliance**: Enforces consistent metadata structure
+
+#### **⬆️ UI Component Testing** (`test/back-to-top*.test.ts`)
+
+- **Multi-suite Testing**: Three comprehensive test files for different scenarios
+- **Functionality Testing**: Validates button appearance, scroll behavior, and click actions
+- **Cross-page Testing**: Ensures consistent behavior across blog listing and individual posts
+- **Performance Testing**: Optimized test execution with isolated server instances
+
+#### **🔤 Grammar & Writing Quality** (`test/grammar-checker.test.ts`)
+
+- **Automated Grammar Checking**: Validates commit messages and content writing
+- **Conventional Commits**: Enforces proper commit message format
+- **Text Quality**: Checks for common writing issues and improvements
+- **Integration Testing**: Works with textlint for comprehensive text analysis
 
 ### **Performance Benchmarks**
 
@@ -274,12 +306,18 @@ All Core Web Vitals: PASSING ✅
 npm run test
 
 # Run specific test suite
-npm run test:seo          # SEO validation
-npm run test:links        # Link checking
-npm run test:performance  # Core Web Vitals
+npm run test:performance     # Core Web Vitals testing
+npm run test:back-to-top     # UI component functionality
+npm run test:grammar         # Grammar and writing quality
+npm run test:fast            # Optimized fast test execution
+npm run test:clean           # Clean performance testing setup
 
 # Run tests in watch mode
 npm run test:watch
+
+# Run comprehensive quality checks
+npm run check:all            # Lint, text quality, and all tests
+npm run check:grammar        # Text and grammar validation only
 
 # Run tests with coverage
 npm run test -- --coverage
@@ -342,10 +380,19 @@ Your markdown content with MDX components...
 
 #### **🎵 Text-to-Speech**
 
-- **Voice Synthesis**: Browser-native Web Speech API
-- **Accessibility Enhancement**: Audio content for visually impaired users
-- **Multiple Languages**: Supports various language voices
-- **User Controls**: Play, pause, and speed controls
+- **Voice Synthesis**: Browser-native Web Speech API with multi-chunk processing
+- **Accessibility Enhancement**: Audio content for visually impaired users and multitasking
+- **Multiple Languages**: Supports various language voices and accents
+- **User Controls**: Play, pause, stop, and speed controls with visual feedback
+- **Progress Tracking**: Real-time highlighting of currently spoken content
+- **Error Handling**: Graceful fallbacks for unsupported browsers
+
+#### **⬆️ Back-to-Top Button**
+
+- **Smart Visibility**: Appears only when user scrolls down significantly
+- **Smooth Animation**: CSS transitions for appearance and scroll behavior
+- **Cross-page Functionality**: Works consistently across all blog pages
+- **Performance Optimized**: Throttled scroll event handling for smooth UX
 
 #### **📊 Reading Progress**
 
@@ -634,7 +681,53 @@ import heroImage from '../assets/hero.jpg'
 
 ## 🌐 Deployment & Production
 
-### **Vercel Deployment** (Recommended)
+### **Deployment Configuration**
+
+The project is configured for GitHub Pages deployment with automated CI/CD:
+
+#### **GitHub Actions Workflow** (`.github/workflows/deploy.yml`)
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v4
+      - name: Install, build, and upload your site output
+        uses: withastro/action@v4
+        with:
+          path: .
+          node-version: 22
+          package-manager: npm
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+### **Alternative Deployment Options**
+
+#### **Vercel Deployment** (Recommended for React/dynamic features)
 
 1. **Push to GitHub**:
 
@@ -868,48 +961,57 @@ test(seo): add meta tag validation tests
 
 ### **Content Statistics**
 
-- **Blog Posts**: 4+ comprehensive articles
-- **Categories**: AI Development, Analytics, Digital Marketing, Development
-- **Features**: Text-to-speech, Reading progress, Social sharing
-- **Media Support**: YouTube, Vimeo, Images with optimization
+- **Blog Posts**: 4+ comprehensive articles with rich media content
+- **Categories**: AI Development, Analytics, Digital Marketing, Development Tools
+- **Features**: Multi-chunk text-to-speech, Reading progress, Social sharing, Back-to-top navigation
+- **Media Support**: YouTube embeds, Vimeo integration, Optimized images with lazy loading
+- **Interactive Elements**: Reading time estimation, Progress tracking, Voice synthesis
 
 ### **Code Quality Metrics**
 
-- **TypeScript Coverage**: 100%
-- **ESLint Errors**: 0
-- **Prettier Formatting**: Enforced
-- **Git Hook Coverage**: Pre-commit, commit-msg
-- **Test Suites**: 4 comprehensive test files
+- **TypeScript Coverage**: 100% with strict type checking
+- **ESLint Errors**: 0 (enforced by pre-commit hooks)
+- **Prettier Formatting**: Enforced across all file types
+- **Git Hook Coverage**: Pre-commit, commit-msg validation with Husky
+- **Test Suites**: 11 comprehensive test files covering all functionality
+- **Commit Standards**: Conventional commits with automated validation
+- **Text Quality**: Automated grammar and writing quality checks with textlint
 
 ## 🎯 Key Features Showcase
 
 ### **🧪 Advanced Testing**
 
-- Automated Core Web Vitals monitoring
-- SEO validation with content analysis
-- Link checking across all pages
-- Performance regression detection
+- Automated Core Web Vitals monitoring with dual performance test suites
+- SEO validation with comprehensive content analysis
+- Link checking across all pages with external URL validation
+- Performance regression detection with CI/CD integration
+- UI component testing for interactive elements (back-to-top, forms)
+- Grammar and writing quality validation with automated fixes
 
 ### **🎨 User Experience**
 
-- Dark/light mode with system detection
-- Smooth view transitions
-- Reading progress indicators
-- Text-to-speech accessibility
+- Dark/light mode with system detection and smooth transitions
+- Smooth view transitions with Astro's built-in navigation
+- Reading progress indicators with real-time updates
+- Multi-chunk text-to-speech accessibility with voice controls
+- Back-to-top navigation with smart visibility detection
+- Responsive design optimized for all device sizes
 
 ### **⚡ Performance Excellence**
 
-- Sub-1.5s load times across all pages
-- Perfect CLS scores (0.000)
-- Optimized images with lazy loading
-- Minimal JavaScript footprint
+- Sub-1.5s load times across all pages with optimized Core Web Vitals
+- Perfect CLS scores (0.000) with proper layout shift prevention
+- Optimized images with lazy loading and modern format support
+- Minimal JavaScript footprint with selective hydration
+- Efficient caching strategies and resource optimization
 
 ### **🔍 SEO Mastery**
 
-- Automated meta tag generation
-- Structured data implementation
-- Social media optimization
-- Content quality validation
+- Automated meta tag generation with Open Graph support
+- Structured data implementation with JSON-LD schema
+- Social media optimization for all major platforms
+- Content quality validation with keyword analysis
+- Automated sitemap generation and robots.txt configuration
 
 ## 📚 Documentation & Resources
 
@@ -933,13 +1035,15 @@ test(seo): add meta tag validation tests
 - ✅ **Perfect accessibility** scores across all pages
 - ✅ **Zero CLS** (Cumulative Layout Shift)
 - ✅ **Sub-1.5s load times** for all content pages
-- ✅ **100% test coverage** for critical functionality
-- ✅ **SEO optimized** with automated validation
-- ✅ **Comprehensive testing** infrastructure
-- ✅ **Production-ready** deployment pipeline
+- ✅ **100% test coverage** for critical functionality across 11 test suites
+- ✅ **SEO optimized** with automated validation and content analysis
+- ✅ **Comprehensive testing** infrastructure with performance regression detection
+- ✅ **Production-ready** deployment pipeline with GitHub Actions automation
+- ✅ **Advanced accessibility** features including text-to-speech and WCAG compliance
+- ✅ **Modern development workflow** with automated quality checks and git hooks
 
 ---
 
 **Built with ❤️ using Astro, TypeScript, and modern web technologies.**
 
-_Last updated: July 30, 2025_
+_Last updated: August 3, 2025_
