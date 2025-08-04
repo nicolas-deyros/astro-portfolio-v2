@@ -15,8 +15,6 @@ describe('Video Component Integration', () => {
 
 			const videoComponentRegex =
 				/<Video\s+platform="(\w+)"\s+videoId="([\w-]+)"\s*\/>/g
-			let match
-			const videoCount = 0
 
 			const matches = content.matchAll(videoComponentRegex)
 			const videos = Array.from(matches)

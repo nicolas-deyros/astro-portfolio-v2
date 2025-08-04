@@ -209,6 +209,7 @@ describe('Back to Top Button - Optimized', () => {
 				console.log(
 					'⚠️ Back-to-top button is hidden on home page (display: none) - this is expected behavior',
 				)
+				// This is expected on non-blog pages, so we don't test scroll behavior
 			} else {
 				// Button is present and functional, test scroll behavior
 				// Quick scroll test
