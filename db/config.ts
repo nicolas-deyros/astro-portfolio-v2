@@ -9,7 +9,17 @@ const FormSubmissions = defineTable({
 	},
 })
 
+const Links = defineTable({
+	columns: {
+		id: column.number({ primaryKey: true }),
+		title: column.text(),
+		url: column.text(),
+		tags: column.text(),
+		date: column.text(),
+	},
+})
+
 // https://astro.build/db/config
 export default defineDb({
-	tables: { FormSubmissions },
+	tables: { FormSubmissions, Links },
 })

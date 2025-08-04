@@ -1,4 +1,4 @@
-npx prettier . --write
-npm run lint
-npm run lint:text:fix
-npm run test
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged

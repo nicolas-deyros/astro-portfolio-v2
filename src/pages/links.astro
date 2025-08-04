@@ -1,8 +1,9 @@
 ---
 import Layout from '@layouts/index.astro'
-export const prerender = true
 import Section from '@components/Section.astro'
-import linksData from '@/content/links.json'
+
+const response = await fetch(`${Astro.url.origin}/api/links.json`)
+const linksData = await response.json()
 
 const sortedLinks = linksData.sort(
 	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
