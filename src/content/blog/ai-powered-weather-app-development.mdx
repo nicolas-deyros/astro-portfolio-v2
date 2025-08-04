@@ -24,373 +24,9 @@ image:
 
 import { Image } from 'astro:assets'
 
-<style>
-	{`
-  /* Tech Stack Grid */
-  .tech-stack-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0;
-  }
-  
-  .tech-item {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-  
-  .tech-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dark .tech-item {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border-color: #475569;
-  }
-  
-  .tech-item h4 {
-    margin: 0.5rem 0;
-    color: #1e293b;
-    font-size: 1rem;
-  }
-  
-  .dark .tech-item h4 {
-    color: #f1f5f9;
-  }
-  
-  .tech-item p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #64748b;
-  }
-  
-  .dark .tech-item p {
-    color: #94a3b8;
-  }
-
-  /* Callout Boxes */
-  .ai-tip-callout, .performance-callout, .optimization-callout, .sweet-spot-callout {
-    background: #fef3c7;
-    border: 1px solid #f59e0b;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin: 2rem 0;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .dark .ai-tip-callout, .dark .performance-callout, .dark .optimization-callout, .dark .sweet-spot-callout {
-    background: #451a03;
-    border-color: #92400e;
-  }
-  
-  .callout-icon {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-  }
-  
-  .callout-content h4 {
-    margin: 0 0 0.5rem 0;
-    color: #92400e;
-  }
-  
-  .dark .callout-content h4 {
-    color: #fbbf24;
-  }
-  
-  .callout-content p {
-    margin: 0;
-    color: #451a03;
-  }
-  
-  .dark .callout-content p {
-    color: #fef3c7;
-  }
-
-  /* AI Assistant Cards */
-  .ai-assistant-card {
-    background: #f0f9ff;
-    border: 1px solid #0284c7;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 2rem 0;
-  }
-  
-  .ai-assistant-card.jules {
-    background: #fef7ff;
-    border-color: #a855f7;
-  }
-  
-  .dark .ai-assistant-card {
-    background: #0c4a6e;
-    border-color: #0369a1;
-  }
-  
-  .dark .ai-assistant-card.jules {
-    background: #581c87;
-    border-color: #7c3aed;
-  }
-  
-  .assistant-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  
-  .assistant-icon {
-    font-size: 1.5rem;
-  }
-  
-  .assistant-header h4 {
-    margin: 0;
-    color: #0369a1;
-    font-size: 1.25rem;
-  }
-  
-  .dark .assistant-header h4 {
-    color: #38bdf8;
-  }
-  
-  .jules .assistant-header h4 {
-    color: #7c3aed;
-  }
-  
-  .dark .jules .assistant-header h4 {
-    color: #c084fc;
-  }
-  
-  .assistant-role {
-    background: #0284c7;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-  
-  .jules .assistant-role {
-    background: #a855f7;
-  }
-  
-  .assistant-strengths {
-    color: #0c4a6e;
-    font-size: 0.875rem;
-  }
-  
-  .dark .assistant-strengths {
-    color: #bae6fd;
-  }
-
-  /* Debug Process */
-  .debug-process {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-  }
-  
-  .dark .debug-process {
-    background: #1e293b;
-    border-color: #475569;
-  }
-  
-  .debug-steps {
-    margin: 0;
-    padding-left: 1.5rem;
-  }
-  
-  .debug-steps li {
-    margin-bottom: 0.75rem;
-    color: #334155;
-  }
-  
-  .dark .debug-steps li {
-    color: #cbd5e1;
-  }
-
-  /* Performance Metrics */
-  .performance-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-  }
-  
-  .metric-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dark .metric-card {
-    background: #1e293b;
-    border-color: #475569;
-  }
-  
-  .metric-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #059669;
-    margin-bottom: 0.5rem;
-  }
-  
-  .metric-label {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.25rem;
-  }
-  
-  .dark .metric-label {
-    color: #d1d5db;
-  }
-  
-  .metric-description {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-  
-  .dark .metric-description {
-    color: #9ca3af;
-  }
-  
-  .metric-status {
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-top: 0.5rem;
-  }
-  
-  .metric-status.good {
-    color: #059669;
-  }
-
-  /* AI Insights Grid */
-  .ai-insights-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin: 2rem 0;
-  }
-  
-  @media (max-width: 768px) {
-    .ai-insights-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .insight-section {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  
-  .dark .insight-section {
-    background: #1f2937;
-    border-color: #374151;
-  }
-  
-  .insight-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 1rem 0;
-    font-size: 1.125rem;
-  }
-  
-  .insight-title.good {
-    color: #059669;
-  }
-  
-  .insight-title.caution {
-    color: #d97706;
-  }
-  
-  .insight-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .insight-list li {
-    margin-bottom: 0.75rem;
-    padding-left: 1rem;
-    position: relative;
-  }
-  
-  .insight-list li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #6b7280;
-  }
-
-  /* Technical Insights Cards */
-  .technical-insights {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-  }
-  
-  .insight-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-  }
-  
-  .insight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dark .insight-card {
-    background: #1f2937;
-    border-color: #374151;
-  }
-  
-  .insight-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-  
-  .insight-card h4 {
-    margin: 0 0 0.75rem 0;
-    color: #1f2937;
-    font-size: 1.125rem;
-  }
-  
-  .dark .insight-card h4 {
-    color: #f9fafb;
-  }
-  
-  .insight-card p {
-    margin: 0;
-    color: #6b7280;
-    line-height: 1.6;
-  }
-  
-  .dark .insight-card p {
-    color: #d1d5db;
-  }
-`}
-</style>
-
 # Building a Production-Ready Weather App: A Journey with AI-Powered Development
 
-<div class="lead-paragraph">
+<div class="mb-8 text-lg leading-relaxed text-gray-600 italic dark:text-gray-400">
 	_How I built a comprehensive weather application using Astro, TypeScript, and
 	Tailwind CSS with the help of AI assistants - and what I learned along the
 	way._
@@ -404,9 +40,11 @@ It started as many projects do - with a simple need. I wanted to build a modern 
 
 Armed with access to two cutting-edge AI assistants - GitHub Copilot and Jules (Google's experimental AI) - I embarked on a journey that would teach me as much about collaborative AI development as it would about building great software.
 
-<div class="callout callout-info">
-	<h4>💡 Key Insight</h4>
-	<p>
+<div class="my-8 rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-900/20">
+	<h4 class="mb-2 font-semibold text-amber-800 dark:text-amber-200">
+		💡 Key Insight
+	</h4>
+	<p class="m-0 text-amber-700 dark:text-amber-300">
 		This wasn't just about building a weather app - it was about exploring a new
 		paradigm of development where AI assistants become collaborative partners in
 		the creative process.
@@ -415,37 +53,57 @@ Armed with access to two cutting-edge AI assistants - GitHub Copilot and Jules (
 
 ## The Tech Stack: Modern and Minimal
 
-<div class="tech-stack-grid">
-
 Before diving into code, I needed to choose the right tools. After some consideration, I settled on:
 
 <div class="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-	<div class="tech-card">
-		<h3>🚀 Astro 5.12.6</h3>
-		<p>For its islands architecture and excellent performance</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			🚀 Astro 5.12.6
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			For its islands architecture and excellent performance
+		</p>
 	</div>
-	<div class="tech-card">
-		<h3>📘 TypeScript</h3>
-		<p>For type safety and better developer experience</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			📘 TypeScript
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			For type safety and better developer experience
+		</p>
 	</div>
-	<div class="tech-card">
-		<h3>🎨 Tailwind CSS 4.1.11</h3>
-		<p>For rapid, utility-first styling</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			🎨 Tailwind CSS 4.1.11
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			For rapid, utility-first styling
+		</p>
 	</div>
-	<div class="tech-card">
-		<h3>🌤️ Open-Meteo API</h3>
-		<p>For reliable, free weather data</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			🌤️ Open-Meteo API
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			For reliable, free weather data
+		</p>
 	</div>
-	<div class="tech-card">
-		<h3>⚡ Vercel</h3>
-		<p>For seamless deployment and serverless functions</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			⚡ Vercel
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			For seamless deployment and serverless functions
+		</p>
 	</div>
-	<div class="tech-card">
-		<h3>🤖 AI Assistants</h3>
-		<p>GitHub Copilot & Google Jules</p>
+	<div class="rounded-lg border border-slate-300 bg-gradient-to-br from-slate-50 to-slate-200 p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-600 dark:from-slate-800 dark:to-slate-700">
+		<h3 class="my-2 font-semibold text-slate-800 dark:text-slate-100">
+			🤖 AI Assistants
+		</h3>
+		<p class="m-0 text-sm text-slate-600 dark:text-slate-300">
+			GitHub Copilot & Google Jules
+		</p>
 	</div>
-</div>
-
 </div>
 
 The beauty of this stack is its simplicity. No complex state management, no unnecessary abstractions - just modern web technologies working together harmoniously.
@@ -455,47 +113,6 @@ The beauty of this stack is its simplicity. No complex state management, no unne
 ### The Core Architecture
 
 The first major decision was how to structure the application. I chose Astro's file-based routing with a server-side rendering approach:
-
-<div class="code-block-container">
-
-```typescript title="src/pages/api/weather.json.ts" {2,7-8,15-16}
-// src/pages/api/weather.json.ts
-export async function GET({ url }: APIContext): Promise<Response> {
-	const searchParams = url.searchParams
-	const lat = searchParams.get('lat')
-	const lon = searchParams.get('lon')
-
-	if (!lat || !lon) {
-		return new Response(JSON.stringify({ error: 'Missing coordinates' }), {
-			status: 400,
-			headers: { 'Content-Type': 'application/json' },
-		})
-	}
-
-	// Fetch from Open-Meteo API with proper error handling
-	const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`
-
-	try {
-		const response = await fetch(weatherUrl)
-		const data = await response.json()
-
-		// Transform the raw API data into our structured format
-		return new Response(JSON.stringify(transformWeatherData(data)), {
-			headers: { 'Content-Type': 'application/json' },
-		})
-	} catch (error) {
-		return new Response(
-			JSON.stringify({ error: 'Failed to fetch weather data' }),
-			{
-				status: 500,
-				headers: { 'Content-Type': 'application/json' },
-			},
-		)
-	}
-}
-```
-
-</div>
 
 This API endpoint became the backbone of the application. Notice how I implemented proper error handling from the start - a practice that would prove crucial as the app grew in complexity.
 
@@ -521,17 +138,19 @@ This mapping system proved to be one of the most valuable parts of the applicati
 
 ## Chapter 2: The AI Collaboration Begins
 
-<div class="ai-workflow-section">
-
 ### Working with GitHub Copilot
 
-<div class="ai-assistant-card copilot">
-	<div class="assistant-header">
-		<span class="assistant-icon">🤖</span>
-		<h4>GitHub Copilot</h4>
-		<span class="assistant-role">Code Completion Specialist</span>
+<div class="my-8 rounded-xl border border-sky-200 bg-sky-50 p-6 dark:border-sky-800 dark:bg-sky-900/20">
+	<div class="mb-4 flex items-center gap-3">
+		<span class="text-2xl">🤖</span>
+		<h4 class="m-0 text-xl font-semibold text-sky-700 dark:text-sky-300">
+			GitHub Copilot
+		</h4>
+		<span class="rounded-full bg-sky-600 px-3 py-1 text-xs font-medium text-white">
+			Code Completion Specialist
+		</span>
 	</div>
-	<div class="assistant-strengths">
+	<div class="text-sm text-sky-800 dark:text-sky-200">
 		<strong>Strengths:</strong> Pattern recognition, code completion, repetitive
 		tasks
 	</div>
@@ -587,17 +206,19 @@ GitHub Copilot became my constant companion during the development process. Its 
 
 Copilot didn't just suggest code - it understood the context and helped me maintain consistency across all animations.
 
-</div>
-
 ### The Jules (Google AI) Experience
 
-<div class="ai-assistant-card jules">
-	<div class="assistant-header">
-		<span class="assistant-icon">🧠</span>
-		<h4>Jules (Google AI)</h4>
-		<span class="assistant-role">Strategic Architecture Advisor</span>
+<div class="my-8 rounded-xl border border-purple-200 bg-purple-50 p-6 dark:border-purple-800 dark:bg-purple-900/20">
+	<div class="mb-4 flex items-center gap-3">
+		<span class="text-2xl">🧠</span>
+		<h4 class="m-0 text-xl font-semibold text-purple-700 dark:text-purple-300">
+			Jules (Google AI)
+		</h4>
+		<span class="rounded-full bg-purple-600 px-3 py-1 text-xs font-medium text-white">
+			Strategic Architecture Advisor
+		</span>
 	</div>
-	<div class="assistant-strengths">
+	<div class="text-sm text-purple-800 dark:text-purple-200">
 		<strong>Strengths:</strong> Strategic guidance, debugging, architectural
 		decisions
 	</div>
@@ -607,21 +228,21 @@ Working with Jules brought a different perspective to the development process. W
 
 When I encountered a tricky bug where weather icons weren't displaying properly, Jules helped me trace through the entire data flow:
 
-<div class="debug-process">
-	<ol class="debug-steps">
-		<li>
+<div class="my-6 rounded-lg border border-slate-300 bg-slate-100 p-6 dark:border-slate-600 dark:bg-slate-800">
+	<ol class="m-0 space-y-3 pl-6">
+		<li class="text-slate-700 dark:text-slate-300">
 			<strong>API Response Analysis</strong> - Verified the Open-Meteo API was
 			returning correct data
 		</li>
-		<li>
+		<li class="text-slate-700 dark:text-slate-300">
 			<strong>Data Transformation</strong> - Checked that weather codes were
 			being mapped correctly
 		</li>
-		<li>
+		<li class="text-slate-700 dark:text-slate-300">
 			<strong>Icon Resolution</strong> - Identified that the Astro Icon
 			component needed proper fallbacks
 		</li>
-		<li>
+		<li class="text-slate-700 dark:text-slate-300">
 			<strong>Client-Side Rendering</strong> - Discovered issues with hydration
 			timing
 		</li>
@@ -1068,34 +689,44 @@ That's it! The application automatically builds and deploys with:
 
 The final application achieved excellent performance metrics:
 
-<div class="performance-metrics">
-	<div class="metric-card">
-		<div class="metric-value">1.2s</div>
-		<div class="metric-label">First Contentful Paint</div>
-		<div class="metric-status good">✓ Under 1.2s target</div>
+<div class="my-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+	<div class="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-600 dark:bg-slate-800">
+		<div class="mb-2 text-3xl font-bold text-emerald-600">1.2s</div>
+		<div class="mb-1 font-semibold text-gray-700 dark:text-gray-300">
+			First Contentful Paint
+		</div>
+		<div class="text-xs font-medium text-emerald-600">✓ Under 1.2s target</div>
 	</div>
-	<div class="metric-card">
-		<div class="metric-value">2.1s</div>
-		<div class="metric-label">Largest Contentful Paint</div>
-		<div class="metric-status good">✓ Under 2.5s target</div>
+	<div class="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-600 dark:bg-slate-800">
+		<div class="mb-2 text-3xl font-bold text-emerald-600">2.1s</div>
+		<div class="mb-1 font-semibold text-gray-700 dark:text-gray-300">
+			Largest Contentful Paint
+		</div>
+		<div class="text-xs font-medium text-emerald-600">✓ Under 2.5s target</div>
 	</div>
-	<div class="metric-card">
-		<div class="metric-value">0.08</div>
-		<div class="metric-label">Cumulative Layout Shift</div>
-		<div class="metric-status good">✓ Under 0.1 target</div>
+	<div class="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-600 dark:bg-slate-800">
+		<div class="mb-2 text-3xl font-bold text-emerald-600">0.08</div>
+		<div class="mb-1 font-semibold text-gray-700 dark:text-gray-300">
+			Cumulative Layout Shift
+		</div>
+		<div class="text-xs font-medium text-emerald-600">✓ Under 0.1 target</div>
 	</div>
-	<div class="metric-card">
-		<div class="metric-value">2.8s</div>
-		<div class="metric-label">Time to Interactive</div>
-		<div class="metric-status good">✓ Under 3.0s target</div>
+	<div class="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-600 dark:bg-slate-800">
+		<div class="mb-2 text-3xl font-bold text-emerald-600">2.8s</div>
+		<div class="mb-1 font-semibold text-gray-700 dark:text-gray-300">
+			Time to Interactive
+		</div>
+		<div class="text-xs font-medium text-emerald-600">✓ Under 3.0s target</div>
 	</div>
 </div>
 
-<div class="optimization-callout">
-	<div class="callout-icon">🏆</div>
-	<div class="callout-content">
-		<h4>Performance Achievement</h4>
-		<p>
+<div class="my-8 flex items-start gap-4 rounded-lg border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-900/20">
+	<div class="flex-shrink-0 text-2xl">🏆</div>
+	<div>
+		<h4 class="mt-0 mb-2 font-semibold text-amber-800 dark:text-amber-200">
+			Performance Achievement
+		</h4>
+		<p class="m-0 text-amber-700 dark:text-amber-300">
 			All Core Web Vitals passed Google's "Good" thresholds, resulting in better
 			search rankings and user experience scores.
 		</p>
@@ -1116,49 +747,58 @@ These scores were achieved through:
 
 Working with AI assistants fundamentally changed how I approach development:
 
-<div class="ai-insights-grid">
-	<div class="insight-section">
-		<h4 class="insight-title good">✅ What AI Excels At</h4>
-		<ul class="insight-list">
-			<li>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 my-8">
+	<div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+		<h4 class="flex items-center gap-2 text-emerald-600 text-lg font-semibold mb-4 mt-0">✅ What AI Excels At</h4>
+		<ul class="space-y-3 list-none p-0 m-0">
+			<li class="relative pl-4">
+				<span class="absolute left-0 text-gray-400">•</span>
 				<strong>Pattern Recognition</strong> - Spotting repetitive code and
 				suggesting abstractions
 			</li>
-			<li>
+			<li class="relative pl-4">
+				<span class="absolute left-0 text-gray-400">•</span>
 				<strong>Boilerplate Generation</strong> - Creating comprehensive
 				configurations and test setups
 			</li>
-			<li>
+			<li class="relative pl-4">
+				<span class="absolute left-0 text-gray-400">•</span>
 				<strong>Error Debugging</strong> - Systematically working through
 				complex issues
 			</li>
-			<li>
+			<li class="relative pl-4">
+				<span class="absolute left-0 text-gray-400">•</span>
 				<strong>Code Consistency</strong> - Maintaining style and patterns
 				across the codebase
 			</li>
-			<li>
+			<li class="relative pl-4">
+				<span class="absolute left-0 text-gray-400">•</span>
 				<strong>Documentation</strong> - Generating thorough comments and README
 				content
 			</li>
 		</ul>
 	</div>
 
-    <div class="insight-section">
-    	<h4 class="insight-title caution">⚠️ What AI Struggles With</h4>
-    	<ul class="insight-list">
-    		<li>
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+    	<h4 class="flex items-center gap-2 text-amber-600 text-lg font-semibold mb-4 mt-0">⚠️ What AI Struggles With</h4>
+    	<ul class="space-y-3 list-none p-0 m-0">
+    		<li class="relative pl-4">
+    			<span class="absolute left-0 text-gray-400">•</span>
     			<strong>Creative Problem Solving</strong> - Novel solutions to unique
     			problems
     		</li>
-    		<li>
+    		<li class="relative pl-4">
+    			<span class="absolute left-0 text-gray-400">•</span>
     			<strong>Business Logic Decisions</strong> - Understanding user needs and
     			requirements
     		</li>
-    		<li>
+    		<li class="relative pl-4">
+    			<span class="absolute left-0 text-gray-400">•</span>
     			<strong>Performance Trade-offs</strong> - Making architectural decisions
     			based on constraints
     		</li>
-    		<li>
+    		<li class="relative pl-4">
+    			<span class="absolute left-0 text-gray-400">•</span>
     			<strong>User Experience</strong> - Understanding subtle UX implications
     		</li>
     	</ul>
@@ -1166,11 +806,13 @@ Working with AI assistants fundamentally changed how I approach development:
 
 </div>
 
-<div class="sweet-spot-callout">
-	<div class="callout-icon">🎯</div>
-	<div class="callout-content">
-		<h4>The Sweet Spot</h4>
-		<p>
+<div class="my-8 flex items-start gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-800 dark:bg-emerald-900/20">
+	<div class="flex-shrink-0 text-2xl">🎯</div>
+	<div>
+		<h4 class="mt-0 mb-2 font-semibold text-emerald-800 dark:text-emerald-200">
+			The Sweet Spot
+		</h4>
+		<p class="m-0 text-emerald-700 dark:text-emerald-300">
 			The most productive development happened when I provided the creative
 			direction and architectural decisions, while the AI assistants handled
 			implementation details, testing strategies, and tooling configuration.
@@ -1180,47 +822,47 @@ Working with AI assistants fundamentally changed how I approach development:
 
 ### Technical Insights
 
-<div class="technical-insights">
-	<div class="insight-card">
-		<div class="insight-icon">📝</div>
-		<h4>TypeScript is Essential</h4>
-		<p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+	<div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+		<div class="text-3xl mb-4">📝</div>
+		<h4 class="text-gray-900 dark:text-gray-100 text-lg font-semibold mb-3 mt-0">TypeScript is Essential</h4>
+		<p class="text-gray-600 dark:text-gray-300 leading-relaxed m-0">
 			Even for a relatively simple application, TypeScript caught numerous
 			potential runtime errors and made refactoring much safer.
 		</p>
 	</div>
 
-    <div class="insight-card">
-    	<div class="insight-icon">🧪</div>
-    	<h4>Testing Pays Off</h4>
-    	<p>
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+    	<div class="text-3xl mb-4">🧪</div>
+    	<h4 class="text-gray-900 dark:text-gray-100 text-lg font-semibold mb-3 mt-0">Testing Pays Off</h4>
+    	<p class="text-gray-600 dark:text-gray-300 leading-relaxed m-0">
     		The comprehensive test suite caught several bugs during development and
     		gave me confidence to refactor aggressively.
     	</p>
     </div>
 
-    <div class="insight-card">
-    	<div class="insight-icon">🔧</div>
-    	<h4>Tooling Investment</h4>
-    	<p>
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+    	<div class="text-3xl mb-4">🔧</div>
+    	<h4 class="text-gray-900 dark:text-gray-100 text-lg font-semibold mb-3 mt-0">Tooling Investment</h4>
+    	<p class="text-gray-600 dark:text-gray-300 leading-relaxed m-0">
     		Spending time upfront on proper ESLint, Stylelint, and pre-commit hooks
     		paid dividends throughout development.
     	</p>
     </div>
 
-    <div class="insight-card">
-    	<div class="insight-icon">⚡</div>
-    	<h4>Performance by Default</h4>
-    	<p>
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+    	<div class="text-3xl mb-4">⚡</div>
+    	<h4 class="text-gray-900 dark:text-gray-100 text-lg font-semibold mb-3 mt-0">Performance by Default</h4>
+    	<p class="text-gray-600 dark:text-gray-300 leading-relaxed m-0">
     		Astro's architecture meant the application was fast without additional
     		optimization effort.
     	</p>
     </div>
 
-    <div class="insight-card">
-    	<div class="insight-icon">🚀</div>
-    	<h4>Progressive Enhancement</h4>
-    	<p>
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+    	<div class="text-3xl mb-4">🚀</div>
+    	<h4 class="text-gray-900 dark:text-gray-100 text-lg font-semibold mb-3 mt-0">Progressive Enhancement</h4>
+    	<p class="text-gray-600 dark:text-gray-300 leading-relaxed m-0">
     		Building the core functionality to work without JavaScript, then enhancing
     		with interactivity, created a more robust application.
     	</p>
@@ -1292,7 +934,7 @@ The future of web development isn't about humans vs. AI - it's about humans **wi
 
 ---
 
-_Want to explore the code? Check out the [live demo](https://weather-app-your-domain.vercel.app) or browse the [source code on GitHub](https://github.com/nicolas-deyros/weather-app). The complete test suite, tooling configuration, and deployment setup are all available for reference._
+_Want to explore the code? Check out the [live demo](https://weather-app-pink-phi-60.vercel.app/) or browse the [source code on GitHub](https://github.com/nicolas-deyros/weather-app). The complete test suite, tooling configuration, and deployment setup are all available for reference._
 
 **Final Stats:**
 
