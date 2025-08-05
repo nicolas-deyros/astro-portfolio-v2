@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-08-05
+
+### 🚀 Major TypeScript & Development Workflow Optimizations
+
+- **Enhanced TypeScript Infrastructure**: Upgraded to @typescript-eslint/eslint-plugin@8.39.0 with strict type checking and enhanced code quality rules
+- **Automated Import Sorting**: Integrated eslint-plugin-simple-import-sort for consistent import organization across the codebase
+- **Pre-commit Hook Integration**: Implemented husky + lint-staged for automated code formatting and linting on every commit
+- **RSS Feed Migration**: Converted RSS feed from JavaScript to TypeScript with enhanced sanitization, type safety, and security improvements
+- **SEO Infrastructure Enhancement**: Added sitemap filtering to exclude admin pages and implemented robots.txt endpoint for better search engine optimization
+- **Audio Player Content Filtering Fix**: Resolved critical issue where 13-minute read blog posts generated only 48 seconds of audio by fixing frontmatter removal logic
+- **Clean Console Output**: Removed debug console.log statements from audio player for production-ready clean output
+- **Speech Synthesis Error Handling**: Suppressed 'interrupted' speech errors during audio player stop operations for better user experience
+
+### 🛠️ Technical Improvements
+
+- **Precise Frontmatter Parsing**: Replaced regex-based frontmatter removal with string-based methods to prevent content over-filtering
+- **Enhanced Content Filtering**: Improved audio player content processing to preserve readable text while removing technical elements
+- **Build Pipeline Optimization**: Enhanced build process with improved error handling and type checking
+- **Code Quality Standards**: Enforced consistent coding standards with automated formatting and linting
+- **Development Workflow**: Streamlined development process with automated quality checks and pre-commit validation
+
+### 📊 Performance & Reliability
+
+- **Audio Player Performance**: Fixed long-form blog post audio generation, now properly processing 13+ minute read articles
+- **Content Processing**: Optimized content filtering pipeline for accurate text-to-speech functionality
+- **Type Safety**: Enhanced type safety across RSS feeds, sitemap generation, and content processing
+- **Error Prevention**: Proactive error prevention through enhanced linter rules and type checking
+
 ## [2.4.0] - 2025-08-05
 
 ### 🎨 Enhanced Responsive Design
