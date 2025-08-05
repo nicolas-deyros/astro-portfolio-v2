@@ -54,14 +54,14 @@ export const GET: APIRoute = async context => {
 					pubDate: new Date(post.data.date),
 					content: cleanContent,
 					categories: post.data.category ? [post.data.category] : undefined,
-					author: 'nicolas@deyros.dev (Nicolás Deyros)',
+					author: 'Nicolás Deyros',
 					guid: `/blog/${post.slug}`,
 				}
 			}),
 			customData: [
 				'<language>en-us</language>',
-				'<managingEditor>nicolas@deyros.dev (Nicolás Deyros)</managingEditor>',
-				'<webMaster>nicolas@deyros.dev (Nicolás Deyros)</webMaster>',
+				'<managingEditor>Nicolás Deyros</managingEditor>',
+				'<webMaster>Nicolás Deyros</webMaster>',
 				'<generator>Astro RSS Generator</generator>',
 				'<ttl>60</ttl>',
 			].join('\n'),
