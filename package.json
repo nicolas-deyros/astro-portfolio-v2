@@ -15,6 +15,8 @@
 		"test": "vitest",
 		"test:fast": "tsx scripts/test-fast.ts",
 		"test:clean": "tsx scripts/test-clean.ts",
+		"test:critical": "vitest run test/grammar-checker.test.ts test/mdx.test.ts test/seo.test.ts --run",
+		"test:integration": "vitest run test/links.test.ts test/accessibility.test.ts test/admin-interface.test.ts --run",
 		"test:back-to-top": "vitest run back-to-top",
 		"test:back-to-top:isolated": "tsx scripts/test-clean.ts back-to-top-isolated",
 		"test:performance": "vitest run performance",

@@ -1,2 +1,2 @@
 npx lint-staged
-npm run test:grammar
+npm run test:critical
