@@ -20,7 +20,7 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 ### 📝 **Blog System**
 
 - **� MDX Support**: Rich content with embedded components and interactive elements
-- **🎵 Text-to-Speech**: Read-aloud functionality for blog posts with voice synthesis
+- **🎵 Enhanced Audio Player**: Advanced read-aloud functionality with Web Audio API integration
 - **📊 Reading Progress**: Visual progress bar tracking article reading progress
 - **🏷️ Tagging System**: Organized content with categories and tags
 - **🔗 Social Sharing**: Easy sharing functionality for blog posts
@@ -399,14 +399,15 @@ Your markdown content with MDX components...
 - **Lazy Loading**: Built-in lazy loading for performance
 - **Format Optimization**: WebP conversion where supported
 
-#### **🎵 Text-to-Speech**
+#### **� Enhanced Audio Player**
 
-- **Voice Synthesis**: Browser-native Web Speech API with multi-chunk processing
-- **Accessibility Enhancement**: Audio content for visually impaired users and multitasking
-- **Multiple Languages**: Supports various language voices and accents
-- **User Controls**: Play, pause, stop, and speed controls with visual feedback
-- **Progress Tracking**: Real-time highlighting of currently spoken content
-- **Error Handling**: Graceful fallbacks for unsupported browsers
+- **Advanced Audio Engine**: Web Audio API integration with Speech Synthesis API for enhanced processing
+- **Smart Content Filtering**: Automatically excludes code blocks, images, and non-content elements
+- **Progress Tracking**: Real-time playback position with seek functionality
+- **Playback Controls**: Play, pause, stop with visual feedback and progress bar
+- **Error Handling**: Robust error management with graceful fallbacks
+- **Performance Optimized**: Chunked text processing for long articles
+- **Cross-browser Compatibility**: Works across Chrome, Firefox, Safari, and Edge
 
 #### **⬆️ Back-to-Top Button**
 
@@ -820,8 +821,8 @@ Add your analytics scripts in `src/layouts/index.astro`:
 // Google Analytics 4
 ---
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID">
-</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
+></script>
 <script>
 	window.dataLayer = window.dataLayer || []
 	function gtag() {

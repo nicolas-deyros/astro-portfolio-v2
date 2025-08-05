@@ -18,17 +18,52 @@ const { post } = Astro.props
 const { data, render } = post
 const { Content } = await render()
 
-import Layout from '@layouts/index.astro'
+import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
 import Section from '@components/Section.astro'
+import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
 
 const markdown = post.body
-const plainText = markdown
-	.replace(/[#_*>\-[\]`>]/g, '')
-	.replace(/!\[.*\]\(.*\)/g, '')
+
+// Enhanced text cleaning for reading time calculation
+const getReadableText = (text: string): string => {
+	return (
+		text
+			// Remove image markdown ![alt](url)
+			.replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+			// Remove video embeds and iframe links
+			.replace(
+				/\[!\[.*?\]\(.*?\)\]\(.*?(youtube|youtu\.be|vimeo|dailymotion).*?\)/gi,
+				'',
+			)
+			// Remove link markdown [text](url) but keep text
+			.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+			// Remove code blocks
+			.replace(/```[\s\S]*?```/g, '')
+			// Remove inline code backticks
+			.replace(/`([^`]+)`/g, '$1')
+			// Remove markdown headers
+			.replace(/^#{1,6}\s+/gm, '')
+			// Remove markdown emphasis
+			.replace(/(\*{1,2}|_{1,2})(.*?)\1/g, '$2')
+			// Remove blockquotes
+			.replace(/^>\s*/gm, '')
+			// Remove list markers
+			.replace(/^[\s]*[-*+]\s+/gm, '')
+			.replace(/^[\s]*\d+\.\s+/gm, '')
+			// Clean whitespace
+			.replace(/\s+/g, ' ')
+			.trim()
+	)
+}
+
+const plainText = getReadableText(markdown)
 const wordCount = plainText.trim().split(/\s+/).length
 const wordsPerMinute = 200
 const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
+
+// For the audio player, we'll pass the original markdown and let the audio player handle the advanced cleaning
+const audioText = markdown
 ---
 
 <Layout title={`Blog | ${title}`} {description} isBlog={true}>
@@ -45,105 +80,81 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		</div>
 	</div>
 	<Section>
-		<header class="mb-8 border-b border-gray-200 pb-6 dark:border-gray-700">
-			<h1
-				class="mb-4 text-6xl leading-tight font-bold text-gray-900 md:text-4xl dark:text-white">
-				{title}
-			</h1>
+		<div class="container mx-auto max-w-4xl px-4">
+			<header class="mb-8 border-b border-gray-200 pb-6 dark:border-gray-700">
+				<h1
+					class="mb-4 text-6xl leading-tight font-bold text-gray-900 md:text-4xl dark:text-white">
+					{title}
+				</h1>
 
-			<!-- Article Meta -->
-			<div
-				class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-				{
-					category && (
-						<a
-							href={`/blog/tags/${category}`}
-							class="inline-block rounded-full bg-blue-100 px-3 py-1 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-							{category}
-						</a>
-					)
-				}
-
-				<time
-					datetime={typeof date === 'string' ? date : date.toISOString()}
-					class="flex items-center gap-1">
-					<span>📅</span>
+				<!-- Article Meta -->
+				<div
+					class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
 					{
-						new Date(date).toLocaleDateString('en-us', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric',
-						})
+						category && (
+							<a
+								href={`/blog/tags/${category}`}
+								class="inline-block rounded-full bg-blue-100 px-3 py-1 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+								{category}
+							</a>
+						)
 					}
-				</time>
 
-				<span class="flex items-center gap-1">
-					<span>👤</span>
-					{author}
-				</span>
+					<time
+						datetime={typeof date === 'string' ? date : date.toISOString()}
+						class="flex items-center gap-1">
+						<span>📅</span>
+						{
+							new Date(date).toLocaleDateString('en-us', {
+								year: 'numeric',
+								month: 'long',
+								day: 'numeric',
+							})
+						}
+					</time>
 
-				<span class="flex items-center gap-1">
-					<span>⏱️</span>
-					{readingTime} min read
-				</span>
+					<span class="flex items-center gap-1">
+						<span>👤</span>
+						{author}
+					</span>
+
+					<span class="flex items-center gap-1">
+						<span>⏱️</span>
+						{readingTime} min read
+					</span>
+				</div>
+			</header>
+
+			<!-- Enhanced Audio Player with improved content filtering -->
+			<div class="mb-6">
+				<EnhancedAudioPlayer
+					text={audioText}
+					enableVisualization={true}
+					client="visible"
+					class="w-full"
+				/>
 			</div>
-		</header>
-		<div class="mb-6 flex flex-wrap gap-3">
-			<button
-				id="read-aloud-btn"
-				type="button"
-				class="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-white shadow-md transition-colors hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-600">
-				<span id="read-aloud-icon">▶️</span>
-				<span id="read-aloud-label">Read Aloud</span>
-			</button>
 
-			<button
-				id="stop-aloud-btn"
-				type="button"
-				style="display:none"
-				class="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white shadow-md transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600">
-				<span>⏹️</span>
-				<span>Stop</span>
-			</button>
-		</div>
-
-		<div
-			id="blog-content"
-			class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl container max-w-none">
-			<Content />
+			<div
+				id="blog-content"
+				class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl max-w-none">
+				<Content />
+			</div>
 		</div>
 	</Section>
 </Layout>
 
-<!-- filepath: src/pages/blog/[slug].astro -->
+<!-- Enhanced Audio Player with Web Audio API + Web Speech API -->
 <script>
-	// Global state with proper typing
-	let isReading = false
-	let currentUtterance: SpeechSynthesisUtterance | null = null
-	let selectedVoice: SpeechSynthesisVoice | null = null
-	let speechTimeout: ReturnType<typeof setTimeout> | null = null
-
+	// Progress bar functionality only (audio handled by React component)
 	function initializeBlogFeatures(): (() => void) | null {
-		// console.log('Initializing blog features...')
+		console.log('Initializing blog features...')
 
-		// Check browser support first
-		if (!('speechSynthesis' in window)) {
-			console.warn('Text-to-speech not supported in this browser')
-			const readBtn = document.getElementById('read-aloud-btn')
-			if (readBtn) {
-				readBtn.style.display = 'none'
-			}
-			const progressCleanup = initProgressBar()
-			return typeof progressCleanup === 'function' ? progressCleanup : null
-		}
-
-		// Initialize both features
+		// Initialize progress bar
 		const progressCleanup = initProgressBar()
-		const speechCleanup = initTextToSpeech()
 
 		return () => {
 			if (typeof progressCleanup === 'function') progressCleanup()
-			if (typeof speechCleanup === 'function') speechCleanup()
 		}
 	}
 
@@ -154,7 +165,7 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 
 		if (!progressBar || !blogContent || !progressPercent) {
 			console.warn('Progress bar elements not found')
-			return
+			return null
 		}
 
 		function updateProgressBar() {
@@ -198,503 +209,25 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 		}
 	}
 
-	function initTextToSpeech() {
-		const readBtn = document.getElementById('read-aloud-btn')
-		const stopBtn = document.getElementById('stop-aloud-btn')
-		const content = document.getElementById('blog-content')
-		const iconSpan = document.getElementById('read-aloud-icon')
-		const labelSpan = document.getElementById('read-aloud-label')
-
-		if (!readBtn || !stopBtn || !content || !iconSpan || !labelSpan) {
-			console.warn('Text-to-speech elements not found')
-			return
-		}
-
-		// Extract clean text content, avoiding video and media elements
-		function getCleanTextContent(element: HTMLElement): string {
-			// console.log('Extracting text content from element:', element.tagName)
-
-			// Clone the element to avoid modifying the original
-			const clone = element.cloneNode(true) as HTMLElement
-
-			// Remove all video, audio, and iframe elements (YouTube embeds)
-			const mediaElements = clone.querySelectorAll(
-				'video, audio, iframe, embed, object',
-			)
-			// console.log(`Removing ${mediaElements.length} media elements`)
-			mediaElements.forEach(el => el.remove())
-
-			// Remove script tags and style tags
-			const scriptElements = clone.querySelectorAll('script, style, noscript')
-			// console.log(`Removing ${scriptElements.length} script/style elements`)
-			scriptElements.forEach(el => el.remove())
-
-			// Remove elements with autoplay attributes or video-related classes
-			const autoplayElements = clone.querySelectorAll(
-				'[autoplay], .video-container, .youtube-container, .media-embed, .aspect-video',
-			)
-			// console.log(
-			// 	`Removing ${autoplayElements.length} autoplay/video container elements`,
-			// )
-			autoplayElements.forEach(el => el.remove())
-
-			// Get clean text content
-			const text = clone.innerText || clone.textContent || ''
-
-			// Clean up extra whitespace and normalize
-			const cleanText = text
-				.replace(/\s+/g, ' ')
-				.replace(/\n\s*\n/g, '\n')
-				.trim()
-
-			// console.log(`Extracted text length: ${cleanText.length} characters`)
-			// console.log('First 200 characters:', cleanText.substring(0, 200))
-
-			return cleanText
-		}
-
-		// Load voices with retry mechanism
-		function loadVoices() {
-			const voices = window.speechSynthesis.getVoices()
-			// console.log('Available voices:', voices.length)
-
-			if (voices.length === 0) return false
-
-			const englishVoices = voices.filter(voice => voice.lang.startsWith('en'))
-
-			// Priority order for voice selection
-			selectedVoice =
-				englishVoices.find(
-					voice =>
-						voice.name.toLowerCase().includes('google') &&
-						voice.name.toLowerCase().includes('female') &&
-						voice.name.toLowerCase().includes('us'),
-				) ||
-				englishVoices.find(
-					voice =>
-						voice.name.toLowerCase().includes('google') &&
-						voice.name.toLowerCase().includes('us'),
-				) ||
-				englishVoices.find(voice =>
-					voice.name.toLowerCase().includes('google'),
-				) ||
-				englishVoices.find(voice => voice.default) ||
-				englishVoices[0] ||
-				voices[0]
-
-			// console.log('Selected voice:', selectedVoice?.name || 'None')
-			return true
-		}
-
-		// Voice loading with multiple attempts and promise-based approach
-		let voiceLoadAttempts = 0
-		const maxVoiceLoadAttempts = 10
-
-		function waitForVoices(): Promise<boolean> {
-			return new Promise(resolve => {
-				if (loadVoices()) {
-					resolve(true)
-					return
-				}
-
-				const checkVoices = () => {
-					voiceLoadAttempts++
-					if (loadVoices()) {
-						resolve(true)
-					} else if (voiceLoadAttempts >= maxVoiceLoadAttempts) {
-						resolve(false)
-					} else {
-						setTimeout(checkVoices, 200)
-					}
-				}
-
-				// Set up voice change listener
-				const handleVoicesChanged = () => {
-					if (loadVoices()) {
-						window.speechSynthesis.removeEventListener(
-							'voiceschanged',
-							handleVoicesChanged,
-						)
-						resolve(true)
-					}
-				}
-
-				window.speechSynthesis.addEventListener(
-					'voiceschanged',
-					handleVoicesChanged,
-				)
-
-				// Start checking
-				setTimeout(checkVoices, 100)
-			})
-		}
-
-		// Initialize voice loading
-		waitForVoices()
-
-		function resetSpeechState() {
-			isReading = false
-			currentUtterance = null
-			if (speechTimeout) {
-				clearTimeout(speechTimeout)
-				speechTimeout = null
-			}
-		}
-
-		function updateUI() {
-			if (!iconSpan || !labelSpan || !stopBtn) return
-
-			if (isReading) {
-				const isPaused = window.speechSynthesis.paused
-				iconSpan.textContent = isPaused ? '▶️' : '⏸️'
-				labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
-				stopBtn.style.display = 'flex'
-			} else {
-				iconSpan.textContent = '▶️'
-				labelSpan.textContent = 'Read Aloud'
-				stopBtn.style.display = 'none'
-			}
-		}
-
-		// Pause all media elements when starting speech
-		function pauseAllMedia() {
-			const mediaElements = document.querySelectorAll(
-				'video, audio',
-			) as NodeListOf<HTMLMediaElement>
-			mediaElements.forEach(media => {
-				if (!media.paused) {
-					// console.log('Pausing media element:', media.tagName)
-					media.pause()
-				}
-			})
-
-			// Handle YouTube iframes with improved messaging
-			const youtubeIframes = document.querySelectorAll(
-				'iframe[src*="youtube"], iframe[src*="youtu.be"]',
-			) as NodeListOf<HTMLIFrameElement>
-
-			// console.log(`Found ${youtubeIframes.length} YouTube iframes`)
-
-			youtubeIframes.forEach(iframe => {
-				try {
-					// console.log(`Attempting to pause YouTube iframe`)
-
-					// Multiple pause commands to ensure it works
-					const pauseCommands = [
-						'{"event":"command","func":"pauseVideo","args":""}',
-						'{"event":"command","func":"stopVideo","args":""}',
-					]
-
-					pauseCommands.forEach(command => {
-						iframe.contentWindow?.postMessage(command, '*')
-					})
-
-					// Also try to modify the src to remove autoplay and add enablejsapi
-					const currentSrc = iframe.src
-					let newSrc = currentSrc
-
-					if (currentSrc.includes('autoplay=1')) {
-						// console.log('Removing autoplay from YouTube iframe')
-						newSrc = newSrc.replace('autoplay=1', 'autoplay=0')
-					}
-
-					if (!currentSrc.includes('enablejsapi=1')) {
-						// Add enablejsapi for better postMessage support
-						const separator = currentSrc.includes('?') ? '&' : '?'
-						newSrc = newSrc + separator + 'enablejsapi=1'
-					}
-
-					if (newSrc !== currentSrc) {
-						iframe.src = newSrc
-					}
-				} catch {
-					// console.log(`Could not pause YouTube video:`, error)
-				}
-			})
-		}
-
-		function handleReadClick() {
-			console.log(
-				'[DEBUG] Read button clicked, isReading:',
-				isReading,
-				'paused:',
-				window.speechSynthesis.paused,
-				'speaking:',
-				window.speechSynthesis.speaking,
-			)
-
-			try {
-				if (!isReading) {
-					// Start reading - pause all media first
-					console.log('[DEBUG] Starting read-aloud process...')
-					pauseAllMedia()
-
-					// Wait a moment for media to pause before starting speech
-					setTimeout(async () => {
-						window.speechSynthesis.cancel() // Clear any existing speech
-
-						if (!content) {
-							console.warn('[DEBUG] No blog content element found')
-							return
-						}
-
-						console.log('[DEBUG] Extracting text content...')
-						const text = getCleanTextContent(content)
-						if (!text.trim()) {
-							console.warn('[DEBUG] No content to read - text is empty')
-							alert('No readable content found in this post.')
-							return
-						}
-
-						// Wait for voices to load before starting speech
-						console.log('[DEBUG] Waiting for voices...')
-						const voicesReady = await waitForVoices()
-						console.log(
-							'[DEBUG] Voices ready:',
-							voicesReady,
-							'Selected voice:',
-							selectedVoice?.name,
-						)
-
-						console.log(
-							'[DEBUG] Starting speech with text length:',
-							text.length,
-						)
-
-						// Split long text into chunks to prevent interruption
-						const maxChunkLength = 32767 // Browser limit for utterance text
-						const chunks =
-							text.length > maxChunkLength
-								? text.match(
-										new RegExp(`.{1,${maxChunkLength}}(?=\\s|$)`, 'g'),
-									) || [text]
-								: [text]
-
-						// console.log(`Text split into ${chunks.length} chunks`)
-						console.log('[DEBUG] Text split into', chunks.length, 'chunks')
-
-						let currentChunkIndex = 0
-
-						const speakChunk = (chunkIndex: number) => {
-							console.log(
-								'[DEBUG] Speaking chunk',
-								chunkIndex + 1,
-								'of',
-								chunks.length,
-							)
-
-							if (chunkIndex >= chunks.length) {
-								console.log('[DEBUG] All chunks completed')
-								resetSpeechState()
-								updateUI()
-								return
-							}
-
-							currentUtterance = new SpeechSynthesisUtterance(
-								chunks[chunkIndex],
-							)
-
-							// Configure voice
-							if (selectedVoice) {
-								currentUtterance.voice = selectedVoice
-								console.log('[DEBUG] Using voice:', selectedVoice.name)
-							} else {
-								console.warn('[DEBUG] No voice selected, using default')
-							}
-
-							currentUtterance.lang = 'en-US'
-							currentUtterance.rate = 0.9
-							currentUtterance.pitch = 1.0
-							currentUtterance.volume = 0.8
-
-							// Enhanced error handling
-							currentUtterance.onstart = () => {
-								console.log('[DEBUG] Speech chunk started successfully')
-								if (chunkIndex === 0) {
-									isReading = true
-									updateUI()
-								}
-							}
-
-							currentUtterance.onend = () => {
-								console.log('[DEBUG] Speech chunk ended normally')
-								currentChunkIndex++
-								if (currentChunkIndex < chunks.length) {
-									// Continue with next chunk
-									setTimeout(() => speakChunk(currentChunkIndex), 100)
-								} else {
-									// All chunks completed
-									resetSpeechState()
-									updateUI()
-								}
-							}
-
-							currentUtterance.onerror = event => {
-								console.log('[DEBUG] Speech error occurred:', event.error)
-
-								// Handle different error types
-								switch (event.error) {
-									case 'interrupted':
-										console.log(
-											'[DEBUG] Speech was interrupted - this is normal during navigation',
-										)
-										break
-									case 'canceled':
-										console.log('[DEBUG] Speech was canceled by user')
-										break
-									case 'not-allowed':
-										console.warn(
-											'[DEBUG] Speech synthesis not allowed - check permissions',
-										)
-										alert(
-											'Speech synthesis is not allowed. Please check your browser permissions.',
-										)
-										break
-									case 'network':
-										console.error(
-											'[DEBUG] Network error during speech synthesis',
-										)
-										alert('Network error occurred during text-to-speech.')
-										break
-									default:
-										console.error(
-											'[DEBUG] Unexpected speech error:',
-											event.error,
-										)
-										alert(
-											'An error occurred during text-to-speech: ' + event.error,
-										)
-								}
-
-								resetSpeechState()
-								updateUI()
-							}
-
-							currentUtterance.onpause = () => {
-								// console.log('Speech paused')
-								updateUI()
-							}
-
-							currentUtterance.onresume = () => {
-								// console.log('Speech resumed')
-								updateUI()
-							}
-
-							// Start speaking this chunk
-							console.log(
-								'[DEBUG] Calling speechSynthesis.speak() for chunk',
-								chunkIndex + 1,
-							)
-							window.speechSynthesis.speak(currentUtterance)
-						}
-
-						// Start with the first chunk
-						speakChunk(0)
-						isReading = true
-						updateUI()
-
-						// Fallback timeout in case speech doesn't start
-						speechTimeout = setTimeout(() => {
-							if (isReading && !window.speechSynthesis.speaking) {
-								console.warn('Speech failed to start - resetting state')
-								alert('Speech failed to start. Please try again.')
-								resetSpeechState()
-								updateUI()
-							}
-						}, 3000) // Increased timeout for slower systems
-					}, 800) // Increased wait time for media to pause
-				} else if (window.speechSynthesis.paused) {
-					// Resume paused speech
-					// console.log('Resuming paused speech')
-					window.speechSynthesis.resume()
-					updateUI()
-				} else if (window.speechSynthesis.speaking) {
-					// Pause active speech
-					// console.log('Pausing active speech')
-					window.speechSynthesis.pause()
-					updateUI()
-				} else {
-					// Edge case: isReading is true but no active speech
-					// console.log('Speech state inconsistent - restarting')
-					resetSpeechState()
-					handleReadClick() // Restart the process
-				}
-			} catch (error) {
-				// console.error('Error in handleReadClick:', error)
-				const errorMessage =
-					error instanceof Error ? error.message : String(error)
-				alert('An unexpected error occurred: ' + errorMessage)
-				resetSpeechState()
-				updateUI()
-			}
-		}
-
-		function handleStopClick() {
-			// console.log('Stop button clicked')
-			try {
-				window.speechSynthesis.cancel()
-				resetSpeechState()
-				updateUI()
-			} catch {
-				// console.error('Error stopping speech:', error)
-				resetSpeechState()
-				updateUI()
-			}
-		}
-
-		// Add event listeners
-		readBtn.addEventListener('click', handleReadClick)
-		stopBtn.addEventListener('click', handleStopClick)
-
-		// Initial UI update
-		updateUI()
-
-		// Cleanup function
-		return () => {
-			// console.log('Cleaning up text-to-speech')
-			readBtn.removeEventListener('click', handleReadClick)
-			stopBtn.removeEventListener('click', handleStopClick)
-
-			try {
-				if (window.speechSynthesis.speaking) {
-					window.speechSynthesis.cancel()
-				}
-			} catch {
-				// console.log('Error during TTS cleanup:', error)
-			}
-
-			resetSpeechState()
-		}
-	}
-
 	// Enhanced cleanup for Astro view transitions
 	let cleanup: (() => void) | null = null
 
 	// Clean up before navigation
 	document.addEventListener('astro:before-preparation', () => {
-		// console.log('Cleaning up before navigation')
+		console.log('Cleaning up before navigation')
 		try {
 			if (cleanup) {
 				cleanup()
 				cleanup = null
 			}
-			if (window.speechSynthesis?.speaking) {
-				window.speechSynthesis.cancel()
-			}
-		} catch {
-			// console.log('Error during navigation cleanup:', error)
-		}
-		isReading = false
-		currentUtterance = null
-		if (speechTimeout) {
-			clearTimeout(speechTimeout)
-			speechTimeout = null
+		} catch (error) {
+			console.log('Error during navigation cleanup:', error)
 		}
 	})
 
 	// Initialize on Astro page load
 	document.addEventListener('astro:page-load', () => {
-		// console.log('Astro page loaded - initializing')
+		console.log('Astro page loaded - initializing')
 		if (cleanup) cleanup()
 		setTimeout(() => {
 			cleanup = initializeBlogFeatures()
@@ -717,12 +250,4 @@ const readingTime = Math.max(1, Math.round(wordCount / wordsPerMinute))
 			}
 		}, 50)
 	}
-
-	// Handle page visibility changes (tab switching)
-	document.addEventListener('visibilitychange', () => {
-		if (document.hidden && window.speechSynthesis?.speaking) {
-			// console.log('Page hidden - pausing speech')
-			window.speechSynthesis.pause()
-		}
-	})
 </script>

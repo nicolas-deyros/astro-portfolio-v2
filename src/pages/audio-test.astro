@@ -1,0 +1,193 @@
+---
+// Test page for the Enhanced Audio Player
+import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
+import Section from '@components/Section.astro'
+import Layout from '@layouts/index.astro'
+
+const testText = `
+Welcome to the enhanced audio player demonstration with improved content filtering!
+
+This enhanced audio player now intelligently filters out videos, images, and other non-readable content. Here's what gets automatically excluded:
+
+**Video Content Filtering:**
+The player detects and skips YouTube videos, Vimeo embeds, and other video content that shouldn't be read aloud.
+
+**Image Handling:**
+Images are filtered out, but meaningful alt text is preserved when it provides valuable context.
+
+**Code Block Processing:**
+Code blocks are either skipped entirely or replaced with simple descriptions like "Code block with X lines."
+
+**Interactive Elements:**
+Buttons, forms, and other interactive elements are automatically excluded from the reading.
+
+**Smart Link Processing:**
+Links are converted to just their text content, removing URLs that would be distracting when read aloud.
+
+**Markdown Cleanup:**
+All markdown formatting is properly cleaned while preserving the actual content structure and readability.
+
+This results in a much cleaner, more natural listening experience that focuses on the actual content rather than technical markup or media descriptions.
+
+Try the enhanced player below to experience the improved content filtering in action!
+`
+---
+
+<Layout
+	title="Enhanced Audio Player Test"
+	description="Testing the new Web Audio API + Web Speech API implementation">
+	<Section>
+		<div class="container mx-auto max-w-4xl px-4 py-8">
+			<header class="mb-8 text-center">
+				<h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
+					🎧 Enhanced Audio Player Test
+				</h1>
+				<p class="text-lg text-gray-600 dark:text-gray-300">
+					Testing the new Web Audio API + Web Speech API implementation
+				</p>
+			</header>
+
+			<div
+				class="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
+				<h2 class="mb-4 text-xl font-semibold text-blue-900 dark:text-blue-100">
+					✨ New Features
+				</h2>
+				<div class="grid gap-4 md:grid-cols-2">
+					<div>
+						<h3 class="font-medium text-blue-800 dark:text-blue-200">
+							🎛️ Advanced Controls
+						</h3>
+						<ul class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<li>• Play, pause, stop, seek</li>
+							<li>• Volume control (0-100%)</li>
+							<li>• Speed control (0.5x-2x)</li>
+							<li>• Progress tracking</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="font-medium text-blue-800 dark:text-blue-200">
+							🎵 Audio Visualization
+						</h3>
+						<ul class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<li>• Real-time frequency analysis</li>
+							<li>• Animated waveform display</li>
+							<li>• Web Audio API integration</li>
+							<li>• Visual feedback</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="font-medium text-blue-800 dark:text-blue-200">
+							🔧 Enhanced Processing
+						</h3>
+						<ul class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<li>• Intelligent text chunking</li>
+							<li>• Smart voice selection</li>
+							<li>• Error handling & recovery</li>
+							<li>• Media pause integration</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="font-medium text-blue-800 dark:text-blue-200">
+							🔧 Enhanced Processing
+						</h3>
+						<ul class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<li>• Intelligent text chunking</li>
+							<li>• Smart voice selection</li>
+							<li>• Video/image content filtering</li>
+							<li>• Code block handling</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="font-medium text-blue-800 dark:text-blue-200">
+							🌐 Browser Support
+						</h3>
+						<ul class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<li>• Progressive enhancement</li>
+							<li>• Graceful fallback</li>
+							<li>• Cross-browser compatibility</li>
+							<li>• Mobile-friendly design</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Enhanced Audio Player Component -->
+			<div class="mb-8">
+				<EnhancedAudioPlayer
+					text={testText}
+					enableVisualization={true}
+					client="load"
+					class="w-full"
+				/>
+			</div>
+
+			<div
+				class="rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/20">
+				<h2
+					class="mb-4 text-xl font-semibold text-green-900 dark:text-green-100">
+					🧪 How to Test
+				</h2>
+				<div class="space-y-3 text-green-800 dark:text-green-200">
+					<p>
+						<strong>1. Content Filtering:</strong> The player now intelligently filters
+						out videos, images, and code blocks
+					</p>
+					<p>
+						<strong>2. Basic Playback:</strong> Click the play button to start text-to-speech
+					</p>
+					<p>
+						<strong>3. Advanced Controls:</strong> Click the ⋮ button to show volume
+						and speed controls
+					</p>
+					<p>
+						<strong>4. Audio Visualization:</strong> Watch the frequency bars animate
+						during playback (if Web Audio API is supported)
+					</p>
+					<p>
+						<strong>5. Seek Control:</strong> Use the progress bar to jump to different
+						parts of the text
+					</p>
+					<p>
+						<strong>5. Volume & Speed:</strong> Adjust volume (0-100%) and playback
+						speed (0.5x-2x)
+					</p>
+					<p>
+						<strong>6. Browser Testing:</strong> Try in different browsers to see
+						fallback behavior
+					</p>
+				</div>
+			</div>
+
+			<div
+				class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+				<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+					📋 Technical Implementation
+				</h2>
+				<div class="grid gap-6 md:grid-cols-2">
+					<div>
+						<h3 class="font-medium text-gray-800 dark:text-gray-200">
+							Web Audio API Features
+						</h3>
+						<ul class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+							<li>• AudioContext for audio processing</li>
+							<li>• GainNode for volume control</li>
+							<li>• AnalyserNode for frequency data</li>
+							<li>• Real-time audio analysis</li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="font-medium text-gray-800 dark:text-gray-200">
+							Web Speech API Features
+						</h3>
+						<ul class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+							<li>• SpeechSynthesis for text-to-speech</li>
+							<li>• Voice selection and preferences</li>
+							<li>• Text chunking for long content</li>
+							<li>• Comprehensive error handling</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Section>
+</Layout>
