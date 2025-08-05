@@ -53,9 +53,9 @@ export default [
 	},
 	{
 		ignores: [
-			'.astro/', 
-			'dist/', 
-			'node_modules/', 
+			'.astro/',
+			'dist/',
+			'node_modules/',
 			'.gitignore',
 			'.vercel/',
 			'**/*.mjs',

@@ -56,11 +56,13 @@ function updateProgressBar(): void {
 
 function loadVoices(): void {
 	state.voices = window.speechSynthesis.getVoices()
-	const englishVoices = state.voices.filter((voice) => voice.lang.startsWith('en'))
+	const englishVoices = state.voices.filter(voice =>
+		voice.lang.startsWith('en'),
+	)
 	state.selectedVoice =
-		englishVoices.find((voice) => voice.name.includes('Zira')) ||
-		englishVoices.find((voice) => voice.name.includes('Samantha')) ||
-		englishVoices.find((voice) => voice.default) ||
+		englishVoices.find(voice => voice.name.includes('Zira')) ||
+		englishVoices.find(voice => voice.name.includes('Samantha')) ||
+		englishVoices.find(voice => voice.default) ||
 		englishVoices[0] ||
 		null
 }
