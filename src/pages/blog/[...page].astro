@@ -1,11 +1,10 @@
 ---
 export const prerender = true
+import Pagination from '@components/Pagination.astro'
+import Section from '@components/Section.astro'
+import Layout from '@layouts/index.astro'
 import { type GetStaticPathsOptions, type Page } from 'astro'
 import { type CollectionEntry, getCollection } from 'astro:content'
-
-import Layout from '@layouts/index.astro'
-import Section from '@components/Section.astro'
-import Pagination from '@components/Pagination.astro'
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 	const posts = await getCollection('blog')

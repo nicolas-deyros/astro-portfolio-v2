@@ -1,7 +1,8 @@
-import { useState } from 'react'
 import { useFormik } from 'formik'
+import { AnimatePresence,motion } from 'framer-motion'
+import { useState } from 'react'
+
 import { BasicSchema } from '@/schemas'
-import { motion, AnimatePresence } from 'framer-motion'
 
 // Types
 interface FormValues {

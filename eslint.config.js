@@ -1,9 +1,9 @@
 import js from '@eslint/js'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
 import eslintPluginAstro from 'eslint-plugin-astro'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
 export default [
 	{
@@ -15,12 +15,20 @@ export default [
 	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
+	...tseslint.configs.strict,
 	...eslintPluginAstro.configs.recommended,
 
 	{
 		files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
 		languageOptions: {
 			globals: globals.browser,
+		},
+		rules: {
+			// TypeScript-specific optimizations
+			'@typescript-eslint/no-unused-vars': 'error',
+			'@typescript-eslint/explicit-function-return-type': 'warn',
+			'@typescript-eslint/no-explicit-any': 'warn',
+			'prefer-const': 'error',
 		},
 	},
 	{
@@ -44,6 +52,14 @@ export default [
 		...jsxA11y.flatConfigs.recommended,
 	},
 	{
-		ignores: ['.astro/', 'dist/', 'node_modules/', '.gitignore'],
+		ignores: [
+			'.astro/', 
+			'dist/', 
+			'node_modules/', 
+			'.gitignore',
+			'.vercel/',
+			'**/*.mjs',
+			'**/~partytown/**',
+		],
 	},
 ]

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import puppeteer from 'puppeteer'
 import { spawn } from 'child_process'
+import puppeteer from 'puppeteer'
+import { afterAll,beforeAll, describe, expect, it } from 'vitest'
 
 // Helper function to wait for server to be ready
 async function waitForServer(

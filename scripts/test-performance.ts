@@ -9,8 +9,8 @@
  * 3. Providing helpful instructions if something goes wrong
  */
 
-import process from 'process'
 import { spawn } from 'child_process'
+import process from 'process'
 
 async function checkServer(): Promise<boolean> {
 	try {

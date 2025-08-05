@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { checkCommitGrammar } from './grammar-checker.ts'
 import fs from 'fs'
+
+import { checkCommitGrammar } from './grammar-checker.ts'
 
 /**
  * Check commit message grammar - to be used with husky

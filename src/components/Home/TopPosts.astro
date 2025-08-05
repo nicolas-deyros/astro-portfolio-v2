@@ -1,8 +1,9 @@
 ---
 export const prerender = true
 import { getCollection } from 'astro:content'
-import Section from '@/components/Section.astro'
+
 import Link from '@/components/Link/Link.astro'
+import Section from '@/components/Section.astro'
 
 const posts = await getCollection('blog')
 const sortedPosts = posts.sort(

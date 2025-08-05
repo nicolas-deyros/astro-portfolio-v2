@@ -1,18 +1,13 @@
 // @ts-check
-import { defineConfig } from 'astro/config'
-
-import tailwindcss from '@tailwindcss/vite'
+import db from '@astrojs/db'
 import mdx from '@astrojs/mdx'
 import partytown from '@astrojs/partytown'
-import sitemap from '@astrojs/sitemap'
-
-import icon from 'astro-icon'
-
-import db from '@astrojs/db'
-
 import react from '@astrojs/react'
-
+import sitemap from '@astrojs/sitemap'
 import vercel from '@astrojs/vercel'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'astro/config'
+import icon from 'astro-icon'
 
 // https://astro.build/config
 export default defineConfig({

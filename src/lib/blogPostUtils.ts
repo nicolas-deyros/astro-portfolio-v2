@@ -1,10 +1,20 @@
-let voices = []
-let selectedVoice = null
-let utterance = null
-let isPlaying = false
-let isPaused = false
+interface BlogPostState {
+	voices: SpeechSynthesisVoice[]
+	selectedVoice: SpeechSynthesisVoice | null
+	utterance: SpeechSynthesisUtterance | null
+	isPlaying: boolean
+	isPaused: boolean
+}
 
-function updateProgressBar() {
+const state: BlogPostState = {
+	voices: [],
+	selectedVoice: null,
+	utterance: null,
+	isPlaying: false,
+	isPaused: false,
+}
+
+function updateProgressBar(): void {
 	const blogContent = document.getElementById('blog-content')
 	const progressBar = document.getElementById('progress-bar')
 	const progressPercent = document.getElementById('progress-percent')
@@ -30,7 +40,7 @@ function updateProgressBar() {
 		percent = 100
 	}
 
-	progressBar.style.width = percent + '%'
+	progressBar.style.width = `${percent}%`
 	progressPercent.textContent = `${Math.round(percent)}%`
 
 	// Update position based on screen size
@@ -44,24 +54,25 @@ function updateProgressBar() {
 	}
 }
 
-function loadVoices() {
-	voices = window.speechSynthesis.getVoices()
-	const englishVoices = voices.filter(voice => voice.lang.startsWith('en'))
-	selectedVoice =
-		englishVoices.find(voice => voice.name.includes('Zira')) ||
-		englishVoices.find(voice => voice.name.includes('Samantha')) ||
-		englishVoices.find(voice => voice.default) ||
-		englishVoices[0]
+function loadVoices(): void {
+	state.voices = window.speechSynthesis.getVoices()
+	const englishVoices = state.voices.filter((voice) => voice.lang.startsWith('en'))
+	state.selectedVoice =
+		englishVoices.find((voice) => voice.name.includes('Zira')) ||
+		englishVoices.find((voice) => voice.name.includes('Samantha')) ||
+		englishVoices.find((voice) => voice.default) ||
+		englishVoices[0] ||
+		null
 }
 
-function updateUI() {
+function updateUI(): void {
 	const iconSpan = document.getElementById('read-aloud-icon')
 	const labelSpan = document.getElementById('read-aloud-label')
 	const stopBtn = document.getElementById('stop-aloud-btn')
 
-	if (isPlaying) {
-		if (iconSpan) iconSpan.textContent = isPaused ? '▶️' : '⏸️'
-		if (labelSpan) labelSpan.textContent = isPaused ? 'Resume' : 'Pause'
+	if (state.isPlaying) {
+		if (iconSpan) iconSpan.textContent = state.isPaused ? '▶️' : '⏸️'
+		if (labelSpan) labelSpan.textContent = state.isPaused ? 'Resume' : 'Pause'
 		if (stopBtn) stopBtn.style.display = ''
 	} else {
 		if (iconSpan) iconSpan.textContent = '▶️'
@@ -70,94 +81,94 @@ function updateUI() {
 	}
 }
 
-function initializeReadAloud() {
+function initializeReadAloud(): void {
 	const readBtn = document.getElementById('read-aloud-btn')
 	const stopBtn = document.getElementById('stop-aloud-btn')
 	const content = document.getElementById('blog-content')
 
 	if (!readBtn || !stopBtn || !content) return
 
-	if (voices.length === 0) {
+	if (state.voices.length === 0) {
 		window.speechSynthesis.onvoiceschanged = loadVoices
 	} else {
 		loadVoices()
 	}
 
-	readBtn.onclick = () => {
-		if (!isPlaying) {
+	readBtn.onclick = (): void => {
+		if (!state.isPlaying) {
 			window.speechSynthesis.cancel()
 			const text = content.innerText
-			utterance = new window.SpeechSynthesisUtterance(text)
+			state.utterance = new window.SpeechSynthesisUtterance(text)
 
-			if (selectedVoice) {
-				utterance.voice = selectedVoice
+			if (state.selectedVoice) {
+				state.utterance.voice = state.selectedVoice
 			}
-			utterance.lang = 'en-US'
-			utterance.rate = 0.9
-			utterance.pitch = 1
-			utterance.volume = 0.8
+			state.utterance.lang = 'en-US'
+			state.utterance.rate = 0.9
+			state.utterance.pitch = 1
+			state.utterance.volume = 0.8
 
-			utterance.onend = () => {
-				isPlaying = false
-				isPaused = false
+			state.utterance.onend = (): void => {
+				state.isPlaying = false
+				state.isPaused = false
 				updateUI()
 			}
-			utterance.onerror = () => {
-				isPlaying = false
-				isPaused = false
+			state.utterance.onerror = (): void => {
+				state.isPlaying = false
+				state.isPaused = false
 				updateUI()
 			}
-			utterance.onpause = () => {
-				isPaused = true
+			state.utterance.onpause = (): void => {
+				state.isPaused = true
 				updateUI()
 			}
-			utterance.onresume = () => {
-				isPaused = false
+			state.utterance.onresume = (): void => {
+				state.isPaused = false
 				updateUI()
 			}
 
-			window.speechSynthesis.speak(utterance)
-			isPlaying = true
-			isPaused = false
+			window.speechSynthesis.speak(state.utterance)
+			state.isPlaying = true
+			state.isPaused = false
 			updateUI()
 		} else if (
 			window.speechSynthesis.speaking &&
 			!window.speechSynthesis.paused
 		) {
 			window.speechSynthesis.pause()
-			isPaused = true
+			state.isPaused = true
 			updateUI()
 		} else if (window.speechSynthesis.paused) {
 			window.speechSynthesis.resume()
-			isPaused = false
+			state.isPaused = false
 			updateUI()
 		}
 	}
 
-	stopBtn.onclick = () => {
+	stopBtn.onclick = (): void => {
 		window.speechSynthesis.cancel()
-		isPlaying = false
-		isPaused = false
+		state.isPlaying = false
+		state.isPaused = false
 		updateUI()
 	}
 }
 
-function cleanup() {
+function cleanup(): void {
 	window.removeEventListener('scroll', updateProgressBar)
 	window.removeEventListener('resize', updateProgressBar)
 	window.speechSynthesis.cancel() // Stop speech when leaving the page
-	isPlaying = false
-	isPaused = false
-	utterance = null
+	state.isPlaying = false
+	state.isPaused = false
+	state.utterance = null
 }
 
-export function initBlogPostFeatures() {
+export function initBlogPostFeatures(): void {
 	updateProgressBar() // Initial call
 	window.addEventListener('scroll', updateProgressBar)
 	window.addEventListener('resize', updateProgressBar)
 	initializeReadAloud()
 }
 
-export function cleanupBlogPostFeatures() {
+export function cleanupBlogPostFeatures(): void {
 	cleanup()
 }
