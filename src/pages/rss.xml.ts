@@ -26,7 +26,7 @@ export const GET: APIRoute = async context => {
 			title: 'Nicolás Deyros Blog',
 			description:
 				'Programmer, Designer, and Creator - Insights on web development, AI, and technology',
-			site: context.site || 'https://nicolas-deyros.dev',
+			site: context.site || 'https://nicolasdeyros.dev',
 			items: sortedPosts.map(post => {
 				// Enhanced content processing
 				const rawHtml = parser.render(post.body)
