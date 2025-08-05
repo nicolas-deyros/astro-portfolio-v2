@@ -1,0 +1,1008 @@
+---
+import Layout from '@layouts/index.astro'
+
+interface LinkData {
+	id: number
+	title: string
+	url: string
+	tags: string
+	date: string
+}
+
+// Server-side data fetching - secure and pre-rendered
+let links: LinkData[] = []
+try {
+	const response = await fetch(`${Astro.url.origin}/api/links.json`)
+	if (response.ok) {
+		links = await response.json()
+	} else {
+		console.error(
+			'Failed to fetch links:',
+			response.status,
+			response.statusText,
+		)
+	}
+} catch (error) {
+	console.error('Error fetching links:', error)
+	// Fallback to empty array if API is not available
+	links = []
+}
+---
+
+<Layout title="Admin | Link Management">
+	<div class="min-h-screen bg-white dark:bg-gray-900">
+		<!-- Login Section -->
+		<div
+			id="login-section"
+			class="flex min-h-screen items-center justify-center">
+			<div
+				class="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+				<div>
+					<h1
+						class="text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+						Admin Login
+					</h1>
+					<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+						Enter your secret key to access the admin panel
+					</p>
+				</div>
+				<form id="login-form" class="mt-8 space-y-6">
+					<div>
+						<label for="secret-key" class="sr-only">Secret Key</label>
+						<input
+							type="password"
+							id="secret-key"
+							name="secret-key"
+							required
+							class="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+							placeholder="Secret Key"
+						/>
+					</div>
+					<div>
+						<button
+							type="submit"
+							class="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
+							Sign in
+						</button>
+					</div>
+					<div
+						id="login-error"
+						class="hidden rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+						<div class="text-sm text-red-700 dark:text-red-400">
+							Invalid secret key. Please try again.
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Admin Content Section -->
+		<div id="admin-content" class="hidden">
+			<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+				<!-- Header -->
+				<div class="mb-8">
+					<h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+						Link Management
+					</h1>
+					<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+						Manage your social links. Use the header menu to logout.
+					</p>
+				</div>
+
+				<!-- Add New Link Form -->
+				<div
+					class="mb-12 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+					<h2
+						class="mb-6 text-xl font-semibold text-slate-900 dark:text-slate-100">
+						Add New Link
+					</h2>
+					<form id="add-link-form" class="space-y-6">
+						<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+							<div class="sm:col-span-2">
+								<label
+									for="title"
+									class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+									Title
+								</label>
+								<input
+									type="text"
+									id="title"
+									name="title"
+									required
+									class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+									placeholder="Enter link title"
+								/>
+							</div>
+							<div class="sm:col-span-2">
+								<label
+									for="url"
+									class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+									URL
+								</label>
+								<input
+									type="url"
+									id="url"
+									name="url"
+									required
+									class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+									placeholder="https://example.com"
+								/>
+							</div>
+							<div>
+								<label
+									for="tags"
+									class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+									Tags
+								</label>
+								<input
+									type="text"
+									id="tags"
+									name="tags"
+									required
+									class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+									placeholder="tech, ai, development"
+								/>
+								<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+									Separate multiple tags with commas
+								</p>
+							</div>
+							<div>
+								<label
+									for="date"
+									class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+									Publication Date
+								</label>
+								<input
+									type="date"
+									id="date"
+									name="date"
+									required
+									class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+								/>
+								<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+									Future dates will be marked as "Scheduled"
+								</p>
+							</div>
+						</div>
+						<div class="flex justify-end">
+							<button
+								type="submit"
+								class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-slate-800">
+								<svg
+									class="mr-2 h-4 w-4"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+									</path>
+								</svg>
+								Add Link
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- Links Table -->
+				<div
+					class="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+					<div
+						class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+						<div
+							class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+							<div>
+								<h2
+									class="text-xl font-semibold text-slate-900 dark:text-slate-100">
+									Links Management
+								</h2>
+								<p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+									Click column headers to sort. Future dates are marked as
+									"Scheduled".
+								</p>
+							</div>
+
+							<!-- Mobile/Tablet Sort Controls -->
+							<div class="mt-4 sm:mt-0 xl:hidden">
+								<label
+									for="mobile-sort"
+									class="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300">
+									Sort by:
+								</label>
+								<select
+									id="mobile-sort"
+									class="rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100">
+									<option value="date-desc" selected>Date (Newest)</option>
+									<option value="date-asc">Date (Oldest)</option>
+									<option value="title-asc">Title (A-Z)</option>
+									<option value="title-desc">Title (Z-A)</option>
+									<option value="tags-asc">Tags (A-Z)</option>
+									<option value="tags-desc">Tags (Z-A)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Desktop/Large Tablet Table -->
+					<div class="hidden overflow-x-auto xl:block">
+						<table
+							class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+							<thead class="bg-slate-50 dark:bg-slate-700">
+								<tr>
+									<th
+										scope="col"
+										class="sortable w-1/4 cursor-pointer px-4 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+										data-sort="title">
+										Title
+										<span class="sort-indicator ml-1">↕️</span>
+									</th>
+									<th
+										scope="col"
+										class="w-1/3 px-4 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-300">
+										URL
+									</th>
+									<th
+										scope="col"
+										class="sortable w-1/6 cursor-pointer px-4 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+										data-sort="tags">
+										Tags
+										<span class="sort-indicator ml-1">↕️</span>
+									</th>
+									<th
+										scope="col"
+										class="sortable w-24 cursor-pointer px-4 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+										data-sort="date">
+										Date
+										<span class="sort-indicator ml-1">↓</span>
+									</th>
+									<th
+										scope="col"
+										class="w-20 px-4 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-300">
+										Status
+									</th>
+									<th scope="col" class="relative w-24 px-4 py-3">
+										<span class="sr-only">Actions</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody
+								id="links-table-body"
+								class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-800">
+								{
+									links.map((link: LinkData) => {
+										const linkDate = new Date(link.date)
+										const today = new Date()
+										const isScheduled = linkDate > today
+
+										return (
+											<tr
+												data-id={link.id}
+												data-date={link.date}
+												data-title={link.title}
+												data-tags={link.tags}
+												class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+												<td class="px-4 py-4 text-sm font-medium text-slate-900 dark:text-slate-100">
+													<div
+														class="leading-tight break-words"
+														title={link.title}>
+														{link.title}
+													</div>
+												</td>
+												<td class="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
+													<a
+														href={link.url}
+														target="_blank"
+														rel="noopener noreferrer"
+														class="break-all text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+														<div class="leading-tight" title={link.url}>
+															{link.url}
+														</div>
+													</a>
+												</td>
+												<td class="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
+													<div
+														class="leading-tight break-words"
+														title={link.tags}>
+														{link.tags}
+													</div>
+												</td>
+												<td class="px-4 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
+													{link.date}
+												</td>
+												<td class="px-4 py-4 text-sm">
+													{isScheduled ? (
+														<span class="inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs leading-4 font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+															Scheduled
+														</span>
+													) : (
+														<span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs leading-4 font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+															Live
+														</span>
+													)}
+												</td>
+												<td class="px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
+													<div class="flex flex-col space-y-1">
+														<button
+															class="edit-btn text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+															data-id={link.id}>
+															Edit
+														</button>
+														<button
+															class="delete-btn text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+															data-id={link.id}>
+															Delete
+														</button>
+													</div>
+												</td>
+											</tr>
+										)
+									})
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Tablet Table (Compact) -->
+					<div class="hidden overflow-x-auto lg:block xl:hidden">
+						<table
+							class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+							<thead class="bg-slate-50 dark:bg-slate-700">
+								<tr>
+									<th
+										scope="col"
+										class="sortable cursor-pointer px-3 py-2 text-left text-xs font-medium tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+										data-sort="title">
+										Title/URL
+										<span class="sort-indicator ml-1">↕️</span>
+									</th>
+									<th
+										scope="col"
+										class="sortable cursor-pointer px-3 py-2 text-left text-xs font-medium tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+										data-sort="date">
+										Date
+										<span class="sort-indicator ml-1">↓</span>
+									</th>
+									<th
+										scope="col"
+										class="px-3 py-2 text-left text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-300">
+										Status
+									</th>
+									<th scope="col" class="relative px-3 py-2">
+										<span class="sr-only">Actions</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody
+								class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-800">
+								{
+									links.map((link: LinkData) => {
+										const linkDate = new Date(link.date)
+										const today = new Date()
+										const isScheduled = linkDate > today
+
+										return (
+											<tr
+												data-id={link.id}
+												data-date={link.date}
+												data-title={link.title}
+												data-tags={link.tags}
+												class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+												<td class="px-3 py-3 text-sm">
+													<div class="space-y-1">
+														<div class="font-medium break-words text-slate-900 dark:text-slate-100">
+															{link.title}
+														</div>
+														<div class="text-xs text-slate-500 dark:text-slate-400">
+															<a
+																href={link.url}
+																target="_blank"
+																rel="noopener noreferrer"
+																class="break-all text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+																{link.url}
+															</a>
+														</div>
+														<div class="text-xs text-slate-500 dark:text-slate-400">
+															{link.tags}
+														</div>
+													</div>
+												</td>
+												<td class="px-3 py-3 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
+													{link.date}
+												</td>
+												<td class="px-3 py-3 text-sm">
+													{isScheduled ? (
+														<span class="inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs leading-4 font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+															Scheduled
+														</span>
+													) : (
+														<span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs leading-4 font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+															Live
+														</span>
+													)}
+												</td>
+												<td class="px-3 py-3 text-right text-sm font-medium whitespace-nowrap">
+													<div class="flex flex-col space-y-1">
+														<button
+															class="edit-btn text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+															data-id={link.id}>
+															Edit
+														</button>
+														<button
+															class="delete-btn text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+															data-id={link.id}>
+															Delete
+														</button>
+													</div>
+												</td>
+											</tr>
+										)
+									})
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Mobile Cards -->
+					<div
+						class="divide-y divide-slate-200 lg:hidden dark:divide-slate-700"
+						id="links-mobile-cards">
+						{
+							links.map((link: LinkData) => {
+								const linkDate = new Date(link.date)
+								const today = new Date()
+								const isScheduled = linkDate > today
+
+								return (
+									<div
+										class="space-y-3 p-4"
+										data-id={link.id}
+										data-date={link.date}
+										data-title={link.title}
+										data-tags={link.tags}>
+										<div class="flex items-start justify-between">
+											<h3 class="mr-3 flex-1 text-sm font-medium text-slate-900 dark:text-slate-100">
+												{link.title}
+											</h3>
+											{isScheduled ? (
+												<span class="inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+													Scheduled
+												</span>
+											) : (
+												<span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
+													Live
+												</span>
+											)}
+										</div>
+										<div class="space-y-2">
+											<div>
+												<span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+													URL:
+												</span>
+												<a
+													href={link.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="ml-2 text-sm break-all text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+													{link.url}
+												</a>
+											</div>
+											<div>
+												<span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+													Tags:
+												</span>
+												<span class="ml-2 text-sm text-slate-700 dark:text-slate-300">
+													{link.tags}
+												</span>
+											</div>
+											<div>
+												<span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+													Date:
+												</span>
+												<span class="ml-2 text-sm text-slate-700 dark:text-slate-300">
+													{link.date}
+												</span>
+											</div>
+										</div>
+										<div class="flex space-x-3 pt-2">
+											<button
+												class="edit-btn text-sm font-medium text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+												data-id={link.id}>
+												Edit
+											</button>
+											<button
+												class="delete-btn text-sm font-medium text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+												data-id={link.id}>
+												Delete
+											</button>
+										</div>
+									</div>
+								)
+							})
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Client-side functionality -->
+	<script>
+		const currentSort = { field: 'date', direction: 'desc' }
+		let inactivityTimer: number | null = null
+		const INACTIVITY_TIMEOUT = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+		document.addEventListener('astro:page-load', () => {
+			const loginSection = document.getElementById('login-section')
+			const adminContent = document.getElementById('admin-content')
+			const loginForm = document.getElementById('login-form')
+			const secretKeyInput = document.getElementById(
+				'secret-key',
+			) as HTMLInputElement
+			const loginError = document.getElementById('login-error')
+
+			function showAdminContent() {
+				if (loginSection && adminContent) {
+					loginSection.classList.add('hidden')
+					adminContent.classList.remove('hidden')
+					// Start inactivity timer when admin content is shown
+					startInactivityTimer()
+					// Apply default sort (newest first)
+					sortTable('date', 'desc')
+					updateSortIndicators()
+					updateMobileSortSelect()
+				}
+			}
+
+			function showLoginSection() {
+				if (loginSection && adminContent) {
+					loginSection.classList.remove('hidden')
+					adminContent.classList.add('hidden')
+					localStorage.removeItem('admin_authenticated')
+					localStorage.removeItem('auth_token')
+					// Clear inactivity timer when logged out
+					clearInactivityTimer()
+				}
+			}
+
+			// Auto-logout functionality
+			function startInactivityTimer() {
+				clearInactivityTimer() // Clear any existing timer
+
+				inactivityTimer = window.setTimeout(() => {
+					showSessionExpiredModal()
+				}, INACTIVITY_TIMEOUT)
+			}
+
+			function showSessionExpiredModal() {
+				const modalHtml = `
+					<div id="session-expired-modal" class="fixed inset-0 z-50 overflow-y-auto">
+						<div class="flex min-h-screen items-center justify-center p-4">
+							<div class="fixed inset-0 bg-black bg-opacity-50"></div>
+							<div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800">
+								<div class="flex items-center mb-4">
+									<div class="flex-shrink-0">
+										<svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.88-.833-2.65 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+										</svg>
+									</div>
+									<div class="ml-3">
+										<h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+											Session Expired
+										</h3>
+									</div>
+								</div>
+								<div class="mb-6">
+									<p class="text-sm text-slate-600 dark:text-slate-400">
+										Your session has expired due to inactivity. You will be logged out for security reasons.
+									</p>
+								</div>
+								<div class="flex justify-end">
+									<button
+										onclick="closeSessionExpiredModal()"
+										class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-slate-800">
+										OK
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				`
+
+				// Add modal to DOM
+				document.body.insertAdjacentHTML('beforeend', modalHtml)
+			}
+
+			// Make closeSessionExpiredModal globally available
+			function closeSessionExpiredModal() {
+				const modal = document.getElementById('session-expired-modal')
+				modal?.remove()
+				showLoginSection()
+			}
+
+			function clearInactivityTimer() {
+				if (inactivityTimer) {
+					clearTimeout(inactivityTimer)
+					inactivityTimer = null
+				}
+			}
+
+			function resetInactivityTimer() {
+				if (localStorage.getItem('admin_authenticated') === 'true') {
+					startInactivityTimer()
+				}
+			}
+
+			// Listen for user activity to reset the timer
+			const activityEvents = [
+				'mousedown',
+				'mousemove',
+				'keypress',
+				'scroll',
+				'touchstart',
+				'click',
+			]
+			activityEvents.forEach(event => {
+				document.addEventListener(event, resetInactivityTimer, true)
+			})
+
+			// Check authentication status
+			if (localStorage.getItem('admin_authenticated') === 'true') {
+				showAdminContent()
+			}
+
+			// Handle login
+			loginForm?.addEventListener('submit', async e => {
+				e.preventDefault()
+				loginError?.classList.add('hidden')
+
+				try {
+					const response = await fetch('/api/auth.json', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ secretKey: secretKeyInput?.value }),
+					})
+
+					if (response.ok) {
+						const { token } = await response.json()
+						localStorage.setItem('admin_authenticated', 'true')
+						localStorage.setItem('auth_token', token)
+						showAdminContent()
+					} else {
+						loginError?.classList.remove('hidden')
+						secretKeyInput.value = ''
+					}
+				} catch (error) {
+					console.error('Login error:', error)
+					loginError?.classList.remove('hidden')
+				}
+			})
+
+			// Form submission
+			const addLinkForm = document.getElementById('add-link-form')
+			addLinkForm?.addEventListener('submit', async e => {
+				e.preventDefault()
+				const formData = new FormData(addLinkForm as HTMLFormElement)
+				const data = Object.fromEntries(formData.entries())
+
+				try {
+					const response = await fetch('/api/links.json', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+						},
+						body: JSON.stringify(data),
+					})
+
+					if (response.ok) {
+						location.reload()
+					} else {
+						const { message } = await response.json()
+						alert(`Error: ${message}`)
+					}
+				} catch (error) {
+					console.error('Error adding link:', error)
+					alert('Error adding link')
+				}
+			})
+
+			// Table sorting
+			const sortableHeaders = document.querySelectorAll('.sortable')
+			sortableHeaders.forEach(header => {
+				header.addEventListener('click', () => {
+					const sortField = header.getAttribute('data-sort') as string
+
+					if (currentSort.field === sortField) {
+						currentSort.direction =
+							currentSort.direction === 'asc' ? 'desc' : 'asc'
+					} else {
+						currentSort.field = sortField
+						currentSort.direction = 'asc'
+					}
+
+					sortTable(sortField, currentSort.direction)
+					updateSortIndicators()
+					updateMobileSortSelect()
+				})
+			})
+
+			// Mobile sort dropdown
+			const mobileSortSelect = document.getElementById(
+				'mobile-sort',
+			) as HTMLSelectElement
+			mobileSortSelect?.addEventListener('change', () => {
+				const [field, direction] = mobileSortSelect.value.split('-')
+				currentSort.field = field
+				currentSort.direction = direction
+				sortTable(field, direction)
+				updateSortIndicators()
+			})
+
+			function updateMobileSortSelect() {
+				const mobileSortSelect = document.getElementById(
+					'mobile-sort',
+				) as HTMLSelectElement
+				if (mobileSortSelect && currentSort.field) {
+					mobileSortSelect.value = `${currentSort.field}-${currentSort.direction}`
+				}
+			}
+
+			// Delete and Edit links
+			const linksTableBody = document.getElementById('links-table-body')
+			const linksMobileCards = document.getElementById('links-mobile-cards')
+
+			// Handle clicks on table body
+			linksTableBody?.addEventListener('click', async e => {
+				const target = e.target as HTMLElement
+				await handleLinkActions(target)
+			})
+
+			// Handle clicks on mobile cards
+			linksMobileCards?.addEventListener('click', async e => {
+				const target = e.target as HTMLElement
+				await handleLinkActions(target)
+			})
+
+			async function handleLinkActions(target: HTMLElement) {
+				const id = target.getAttribute('data-id')
+
+				if (target.classList.contains('delete-btn') && id) {
+					if (confirm('Are you sure you want to delete this link?')) {
+						try {
+							const response = await fetch('/api/links.json', {
+								method: 'DELETE',
+								headers: {
+									'Content-Type': 'application/json',
+									Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+								},
+								body: JSON.stringify({ id: parseInt(id) }),
+							})
+
+							if (response.ok) {
+								location.reload()
+							} else {
+								const { message } = await response.json()
+								alert(`Error: ${message}`)
+							}
+						} catch (error) {
+							console.error('Error deleting link:', error)
+							alert('Error deleting link')
+						}
+					}
+				} else if (target.classList.contains('edit-btn') && id) {
+					openEditModal(id)
+				}
+			}
+
+			function openEditModal(linkId: string) {
+				// Find the link data from the DOM
+				const linkElement = document.querySelector(`[data-id="${linkId}"]`)
+				if (!linkElement) return
+
+				const title = linkElement.getAttribute('data-title') || ''
+				const tags = linkElement.getAttribute('data-tags') || ''
+				const date = linkElement.getAttribute('data-date') || ''
+
+				// Get URL from the link element
+				const urlElement = linkElement.querySelector(
+					'a[href]',
+				) as HTMLAnchorElement
+				const url = urlElement?.href || ''
+
+				// Create modal HTML
+				const modalHtml = `
+					<div id="edit-modal" class="fixed inset-0 z-50 overflow-y-auto">
+						<div class="flex min-h-screen items-center justify-center p-4">
+							<div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeEditModal()"></div>
+							<div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800">
+								<h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Edit Link</h3>
+								<form id="edit-link-form" class="space-y-4">
+									<div>
+										<label for="edit-title" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+											Title
+										</label>
+										<input
+											type="text"
+											id="edit-title"
+											name="title"
+											value="${title}"
+											required
+											class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+										/>
+									</div>
+									<div>
+										<label for="edit-url" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+											URL
+										</label>
+										<input
+											type="url"
+											id="edit-url"
+											name="url"
+											value="${url}"
+											required
+											class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+										/>
+									</div>
+									<div>
+										<label for="edit-tags" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+											Tags
+										</label>
+										<input
+											type="text"
+											id="edit-tags"
+											name="tags"
+											value="${tags}"
+											required
+											class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+										/>
+									</div>
+									<div>
+										<label for="edit-date" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+											Date
+										</label>
+										<input
+											type="date"
+											id="edit-date"
+											name="date"
+											value="${date}"
+											required
+											class="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+										/>
+									</div>
+									<div class="flex justify-end space-x-3 pt-4">
+										<button
+											type="button"
+											onclick="closeEditModal()"
+											class="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
+											Cancel
+										</button>
+										<button
+											type="submit"
+											class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-slate-800">
+											Update Link
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				`
+
+				// Add modal to DOM
+				document.body.insertAdjacentHTML('beforeend', modalHtml)
+
+				// Add form submit handler
+				const editForm = document.getElementById('edit-link-form')
+				editForm?.addEventListener('submit', async e => {
+					e.preventDefault()
+					const formData = new FormData(editForm as HTMLFormElement)
+					const data = Object.fromEntries(formData.entries())
+
+					try {
+						const response = await fetch('/api/links.json', {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json',
+								Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+							},
+							body: JSON.stringify({ id: parseInt(linkId), ...data }),
+						})
+
+						if (response.ok) {
+							location.reload()
+						} else {
+							const { message } = await response.json()
+							alert(`Error: ${message}`)
+						}
+					} catch (error) {
+						console.error('Error updating link:', error)
+						alert('Error updating link')
+					}
+				})
+			}
+
+			// Make closeEditModal globally available
+			function closeEditModal() {
+				const modal = document.getElementById('edit-modal')
+				modal?.remove()
+			}
+
+			// Attach to window object for onclick handlers (suppress TypeScript warning)
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			;(window as any).closeEditModal = closeEditModal
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			;(window as any).closeSessionExpiredModal = closeSessionExpiredModal
+		})
+
+		function sortTable(field: string, direction: string) {
+			const tbody = document.getElementById('links-table-body')
+			const mobileCards = document.getElementById('links-mobile-cards')
+
+			if (tbody) {
+				const rows = Array.from(tbody.querySelectorAll('tr'))
+				const sortedRows = sortElements(rows, field, direction)
+				sortedRows.forEach(row => tbody.appendChild(row))
+			}
+
+			if (mobileCards) {
+				const cards = Array.from(mobileCards.querySelectorAll('[data-id]'))
+				const sortedCards = sortElements(cards, field, direction)
+				sortedCards.forEach(card => mobileCards.appendChild(card))
+			}
+		}
+
+		function sortElements(
+			elements: Element[],
+			field: string,
+			direction: string,
+		) {
+			return elements.sort((a, b) => {
+				let aValue = ''
+				let bValue = ''
+
+				switch (field) {
+					case 'title':
+						aValue = a.getAttribute('data-title') || ''
+						bValue = b.getAttribute('data-title') || ''
+						break
+					case 'tags':
+						aValue = a.getAttribute('data-tags') || ''
+						bValue = b.getAttribute('data-tags') || ''
+						break
+					case 'date':
+						aValue = a.getAttribute('data-date') || ''
+						bValue = b.getAttribute('data-date') || ''
+						break
+				}
+
+				if (field === 'date') {
+					const dateA = new Date(aValue)
+					const dateB = new Date(bValue)
+					return direction === 'asc'
+						? dateA.getTime() - dateB.getTime()
+						: dateB.getTime() - dateA.getTime()
+				}
+
+				return direction === 'asc'
+					? aValue.localeCompare(bValue)
+					: bValue.localeCompare(aValue)
+			})
+		}
+
+		function updateSortIndicators() {
+			const indicators = document.querySelectorAll('.sort-indicator')
+			indicators.forEach(indicator => {
+				indicator.textContent = '↕️'
+			})
+
+			const activeHeader = document.querySelector(
+				`[data-sort="${currentSort.field}"] .sort-indicator`,
+			)
+			if (activeHeader) {
+				activeHeader.textContent = currentSort.direction === 'asc' ? '↑' : '↓'
+			}
+		}
+	</script>
+</Layout>

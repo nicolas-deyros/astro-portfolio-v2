@@ -1,4 +1,1 @@
-npx prettier . --write
-npm run lint
-npm run lint:text:fix
-npm run test
+npx lint-staged

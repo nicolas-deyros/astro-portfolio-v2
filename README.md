@@ -1,11 +1,4 @@
-# 🚀 Nicolás Deyros### 📝 **Blog System**
-
-- **📝 MDX Support**: Rich content with embedded components and interactive elements
-- **🎵 Text-to-Speech**: Multi-chunk read-aloud functionality with voice synthesis and controls
-- **📊 Reading Progress**: Visual progress bar tracking article reading progress
-- **🏷️ Tagging System**: Organized content with categories and tags
-- **🔗 Social Sharing**: Easy sharing functionality for blog posts
-- **⬆️ Back-to-Top Button**: Smooth scroll-to-top functionality with visibility detectionfolio site
+# 🚀 Nicolás Deyros Portfolio
 
 A modern, high-performance portfolio site built with Astro, featuring comprehensive testing, SEO optimization, and advanced blog functionality. Showcasing work as a Developer, Project Manager, and AI Enthusiast.
 
@@ -42,14 +35,18 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 
 ### 🧪 **Testing & Quality**
 
-- **🔬 Comprehensive Test Suite**: 11 test files covering SEO, accessibility, performance, and functionality
-- **🎯 Core Web Vitals Testing**: Automated performance monitoring with Puppeteer
+- **🧪 Comprehensive Test Suite**: 15+ test files covering SEO, accessibility, performance, admin interface, and functionality
+- **🎯 Core Web Vitals Testing**: Automated performance monitoring with Puppeteer and Windows-compatible process spawning
 - **🔍 SEO Validation**: Meta tags, headings, and content quality checks
 - **♿ Accessibility Testing**: WCAG compliance and keyboard navigation validation
 - **🔗 Link Validation**: Automated broken link detection across all pages
 - **📝 Content Testing**: MDX frontmatter validation and blog post structure
 - **🔤 Grammar Testing**: Automated text quality and spelling validation
 - **⬆️ UI Component Testing**: Back-to-top button functionality across multiple test suites
+- **🖥️ Admin Interface Testing**: Responsive design testing for desktop, tablet, and mobile layouts with comprehensive form validation
+- **📅 Date Filtering Testing**: Timezone-safe content scheduling and filtering validation with string-based date comparison
+- **🎛️ Responsive Design Testing**: Multi-breakpoint testing (≥1280px desktop, 1024-1279px tablet, <1024px mobile) with automated browser testing
+- **🧪 Windows Development Support**: Cross-platform testing with shell compatibility and proper process management
 
 ## 🛠️ Tech Stack
 
@@ -150,6 +147,8 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 │   └── styles/
 │       └── global.css                    # Global styles
 ├── test/                                 # Test suites
+│   ├── admin-interface.test.ts           # Admin interface responsive design tests
+│   ├── date-filtering.test.ts            # Date filtering and timezone tests
 │   ├── links.test.ts                     # Link validation tests
 │   ├── mdx.test.ts                       # MDX content tests
 │   ├── performance.test.ts               # Performance testing
@@ -208,28 +207,31 @@ A modern, high-performance portfolio site built with Astro, featuring comprehens
 
 ## 📜 Available Scripts
 
-| Command                    | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| `npm run dev`              | Start development server at `localhost:4321` |
-| `npm run build`            | Build production site to `./dist/`           |
-| `npm run preview`          | Preview production build locally             |
-| `npm run lint`             | Run ESLint for code quality                  |
-| `npm run lint:fix`         | Fix ESLint issues automatically              |
-| `npm run lint:text`        | Run textlint for grammar and writing quality |
-| `npm run lint:text:fix`    | Fix textlint issues automatically            |
-| `npm run format`           | Format code with Prettier                    |
-| `npm run type-check`       | Run TypeScript type checking                 |
-| `npm run test`             | Run all test suites                          |
-| `npm run test:fast`        | Run fast test suite with optimized settings  |
-| `npm run test:clean`       | Run performance tests with clean setup       |
-| `npm run test:performance` | Run Core Web Vitals performance tests        |
-| `npm run test:back-to-top` | Run back-to-top button functionality tests   |
-| `npm run test:grammar`     | Run grammar and writing quality tests        |
-| `npm run test:watch`       | Run tests in watch mode                      |
-| `npm run check:grammar`    | Check text quality and grammar               |
-| `npm run check:commit`     | Validate commit message format               |
-| `npm run check:all`        | Run all quality checks (lint, text, tests)   |
-| `npm run astro ...`        | Run Astro CLI commands                       |
+| Command                       | Description                                    |
+| ----------------------------- | ---------------------------------------------- |
+| `npm run dev`                 | Start development server at `localhost:4321`   |
+| `npm run build`               | Build production site to `./dist/`             |
+| `npm run preview`             | Preview production build locally               |
+| `npm run lint`                | Run ESLint for code quality                    |
+| `npm run lint:fix`            | Fix ESLint issues automatically                |
+| `npm run lint:text`           | Run textlint for grammar and writing quality   |
+| `npm run lint:text:fix`       | Fix textlint issues automatically              |
+| `npm run format`              | Format code with Prettier                      |
+| `npm run type-check`          | Run TypeScript type checking                   |
+| `npm run test`                | Run all test suites                            |
+| `npm run test:fast`           | Run fast test suite with optimized settings    |
+| `npm run test:clean`          | Run performance tests with clean setup         |
+| `npm run test:performance`    | Run Core Web Vitals performance tests          |
+| `npm run test:back-to-top`    | Run back-to-top button functionality tests     |
+| `npm run test:grammar`        | Run grammar and writing quality tests          |
+| `npm run test:admin`          | Run admin interface and responsive tests       |
+| `npm run test:date-filtering` | Run date filtering and timezone tests          |
+| `npm run test:ui`             | Run combined UI tests (admin + date filtering) |
+| `npm run test:watch`          | Run tests in watch mode                        |
+| `npm run check:grammar`       | Check text quality and grammar                 |
+| `npm run check:commit`        | Validate commit message format                 |
+| `npm run check:all`           | Run all quality checks (lint, text, tests)     |
+| `npm run astro ...`           | Run Astro CLI commands                         |
 
 ## 🧪 Testing Infrastructure
 
@@ -278,6 +280,25 @@ This project includes extensive testing to ensure quality, performance, and SEO 
 - **Conventional Commits**: Enforces proper commit message format
 - **Text Quality**: Checks for common writing issues and improvements
 - **Integration Testing**: Works with textlint for comprehensive text analysis
+
+#### **🖥️ Admin Interface Testing** (`test/admin-interface.test.ts`)
+
+- **Authentication & Access**: Login form validation and page loading tests
+- **Responsive Design**: Desktop (≥1280px), tablet (1024-1279px), and mobile (<1024px) layouts
+- **Table Functionality**: Sorting, column widths, status badges, and data display
+- **Form Validation**: Add link form, required fields, and input styling
+- **Modal Functionality**: Session expiry modals and edit dialog behavior
+- **Accessibility**: ARIA labels, focus management, and contrast validation
+- **Performance**: Load times, hover effects, and content handling optimization
+
+#### **📅 Date Filtering & Timezone** (`test/date-filtering.test.ts`)
+
+- **API Validation**: Links endpoint testing and date format verification
+- **Timezone Fix Testing**: String-based date comparison to prevent UTC conversion issues
+- **Content Filtering**: Ensures scheduled content doesn't appear prematurely
+- **Edge Cases**: Date parsing consistency and timezone-independent comparisons
+- **Homepage Integration**: Validates TopLinks component filtering behavior
+- **Cross-component Testing**: Ensures consistent date handling across the application
 
 ### **Performance Benchmarks**
 
