@@ -4,6 +4,7 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "astro dev --open",
+		"dev:test": "astro dev --port 4321",
 		"build": "astro build --remote",
 		"preview": "astro preview",
 		"astro": "astro",
@@ -19,6 +20,9 @@
 		"test:performance": "vitest run performance",
 		"test:performance:help": "tsx scripts/test-performance.ts",
 		"test:grammar": "vitest run test/grammar-checker.test.ts",
+		"test:admin": "vitest run test/admin-interface.test.ts",
+		"test:date-filtering": "vitest run test/date-filtering.test.ts",
+		"test:ui": "vitest run test/admin-interface.test.ts test/date-filtering.test.ts",
 		"check:grammar": "npm run lint:text && echo \"✅ Grammar check passed\"",
 		"check:commit": "tsx scripts/test-grammar.ts",
 		"check:all": "npm run lint && npm run lint:text:smart && npm run test",

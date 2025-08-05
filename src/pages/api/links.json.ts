@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro'
-import { db, Links, eq } from 'astro:db'
+import { db, eq, Links } from 'astro:db'
+
+import { verifyAuthToken } from './auth.json'
 
 // GET: Fetch all links
 export const GET: APIRoute = async () => {
@@ -12,8 +14,7 @@ export const GET: APIRoute = async () => {
 
 // POST: Create a new link
 export const POST: APIRoute = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization')
-	if (authHeader !== `Bearer ${import.meta.env.API_SECRET_KEY}`) {
+	if (!verifyAuthToken(request)) {
 		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 			status: 401,
 		})
@@ -37,8 +38,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 // PUT: Update an existing link
 export const PUT: APIRoute = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization')
-	if (authHeader !== `Bearer ${import.meta.env.API_SECRET_KEY}`) {
+	if (!verifyAuthToken(request)) {
 		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 			status: 401,
 		})
@@ -61,8 +61,7 @@ export const PUT: APIRoute = async ({ request }) => {
 
 // DELETE: Delete a link
 export const DELETE: APIRoute = async ({ request }) => {
-	const authHeader = request.headers.get('Authorization')
-	if (authHeader !== `Bearer ${import.meta.env.API_SECRET_KEY}`) {
+	if (!verifyAuthToken(request)) {
 		return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 			status: 401,
 		})

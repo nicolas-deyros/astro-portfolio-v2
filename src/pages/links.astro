@@ -1,22 +1,54 @@
 ---
-import Layout from '@layouts/index.astro'
 import Section from '@components/Section.astro'
+import Layout from '@layouts/index.astro'
 
-const response = await fetch(`${Astro.url.origin}/api/links.json`)
-const linksData = await response.json()
+interface LinkData {
+	id: number
+	title: string
+	url: string
+	tags: string
+	date: string
+}
 
-const sortedLinks = linksData.sort(
-	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+let linksData: LinkData[] = []
+try {
+	const response = await fetch(`${Astro.url.origin}/api/links.json`)
+	if (response.ok) {
+		linksData = await response.json()
+	} else {
+		console.error(
+			'Failed to fetch links:',
+			response.status,
+			response.statusText,
+		)
+	}
+} catch (error) {
+	console.error('Error fetching links:', error)
+	// Fallback to empty array if API is not available
+	linksData = []
+}
+
+// Filter out future-dated links and get only live content
+const today = new Date()
+const todayDateString = today.toISOString().split('T')[0] // Get YYYY-MM-DD format
+
+const liveLinks = linksData.filter((link: LinkData) => {
+	return link.date <= todayDateString
+})
+
+const sortedLinks = liveLinks.sort(
+	(a: LinkData, b: LinkData) =>
+		new Date(b.date).getTime() - new Date(a.date).getTime(),
 )
 
 // Extract all unique tags
 const allTags = [
 	...new Set(
-		sortedLinks.flatMap(link =>
+		sortedLinks.flatMap((link: LinkData) =>
 			link.tags
 				? Array.isArray(link.tags)
 					? link.tags
-					: link.tags.split(',').map(tag => tag.trim())
+					: link.tags.split(',').map((tag: string) => tag.trim())
 				: [],
 		),
 	),
@@ -70,9 +102,9 @@ const getTagColor = (tag: string) => {
 			</div>
 			<div class="flex flex-wrap justify-center gap-2">
 				{
-					allTags.map(tag => (
+					allTags.map((tag: string) => (
 						<button
-							class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag)}`}
+							class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag as string)}`}
 							data-tag={tag}>
 							{tag}
 						</button>
@@ -89,7 +121,7 @@ const getTagColor = (tag: string) => {
 					class="flex w-full flex-col items-center gap-4"
 					id="links-container">
 					{
-						sortedLinks.map((l, i) => (
+						sortedLinks.map((l: LinkData, i: number) => (
 							<article
 								class="article-animate link-item flex w-full max-w-4xl flex-col gap-2 border-b-2 border-slate-200 p-1 md:flex-row dark:border-slate-700"
 								style={`animation-delay: ${i * 100}ms`}
@@ -123,10 +155,10 @@ const getTagColor = (tag: string) => {
 											{/* Handle both comma-separated strings and arrays */}
 											{(Array.isArray(l.tags)
 												? l.tags
-												: l.tags.split(',').map(tag => tag.trim())
-											).map(tag => (
+												: l.tags.split(',').map((tag: string) => tag.trim())
+											).map((tag: string) => (
 												<span
-													class={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${getTagColor(tag)}`}>
+													class={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${getTagColor(tag as string)}`}>
 													{tag}
 												</span>
 											))}
@@ -162,9 +194,9 @@ const getTagColor = (tag: string) => {
 
 					<div class="flex flex-wrap gap-2">
 						{
-							allTags.map(tag => (
+							allTags.map((tag: string) => (
 								<button
-									class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag)}`}
+									class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag as string)}`}
 									data-tag={tag}>
 									{tag}
 								</button>
