@@ -16,6 +16,124 @@ interface AudioPlayerUIProps {
 	autoLoad?: boolean
 }
 
+// Enhanced content filtering function
+const filterContentForAudio = (rawContent: string): string => {
+	// console.log('🎧 Starting with content length:', rawContent.length)
+
+	// Handle markdown content (most blog posts will be markdown)
+	let content = rawContent
+
+	// Extract title from markdown (first H1)
+	const titleMatch = content.match(/^#\s+(.+)$/m)
+	const title = titleMatch?.[1]?.trim() || ''
+	// console.log('🎧 Found title:', title)
+
+	// Step 1: Remove frontmatter (YAML between --- lines) - ONLY at the start
+	if (content.startsWith('---')) {
+		const endIndex = content.indexOf('\n---\n', 4)
+		if (endIndex !== -1) {
+			content = content.substring(endIndex + 5)
+		}
+	}
+	// console.log('🎧 After removing frontmatter:', content.length)
+
+	// Step 2: Remove import statements
+	content = content.replace(/^import\s+[\s\S]*?from\s+['"][^'"]*['"].*$/gm, '')
+	content = content.replace(/^import\s+[\s\S]*?['"][^'"]*['"].*$/gm, '')
+	// console.log('🎧 After removing imports:', content.length)
+
+	// Step 3: Remove Astro/React components (this might be removing too much!)
+	// const beforeComponents = content.length
+	content = content.replace(/<[A-Z][a-zA-Z0-9_]*[^>]*\/>/g, '') // Self-closing
+	content = content.replace(
+		/<[A-Z][a-zA-Z0-9_]*[^>]*>[\s\S]*?<\/[A-Z][a-zA-Z0-9_]*>/g,
+		'',
+	) // With content
+	// console.log(
+	// 	'🎧 After removing components:',
+	// 	content.length,
+	// 	'Removed:',
+	// 	beforeComponents - content.length,
+	// )
+
+	// Step 4: Remove images and videos
+	content = content.replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+	content = content.replace(
+		/\[!\[.*?\]\(.*?\)\]\(.*?(youtube|youtu\.be|vimeo|dailymotion).*?\)/gi,
+		'',
+	)
+	// console.log('🎧 After removing images/videos:', content.length)
+
+	// Step 5: Remove only truly problematic HTML elements
+	// const beforeHTML = content.length
+	content = content.replace(
+		/<(script|style|svg|video|audio|iframe|embed)[^>]*>[\s\S]*?<\/\1>/gis,
+		'',
+	)
+	content = content.replace(
+		/<(script|style|svg|video|audio|iframe|embed)[^>]*\/?>/gi,
+		'',
+	)
+	// console.log(
+	// 	'🎧 After removing problematic HTML:',
+	// 	content.length,
+	// 	'Removed:',
+	// 	beforeHTML - content.length,
+	// )
+
+	// Step 6: MINIMAL HTML cleanup - just remove tags, keep ALL content
+	// const beforeTagRemoval = content.length
+	content = content.replace(/<[^>]*>/g, '') // Remove ALL HTML tags but keep content
+	// console.log(
+	// 	'🎧 After removing HTML tags:',
+	// 	content.length,
+	// 	'Removed:',
+	// 	beforeTagRemoval - content.length,
+	// )
+
+	// Step 7: Remove code blocks
+	// const beforeCode = content.length
+	content = content.replace(/```[\s\S]*?```/g, '')
+	content = content.replace(/`([^`]+)`/g, '$1') // Keep inline code content
+	// console.log(
+	// 	'🎧 After removing code blocks:',
+	// 	content.length,
+	// 	'Removed:',
+	// 	beforeCode - content.length,
+	// )
+
+	// Step 8: MINIMAL markdown cleanup
+	content = content.replace(/^#{1,6}\s+/gm, '') // Headers
+	content = content.replace(/(\*{1,2}|_{1,2})(.*?)\1/g, '$2') // Bold/italic
+	content = content.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Links
+	content = content.replace(/^[-*_]{3,}$/gm, '') // Horizontal rules
+	content = content.replace(/^>\s*/gm, '') // Blockquotes
+	content = content.replace(/^[\s]*[-*+]\s+/gm, '') // Lists
+	content = content.replace(/^[\s]*\d+\.\s+/gm, '') // Numbered lists
+
+	// Step 9: VERY minimal cleanup
+	content = content
+		.replace(/\s+/g, ' ') // Multiple spaces to single
+		.replace(/^\s*[-_+*#>|=~`^]\s*$/gm, '') // Lines with ONLY symbols
+		.replace(/https?:\/\/[^\s]+/gi, '') // URLs
+		.trim()
+
+	// console.log('🎧 After final cleanup:', content.length)
+
+	// Add title
+	if (title && !content.toLowerCase().startsWith(title.toLowerCase())) {
+		content = `${title}. ${content}`
+	}
+
+	// console.log('🎧 Final result length:', content.length)
+	// console.log(
+	// 	'🎧 Final content preview (first 500 chars):',
+	// 	content.substring(0, 500),
+	// )
+
+	return content
+}
+
 const AudioPlayerUI: React.FC<AudioPlayerUIProps> = ({
 	text,
 	className = '',
@@ -60,7 +178,39 @@ const AudioPlayerUI: React.FC<AudioPlayerUIProps> = ({
 			setAudioPlayer(player)
 
 			if (autoLoad && text.trim()) {
-				player.loadText(text)
+				// Filter content before loading
+				const filteredText = filterContentForAudio(text)
+				// console.log('🎧 === AUDIO PLAYER DEBUG ===')
+				// console.log('🎧 Original text length:', text.length)
+				// console.log('🎧 Filtered text length:', filteredText.length)
+				// console.log(
+				// 	'🎧 Reduction ratio:',
+				// 	(((text.length - filteredText.length) / text.length) * 100).toFixed(
+				// 		1,
+				// 	) + '%',
+				// )
+				// console.log('🎧 Original text first 300 chars:', text.substring(0, 300))
+				// console.log(
+				// 	'🎧 Filtered text first 300 chars:',
+				// 	filteredText.substring(0, 300),
+				// )
+				// console.log(
+				// 	'🎧 Filtered text last 300 chars:',
+				// 	filteredText.substring(Math.max(0, filteredText.length - 300)),
+				// )
+				// console.log('🎧 === END DEBUG ===')
+
+				if (filteredText.trim()) {
+					// Calculate expected duration (rough estimate: 150-200 words per minute)
+					// const wordCount = filteredText.trim().split(/\s+/).length
+					// const estimatedMinutes = Math.round(wordCount / 175)
+					// console.log(
+					// 	`🎧 Word count: ${wordCount}, Estimated duration: ${estimatedMinutes} minutes`,
+					// )
+					player.loadText(filteredText)
+				} else {
+					console.warn('🎧 No content to load after filtering')
+				}
 			}
 
 			return () => {
@@ -89,7 +239,14 @@ const AudioPlayerUI: React.FC<AudioPlayerUIProps> = ({
 	}, [audioPlayer])
 
 	const handleStop = useCallback(() => {
-		audioPlayer?.stop()
+		// Clear any error messages when stopping
+		if (audioPlayer) {
+			audioPlayer.stop()
+			// Small delay to prevent the "interrupted" error from showing
+			setTimeout(() => {
+				setPlayerState(prev => ({ ...prev, error: null }))
+			}, 100)
+		}
 	}, [audioPlayer])
 
 	const handleSeek = useCallback(
@@ -154,7 +311,7 @@ const AudioPlayerUI: React.FC<AudioPlayerUIProps> = ({
 					)}
 				</div>
 
-				{playerState.error && (
+				{playerState.error && !playerState.error.includes('interrupted') && (
 					<div className="text-sm text-red-600 dark:text-red-400">
 						⚠️ {playerState.error}
 					</div>
@@ -274,6 +431,13 @@ const AudioPlayerUI: React.FC<AudioPlayerUIProps> = ({
 				{supported.webAudio && (
 					<div>✅ Web Audio API enabled for advanced features</div>
 				)}
+				<div className="text-green-600 dark:text-green-400">
+					🎯 Smart content filtering: Excludes code, images, and videos
+				</div>
+				<div className="text-blue-600 dark:text-blue-400">
+					📝 Content length: {text.length} chars →{' '}
+					{filterContentForAudio(text).length} chars
+				</div>
 			</div>
 		</div>
 	)
