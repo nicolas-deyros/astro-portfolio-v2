@@ -1,17 +1,13 @@
+import { createAudioPlayer, type EnhancedAudioPlayer } from './audioPlayer'
+
 interface BlogPostState {
-	voices: SpeechSynthesisVoice[]
-	selectedVoice: SpeechSynthesisVoice | null
-	utterance: SpeechSynthesisUtterance | null
-	isPlaying: boolean
-	isPaused: boolean
+	audioPlayer: EnhancedAudioPlayer | null
+	isInitialized: boolean
 }
 
 const state: BlogPostState = {
-	voices: [],
-	selectedVoice: null,
-	utterance: null,
-	isPlaying: false,
-	isPaused: false,
+	audioPlayer: null,
+	isInitialized: false,
 }
 
 function updateProgressBar(): void {
@@ -54,27 +50,19 @@ function updateProgressBar(): void {
 	}
 }
 
-function loadVoices(): void {
-	state.voices = window.speechSynthesis.getVoices()
-	const englishVoices = state.voices.filter(voice =>
-		voice.lang.startsWith('en'),
-	)
-	state.selectedVoice =
-		englishVoices.find(voice => voice.name.includes('Zira')) ||
-		englishVoices.find(voice => voice.name.includes('Samantha')) ||
-		englishVoices.find(voice => voice.default) ||
-		englishVoices[0] ||
-		null
-}
-
 function updateUI(): void {
 	const iconSpan = document.getElementById('read-aloud-icon')
 	const labelSpan = document.getElementById('read-aloud-label')
 	const stopBtn = document.getElementById('stop-aloud-btn')
 
-	if (state.isPlaying) {
-		if (iconSpan) iconSpan.textContent = state.isPaused ? '▶️' : '⏸️'
-		if (labelSpan) labelSpan.textContent = state.isPaused ? 'Resume' : 'Pause'
+	if (!state.audioPlayer) return
+
+	const playerState = state.audioPlayer.getState()
+
+	if (playerState.isPlaying) {
+		if (iconSpan) iconSpan.textContent = playerState.isPaused ? '▶️' : '⏸️'
+		if (labelSpan)
+			labelSpan.textContent = playerState.isPaused ? 'Resume' : 'Pause'
 		if (stopBtn) stopBtn.style.display = ''
 	} else {
 		if (iconSpan) iconSpan.textContent = '▶️'
@@ -90,85 +78,73 @@ function initializeReadAloud(): void {
 
 	if (!readBtn || !stopBtn || !content) return
 
-	if (state.voices.length === 0) {
-		window.speechSynthesis.onvoiceschanged = loadVoices
-	} else {
-		loadVoices()
+	// Initialize enhanced audio player
+	if (!state.audioPlayer) {
+		state.audioPlayer = createAudioPlayer({
+			rate: 0.9,
+			pitch: 1.0,
+			volume: 0.8,
+			lang: 'en-US',
+		})
+
+		// Set up state change listener for UI updates
+		state.audioPlayer.onStateChange(() => {
+			updateUI()
+		})
 	}
 
-	readBtn.onclick = (): void => {
-		if (!state.isPlaying) {
-			window.speechSynthesis.cancel()
-			const text = content.innerText
-			state.utterance = new window.SpeechSynthesisUtterance(text)
+	readBtn.onclick = async (): Promise<void> => {
+		if (!state.audioPlayer) return
 
-			if (state.selectedVoice) {
-				state.utterance.voice = state.selectedVoice
-			}
-			state.utterance.lang = 'en-US'
-			state.utterance.rate = 0.9
-			state.utterance.pitch = 1
-			state.utterance.volume = 0.8
+		const playerState = state.audioPlayer.getState()
 
-			state.utterance.onend = (): void => {
-				state.isPlaying = false
-				state.isPaused = false
-				updateUI()
+		if (!playerState.isPlaying) {
+			// Load and start playing content
+			const text = content.innerHTML // Use innerHTML to get rich content for better filtering
+			try {
+				await state.audioPlayer.loadText(text)
+				await state.audioPlayer.play()
+			} catch (error) {
+				console.error('Error starting audio playback:', error)
 			}
-			state.utterance.onerror = (): void => {
-				state.isPlaying = false
-				state.isPaused = false
-				updateUI()
-			}
-			state.utterance.onpause = (): void => {
-				state.isPaused = true
-				updateUI()
-			}
-			state.utterance.onresume = (): void => {
-				state.isPaused = false
-				updateUI()
-			}
-
-			window.speechSynthesis.speak(state.utterance)
-			state.isPlaying = true
-			state.isPaused = false
-			updateUI()
-		} else if (
-			window.speechSynthesis.speaking &&
-			!window.speechSynthesis.paused
-		) {
-			window.speechSynthesis.pause()
-			state.isPaused = true
-			updateUI()
-		} else if (window.speechSynthesis.paused) {
-			window.speechSynthesis.resume()
-			state.isPaused = false
-			updateUI()
+		} else if (playerState.isPlaying && !playerState.isPaused) {
+			// Pause playback
+			state.audioPlayer.pause()
+		} else if (playerState.isPaused) {
+			// Resume playback
+			await state.audioPlayer.play()
 		}
 	}
 
 	stopBtn.onclick = (): void => {
-		window.speechSynthesis.cancel()
-		state.isPlaying = false
-		state.isPaused = false
-		updateUI()
+		if (state.audioPlayer) {
+			state.audioPlayer.stop()
+		}
 	}
 }
 
 function cleanup(): void {
 	window.removeEventListener('scroll', updateProgressBar)
 	window.removeEventListener('resize', updateProgressBar)
-	window.speechSynthesis.cancel() // Stop speech when leaving the page
-	state.isPlaying = false
-	state.isPaused = false
-	state.utterance = null
+
+	// Clean up enhanced audio player
+	if (state.audioPlayer) {
+		state.audioPlayer.destroy()
+		state.audioPlayer = null
+	}
+
+	state.isInitialized = false
 }
 
 export function initBlogPostFeatures(): void {
+	if (state.isInitialized) return
+
 	updateProgressBar() // Initial call
 	window.addEventListener('scroll', updateProgressBar)
 	window.addEventListener('resize', updateProgressBar)
 	initializeReadAloud()
+
+	state.isInitialized = true
 }
 
 export function cleanupBlogPostFeatures(): void {
