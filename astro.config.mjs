@@ -20,5 +20,14 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 	},
 
-	integrations: [mdx(), partytown(), sitemap(), icon(), db(), react()],
+	integrations: [
+		mdx(),
+		partytown(),
+		sitemap({
+			filter: page => page !== 'https://www.nicolasdeyros.dev/admin',
+		}),
+		icon(),
+		db(),
+		react(),
+	],
 })

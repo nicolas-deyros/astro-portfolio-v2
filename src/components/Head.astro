@@ -16,8 +16,8 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 	<script
 		type="text/partytown"
 		async
-		src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH">
-	</script>
+		src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
+	></script>
 	<script type="text/partytown">
 		window.dataLayer = window.dataLayer || []
 		function gtag(...args) {
@@ -31,6 +31,7 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 	<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 	<meta name="viewport" content="width=device-width" />
 	<meta name="author" content="Nicolás Deyros" />
+	<link rel="sitemap" href="/sitemap-index.xml" />
 	<meta http-equiv="Permissions-Policy" content="compute-pressure=()" />
 	<SEO
 		title={`Nicolás Deyros | ${title}`}
