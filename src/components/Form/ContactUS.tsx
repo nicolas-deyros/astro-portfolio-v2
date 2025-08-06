@@ -1,5 +1,5 @@
 import { useFormik } from 'formik'
-import { AnimatePresence,motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 
 import { BasicSchema } from '@/schemas'
@@ -78,17 +78,6 @@ const ContactUs = () => {
                                 <p><strong>Email:</strong> ${values.email}</p>
                                 <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
                             </div>
-
-                            ${
-															values.message
-																? `
-                            <div class="message">
-                                <h3>Your Message:</h3>
-                                <p>${values.message.replace(/\n/g, '<br>')}</p>
-                            </div>
-                            `
-																: ''
-														}
                             
                             <div class="footer">
                                 <p>Best regards,<br><strong>Nicolás Deyros</strong></p>

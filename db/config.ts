@@ -1,4 +1,4 @@
-import { column,defineDb, defineTable } from 'astro:db'
+import { column, defineDb, defineTable } from 'astro:db'
 
 const FormSubmissions = defineTable({
 	columns: {
@@ -6,6 +6,7 @@ const FormSubmissions = defineTable({
 		fullName: column.text(),
 		email: column.text(),
 		message: column.text({ optional: true }),
+		resendMessageId: column.text(),
 	},
 })
 
