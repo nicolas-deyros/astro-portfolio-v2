@@ -1,6 +1,6 @@
 ---
 import NavList from '@components/List/NavList.astro'
-import navData from '@data/navData'
+import navData, { adminNavData } from '@data/navData'
 import { Icon } from 'astro-icon/components'
 
 type NavItem = {
@@ -8,6 +8,16 @@ type NavItem = {
 	icon: string
 	text: string
 }
+
+type AdminNavItem = {
+	path: string
+	icon: string
+	text: string
+	title: string
+}
+
+// Check if we're on an admin page at build time
+const isAdminPage = Astro.url.pathname.startsWith('/admin')
 ---
 
 <!-- Mobile Hamburger Button -->
@@ -59,13 +69,31 @@ type NavItem = {
 			/>
 		))
 	}
-	<!-- Admin Logout Button (Desktop) -->
-	<button
-		id="admin-logout-btn"
-		class="hidden rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
-		title="Logout from Admin">
-		Logout
-	</button>
+	<!-- Admin Menu Items (Desktop) - Only render on admin pages -->
+	{
+		isAdminPage &&
+			adminNavData.map((item: AdminNavItem) => (
+				<NavList
+					href={item.path}
+					icon={item.icon}
+					text={item.text}
+					title={item.title}
+					class="admin-menu-item hidden"
+					data-navLink
+				/>
+			))
+	}
+	<!-- Admin Logout Button (Desktop) - Only render on admin pages -->
+	{
+		isAdminPage && (
+			<button
+				id="admin-logout-btn"
+				class="hidden rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+				title="Logout from Admin">
+				Logout
+			</button>
+		)
+	}
 	<label
 		id="toggle-theme"
 		for="theme-toggle-checkbox"
@@ -131,15 +159,34 @@ type NavItem = {
 				</a>
 			))
 		}
-		<!-- Admin Logout Button (Mobile) -->
-		<button
-			id="mobile-admin-logout-btn"
-			class="hidden rounded-lg bg-red-600 px-4 py-3 text-white transition-colors duration-200 hover:bg-red-700">
-			<div class="flex items-center gap-3">
-				<span class="text-xl">🚪</span>
-				<span class="font-medium">Logout</span>
-			</div>
-		</button>
+		<!-- Admin Menu Items (Mobile) - Only render on admin pages -->
+		{
+			isAdminPage &&
+				adminNavData.map((item: AdminNavItem) => (
+					<a
+						href={item.path}
+						class="admin-menu-item hidden items-center gap-3 rounded-lg px-4 py-3 text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+						data-navLink>
+						<span class="text-xl">
+							<Icon name={item.icon} class="h-5" />
+						</span>
+						<span class="font-medium">{item.text}</span>
+					</a>
+				))
+		}
+		<!-- Admin Logout Button (Mobile) - Only render on admin pages -->
+		{
+			isAdminPage && (
+				<button
+					id="mobile-admin-logout-btn"
+					class="hidden rounded-lg bg-red-600 px-4 py-3 text-white transition-colors duration-200 hover:bg-red-700">
+					<div class="flex items-center gap-3">
+						<span class="text-xl">🚪</span>
+						<span class="font-medium">Logout</span>
+					</div>
+				</button>
+			)
+		}
 		<label
 			id="mobile-toggle-theme"
 			for="mobile-theme-toggle-checkbox"
@@ -169,7 +216,7 @@ type NavItem = {
 
 		if (!mobileMenuButton || !mobileMenu || !mobileMenuOverlay) return
 
-		function openMobileMenu() {
+		function openMobileMenu(): void {
 			if (mobileMenu) {
 				mobileMenu.classList.remove('translate-x-full')
 			}
@@ -182,7 +229,7 @@ type NavItem = {
 			document.body.classList.add('overflow-hidden')
 		}
 
-		function closeMobileMenu() {
+		function closeMobileMenu(): void {
 			if (mobileMenu) {
 				mobileMenu.classList.add('translate-x-full')
 			}
@@ -216,6 +263,14 @@ type NavItem = {
 			link.addEventListener('click', closeMobileMenu)
 		})
 
+		// Close menu when clicking admin nav links
+		const adminNavLinks = document.querySelectorAll(
+			'.admin-menu-item[data-navlink]',
+		)
+		adminNavLinks.forEach(link => {
+			link.addEventListener('click', closeMobileMenu)
+		})
+
 		// Close menu on escape key
 		document.addEventListener('keydown', e => {
 			if (
@@ -243,7 +298,7 @@ type NavItem = {
 		const htmlElement = document.documentElement
 
 		// Sync checkbox states with current theme
-		function syncCheckboxStates() {
+		function syncCheckboxStates(): void {
 			const isDark = htmlElement.classList.contains('dark')
 			if (themeToggleCheckbox) {
 				themeToggleCheckbox.checked = isDark
@@ -296,26 +351,59 @@ type NavItem = {
 			'mobile-admin-logout-btn',
 		)
 
-		function checkAdminStatus() {
+		function checkAdminStatus(): void {
 			const isAdmin = localStorage.getItem('admin_authenticated') === 'true'
-			const isAdminPage = window.location.pathname === '/admin'
+			const currentIsAdminPage = window.location.pathname.startsWith('/admin')
 
-			if (isAdmin && isAdminPage) {
-				adminLogoutBtn?.classList.remove('hidden')
-				mobileAdminLogoutBtn?.classList.remove('hidden')
+			// Only proceed if we're on an admin page (elements exist)
+			if (!currentIsAdminPage) return
+
+			// Show/hide admin menu items - only show if authenticated
+			const adminMenuItems = document.querySelectorAll('.admin-menu-item')
+			const adminLogoutBtns = document.querySelectorAll(
+				'#admin-logout-btn, #mobile-admin-logout-btn',
+			)
+
+			if (isAdmin) {
+				// User is authenticated - show admin items
+				adminMenuItems.forEach(item => {
+					item.classList.remove('hidden')
+					// For mobile menu items (links), add flex to show them properly
+					if (item.tagName.toLowerCase() === 'a') {
+						item.classList.add('flex')
+					}
+					// For desktop menu items (NavList components), restore the flex classes
+					if (item.tagName.toLowerCase() === 'li') {
+						item.classList.add(
+							'flex',
+							'list-none',
+							'items-center',
+							'justify-center',
+						)
+					}
+				})
+				adminLogoutBtns.forEach(btn => btn.classList.remove('hidden'))
 			} else {
-				adminLogoutBtn?.classList.add('hidden')
-				mobileAdminLogoutBtn?.classList.add('hidden')
+				// User is not authenticated - hide admin items
+				adminMenuItems.forEach(item => {
+					item.classList.add('hidden')
+					// Remove all display classes
+					item.classList.remove(
+						'flex',
+						'list-none',
+						'items-center',
+						'justify-center',
+					)
+				})
+				adminLogoutBtns.forEach(btn => btn.classList.add('hidden'))
 			}
 		}
 
-		function handleLogout() {
+		function handleLogout(): void {
 			localStorage.removeItem('admin_authenticated')
 			localStorage.removeItem('auth_token')
-			// If on admin page, reload to show login screen
-			if (window.location.pathname === '/admin') {
-				window.location.reload()
-			}
+			// Always redirect to admin login page after logout
+			window.location.href = '/admin'
 		}
 
 		// Check admin status on page load

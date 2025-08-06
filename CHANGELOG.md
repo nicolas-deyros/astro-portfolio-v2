@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2025-08-06
+
+### 🔐 Enhanced Admin Navigation & Authentication
+
+- **Conditional Admin Navigation**: Implemented smart admin navigation that only appears on admin pages when user is authenticated
+- **Authentication-Based Visibility**: Admin menu items (CRM, Links) and logout button now show/hide based on `localStorage` authentication state
+- **Consistent Cross-Platform Behavior**: Fixed desktop/mobile navigation consistency where admin items were incorrectly visible when not authenticated
+- **Enhanced NavList Component**: Updated NavList component to properly accept and apply CSS classes for conditional rendering
+- **Improved Authentication Logic**: Refined `checkAdminStatus()` function to handle both desktop and mobile navigation elements correctly
+
+### 🧪 Expanded Test Coverage
+
+- **Admin Navigation Testing**: Added comprehensive test cases for admin navigation visibility logic covering:
+  - Authentication state checking (localStorage validation)
+  - Desktop and mobile admin menu item visibility
+  - Logout functionality and redirect behavior
+  - Cross-breakpoint responsive admin navigation
+- **Authentication Flow Testing**: Enhanced test suite to validate proper hiding/showing of admin elements based on auth state
+- **Mobile Navigation Testing**: Added mobile-specific admin navigation tests with proper viewport simulation
+
+### 🛠️ Technical Improvements
+
+- **Server-Side Conditional Rendering**: Implemented `isAdminPage` check to prevent admin navigation from rendering on non-admin pages
+- **Client-Side Authentication Checks**: Enhanced JavaScript logic to dynamically show/hide admin elements based on authentication status
+- **Cross-Platform CSS Classes**: Proper handling of desktop (`lg:flex`) and mobile (`flex`) display classes for admin navigation
+- **Authentication State Management**: Improved localStorage-based authentication with proper cleanup on logout
+
+### 📱 Responsive Design Enhancements
+
+- **Desktop Admin Navigation**: Fixed desktop admin menu items to properly hide when not authenticated
+- **Mobile Menu Consistency**: Ensured mobile hamburger menu admin items follow same authentication logic as desktop
+- **Cross-Breakpoint Validation**: Admin navigation now behaves consistently across all screen sizes and device types
+
 ## [2.5.0] - 2025-08-05
 
 ### 🚀 Major TypeScript & Development Workflow Optimizations

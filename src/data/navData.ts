@@ -16,4 +16,21 @@ const navData = [
 	},
 ]
 
+// Admin-only navigation items
+const adminNavData = [
+	{
+		text: 'Links',
+		path: '/admin/links',
+		icon: 'mdi:link-variant',
+		title: 'Admin Links',
+	},
+	{
+		text: 'CRM',
+		path: '/admin/crm',
+		icon: 'mdi:account-group',
+		title: 'Admin CRM',
+	},
+]
+
 export default navData
+export { adminNavData }

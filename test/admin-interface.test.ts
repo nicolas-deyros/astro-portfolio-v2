@@ -1,6 +1,6 @@
 import { ChildProcess, spawn } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
-import { afterAll,beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // Helper function to wait for server to be ready
 async function waitForServer(
@@ -290,13 +290,100 @@ describe('Admin Interface Tests', () => {
 			const activeElement = await page.evaluate(
 				() => document.activeElement?.tagName,
 			)
-			expect(['INPUT', 'BUTTON', 'SELECT'].includes(activeElement!)).toBe(true)
+			expect(['INPUT', 'BUTTON', 'SELECT'].includes(activeElement || '')).toBe(
+				true,
+			)
 		})
 
 		it('should have proper contrast and readability', async () => {
 			// Check that text has proper contrast classes
 			const textElements = await page.$$('.text-slate-900, .text-slate-100')
 			expect(textElements.length).toBeGreaterThan(0)
+		})
+	})
+
+	describe('Admin Navigation Visibility', () => {
+		it('should hide admin navigation items when not authenticated', async () => {
+			// Clear authentication
+			await page.evaluate(() => {
+				localStorage.removeItem('admin_authenticated')
+				localStorage.removeItem('auth_token')
+			})
+
+			await page.goto(adminUrl)
+
+			// Check that admin menu items are hidden on desktop
+			const desktopAdminItems = await page.$$('.admin-menu-item:not(.hidden)')
+			expect(desktopAdminItems.length).toBe(0)
+
+			// Check that logout button is hidden
+			const logoutBtn = await page.$('#admin-logout-btn:not(.hidden)')
+			expect(logoutBtn).toBe(null)
+		})
+
+		it('should show admin navigation items when authenticated', async () => {
+			// Set authentication
+			await page.evaluate(() => {
+				localStorage.setItem('admin_authenticated', 'true')
+			})
+
+			await page.goto(adminUrl)
+			await page.waitForTimeout(500) // Wait for script to execute
+
+			// Check that admin menu items are visible on desktop
+			const desktopAdminItems = await page.$$('.admin-menu-item:not(.hidden)')
+			expect(desktopAdminItems.length).toBeGreaterThan(0)
+
+			// Check that logout button is visible
+			const logoutBtn = await page.$('#admin-logout-btn:not(.hidden)')
+			expect(logoutBtn).toBeTruthy()
+		})
+
+		it('should handle mobile admin navigation correctly', async () => {
+			await page.setViewport({ width: 768, height: 800 })
+
+			// Set authentication
+			await page.evaluate(() => {
+				localStorage.setItem('admin_authenticated', 'true')
+			})
+
+			await page.goto(adminUrl)
+			await page.waitForTimeout(500)
+
+			// Open mobile menu
+			await page.click('#mobile-menu-button')
+			await page.waitForTimeout(200)
+
+			// Check that mobile admin items are visible when authenticated
+			const mobileAdminItems = await page.$$(
+				'#mobile-menu .admin-menu-item:not(.hidden)',
+			)
+			expect(mobileAdminItems.length).toBeGreaterThan(0)
+		})
+
+		it('should redirect to admin login on logout', async () => {
+			// Set authentication first
+			await page.evaluate(() => {
+				localStorage.setItem('admin_authenticated', 'true')
+			})
+
+			await page.goto(adminUrl)
+			await page.waitForTimeout(500)
+
+			// Click logout button
+			const logoutBtn = await page.$('#admin-logout-btn')
+			if (logoutBtn) {
+				await logoutBtn.click()
+				await page.waitForTimeout(1000)
+
+				// Should redirect to admin page and clear auth
+				expect(page.url()).toBe(adminUrl)
+
+				const isAuthenticated = await page.evaluate(() => {
+					return localStorage.getItem('admin_authenticated') === 'true'
+				})
+				expect(isAuthenticated).toBe(false)
+			}
 		})
 	})
 

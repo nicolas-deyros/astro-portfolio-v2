@@ -5,11 +5,11 @@ export const prerender = false
 // Simple in-memory session storage (in production, use Redis or database)
 const sessions = new Map<string, { token: string; expiresAt: number }>()
 
-function generateToken() {
+function generateToken(): string {
 	return crypto.randomUUID() + '-' + Date.now().toString(36)
 }
 
-function generateSessionId() {
+function generateSessionId(): string {
 	return crypto.randomUUID()
 }
 

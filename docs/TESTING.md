@@ -57,6 +57,19 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 - **Markdown Links**: Proper formatting and structure
 - **Mixed Content**: HTTP/HTTPS validation
 
+### 🔐 Admin Interface Testing
+
+#### `test/admin-interface.test.ts`
+
+- **Authentication Flow**: Login form validation and session management
+- **Admin Navigation**: Conditional visibility based on authentication state
+- **Responsive Design**: Desktop (≥1280px), tablet (1024-1279px), and mobile (<1024px) layouts
+- **Table Functionality**: Sorting, editing, deleting, and status badges
+- **Form Validation**: Add link form with proper field validation
+- **Modal Interactions**: Edit modals and session expiry handling
+- **Accessibility Compliance**: ARIA labels, focus management, and contrast validation
+- **Cross-Platform Testing**: Desktop and mobile admin navigation behavior
+
 ### 🎨 UI Component Testing
 
 #### `test/back-to-top.test.ts`
@@ -97,6 +110,12 @@ npm run test:back-to-top       # Back-to-top button tests
 
 # Content quality
 npm run test:grammar           # Grammar and writing tests
+
+# Admin interface testing
+npm run test:admin             # Admin interface and navigation tests
+
+# UI testing
+npm run test:ui                # Admin and date filtering tests
 
 # Fast execution
 npm run test:fast              # Optimized test suite
