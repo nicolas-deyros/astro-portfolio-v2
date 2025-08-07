@@ -91,6 +91,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🐞 bugfixes
+
+- **CRM Email Status**: Fixed a bug in the CRM where the email status was showing as "unknown" because the code was looking for a `status` property in the Resend API response instead of `last_event`. The code has been updated to use the correct property, ensuring that the correct email status is displayed.
+
 ### 🎧 Enhanced Audio Player System
 
 - **Simplified Audio Player**: Streamlined audio player interface removing complex voice selection, volume, and speed controls for better reliability

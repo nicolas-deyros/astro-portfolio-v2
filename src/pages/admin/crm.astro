@@ -32,12 +32,13 @@ try {
 						submission.resendMessageId,
 						response.data,
 					)
-					// Display only the status field if available
+					// Display only the last_event field if available
 					status =
 						response.data &&
 						typeof response.data === 'object' &&
-						'status' in response.data
-							? ((response.data as { status?: string }).status ?? 'unknown')
+						'last_event' in response.data
+							? ((response.data as { last_event?: string }).last_event ??
+								'unknown')
 							: 'unknown'
 				} catch {
 					status = 'unknown'
