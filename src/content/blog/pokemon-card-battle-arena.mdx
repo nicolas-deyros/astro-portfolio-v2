@@ -1,0 +1,143 @@
+---
+title: 'Pokémon Card Battle Arena'
+slug: 'pokemon-card-battle-arena'
+date: '2025-08-07'
+author: 'Nicolás Deyros'
+description: 'Learn how I built a Pokémon Card Battle Arena using React, TypeScript, and the PokeAPI.'
+draft: false
+category: 'Web Development'
+tags:
+  [
+    'AI Development',
+    'Astro',
+    'TypeScript',
+    'GitHub Copilot',
+    'Google AI',
+    'PokeAPI',
+    'Testing',
+    'Performance',
+  ]
+---
+
+import Aside from '@components/Aside.astro'
+import Video from '@components/Video.astro'
+
+Welcome, developers and Pokémon trainers! Today, we're taking a deep dive into the code behind the **Pokémon Card Battle Arena**, a dynamic web application built with modern frontend technologies. This app allows users to search for their favorite Pokémon, build a custom team of three, and face off against a computer-controlled opponent in a turn-based battle. It also features a Pokémon evolution explorer.
+
+<Aside type="info">
+	**TL;DR:** This article breaks down the architecture of a Pokémon battle
+	simulator built with React, TypeScript, and Tailwind CSS, and explores how to
+	enhance it with Generative AI.
+</Aside>
+
+Let's unpack the key technologies and architectural decisions that bring this interactive experience to life.
+
+## The Tech Stack
+
+The application is built on a robust and modern foundation:
+
+- **Framework**: React with TypeScript for a type-safe, component-based UI.
+- **Styling**: Tailwind CSS for rapid, utility-first styling, augmented with custom CSS for complex animations and the signature holographic card effect.
+- **Data Source**: The invaluable [PokeAPI](https://pokeapi.co/), a free and open-source RESTful API for all things Pokémon.
+- **State Management**: A combination of React's `useState` and `useReducer` hooks, creating a powerful and predictable state machine for the complex game logic.
+
+## Core Feature Deep Dive
+
+### The Holographic Card Effect
+
+The centerpiece of the UI is the interactive, holographic Pokémon card. It's not just a static image; it's a multi-layered component that responds to user interaction, creating a stunning 3D effect.
+
+<Video
+	platform="youtube"
+	videoId="9z77ui4SXGI"
+	title="Pokémon Card Battle Arena in Action"
+/>
+
+Here’s how it works:
+
+1.  **Perspective & 3D Transform**: The parent `card-wrapper` div establishes a `perspective`, creating a 3D space for its children. The `holo-card` itself uses `transform: rotateX() rotateY()` to tilt in 3D space.
+2.  **Mouse Tracking**: An `onMouseMove` event handler on the card's wrapper captures the mouse's X and Y coordinates relative to the card's dimensions.
+3.  **Dynamic CSS Variables**: The JavaScript logic calculates the desired rotation based on the mouse position and updates CSS custom properties (`--x`, `--y`, `--color1`, `--color2`) in real-time.
+4.  **Layered Gradients & Effects**: The magic lies in the `::before` and `::after` pseudo-elements.
+    - The `::before` element creates the holographic sheen using a `linear-gradient`. Its background position is updated via the `--x` and `--y` variables, making the light source appear to move with the user's cursor.
+    - The `::after` element overlays sparkle and texture images, further enhancing the holographic illusion.
+
+```typescript
+// In PokemonCard.tsx
+const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+	const { clientX, clientY, currentTarget } = e
+	const { top, left, width, height } = currentTarget.getBoundingClientRect()
+	const mouseX = (clientX - left) / width
+	const mouseY = (clientY - top) / height
+
+	const rotateX = 15 * (mouseY - 0.5)
+	const rotateY = -15 * (mouseX - 0.5)
+
+	setStyle({
+		transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+		'--x': `${mouseX * 100}%`,
+		'--y': `${mouseY * 100}%`,
+	})
+}
+```
+
+### The Game Logic
+
+Managing the state of a turn-based game can be complex. To handle this cleanly, all battle logic is encapsulated within a custom React hook: `useGameLogic`. This hook employs a `useReducer` state machine, which is perfect for managing state transitions with discrete actions.
+
+The `gameReducer` function handles actions like:
+
+- `START_SUCCESS`: Initializes the game with player and computer teams.
+- `ATTACK`: Kicks off the turn, setting an attack in motion.
+- `PROCESS_TURN`: Calculates and applies damage to the defending Pokémon.
+- `FAINT_SWITCH`: Handles the logic when a Pokémon faints, forcing a switch or ending the game.
+- `SWITCH_POKEMON`: Manages a player switching their active Pokémon.
+- `GAME_OVER`: Declares a winner and transitions to the game-over screen.
+
+<Aside type="success">
+	**Pro Tip:** Using a reducer for game logic makes it easy to debug and test,
+	as each state transition is a pure function.
+</Aside>
+
+### Team Selection
+
+Before battling, a trainer must choose their team. The `TeamSelection` component provides a seamless experience for this:
+
+- **Pokémon Discovery**: An `AutocompleteSearch` component allows users to find any Pokémon by name.
+- **Drag-and-Drop Interface**: The core of the team builder uses the native HTML5 Drag and Drop API. Users can drag Pokémon from a "popular" list or reorder their chosen Pokémon within the three team slots.
+
+## Future Potential: Integrating Generative AI with Gemini
+
+While the current application is fully functional, its architecture is ripe for enhancement with a powerful large language model like Google's Gemini. Here are a few ways we could level-up the experience:
+
+### A Truly Intelligent AI Opponent
+
+The current rule-based AI could be replaced with a call to the Gemini API. We could send the entire game state and ask Gemini to act as a Pokémon battle strategist.
+
+<Aside type="question">
+	**Prompt:** "You are a Pokémon battle AI. The player's active Pokémon is a
+	Charizard with 150 HP. Your active Pokémon is a Blastoise with 160 HP. Your
+	available moves are Hydro Pump (110 power), Skull Bash (130 power), and Water
+	Gun (40 power). Choose the best move and explain your reasoning in one
+	sentence."
+</Aside>
+
+### Dynamic Battle Commentary
+
+The static battle log could be transformed into a lively, narrative experience. After each action, we could ask Gemini to generate flavorful text.
+
+<Aside type="question">
+	**Prompt:** "Generate a short, exciting battle commentary line. Pikachu used
+	Thunderbolt on Gyarados. It was super effective!"
+</Aside>
+
+<Aside type="info">
+	**Gemini Response:** "A massive bolt of lightning erupts from Pikachu,
+	engulfing the colossal Gyarados in a crackling storm of energy!"
+</Aside>
+
+## Conclusion
+
+The Pokémon Card Battle Arena is a testament to what can be achieved with modern web technologies. By combining the component-based power of React, the vast data source of the PokeAPI, and the aesthetic flexibility of advanced CSS, we can create rich, engaging, and performant web applications. The modular design not only makes the code maintainable but also opens the door for exciting future integrations with generative AI.
+
+_Want to explore the code? Check out the [live demo](https://pok-mon-card-battle-arena-1071820676408.us-west1.run.app/)_
