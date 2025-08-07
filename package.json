@@ -28,7 +28,8 @@
 		"check:grammar": "npm run lint:text && echo \"✅ Grammar check passed\"",
 		"check:commit": "tsx scripts/test-grammar.ts",
 		"check:all": "npm run lint && npm run lint:text:smart && npm run test",
-		"fix:text": "npm run lint:text:fix"
+		"fix:text": "npm run lint:text:fix",
+		"db:seed": "npx astro db execute de/seed.ts --remote"
 	},
 	"dependencies": {
 		"@astrojs/db": "^0.15.1",

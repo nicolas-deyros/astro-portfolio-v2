@@ -6,6 +6,7 @@ export default async function seed(): Promise<void> {
 	await db.insert(FormSubmissions).values({
 		fullName: 'John Doe',
 		email: 'johndoe@example.com',
+		message: 'This is a sample message.',
 		resendMessageId: 'sent',
 	})
 
