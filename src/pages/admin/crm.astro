@@ -34,8 +34,10 @@ try {
 					)
 					// Display only the status field if available
 					status =
-						response.data && response.data.status
-							? response.data.status
+						response.data &&
+						typeof response.data === 'object' &&
+						'status' in response.data
+							? ((response.data as { status?: string }).status ?? 'unknown')
 							: 'unknown'
 				} catch {
 					status = 'unknown'
