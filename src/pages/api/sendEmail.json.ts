@@ -186,11 +186,20 @@ export const POST: APIRoute = async ({ request }) => {
 
 		// Save to database
 		try {
-			await db.insert(FormSubmissions).values({
+			const dbValues: {
+				fullName: string
+				email: string
+				resendMessageId: string
+				message?: string
+			} = {
 				fullName: name || senderName || 'Unknown',
 				email: recipientEmail,
-				message: message || null,
-			})
+				resendMessageId: emailResult.data?.id || '',
+			}
+			if (message) {
+				dbValues.message = message
+			}
+			await db.insert(FormSubmissions).values(dbValues)
 		} catch (dbError) {
 			console.error('Database error:', dbError)
 			// Email sent but DB save failed - still return success
@@ -199,6 +208,7 @@ export const POST: APIRoute = async ({ request }) => {
 					success: true,
 					message: 'Email sent successfully (database save failed)',
 					emailId: emailResult.data?.id,
+					resendMessageId: emailResult.data?.id || null,
 				}),
 				{
 					status: 200,
