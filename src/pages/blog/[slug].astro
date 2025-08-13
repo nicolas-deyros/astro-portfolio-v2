@@ -20,6 +20,7 @@ const { Content } = await render()
 
 import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
 import Section from '@components/Section.astro'
+import BlogTranslator from '@components/Translation/BlogTranslator.astro'
 import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
 
@@ -135,6 +136,9 @@ const audioText = markdown
 				/>
 			</div>
 
+			<!-- Translation Component -->
+			<BlogTranslator className="mb-6" />
+
 			<div
 				id="blog-content"
 				class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl max-w-none">
@@ -158,7 +162,7 @@ const audioText = markdown
 		}
 	}
 
-	function initProgressBar() {
+	function initProgressBar(): (() => void) | null {
 		const progressBar = document.getElementById('progress-bar')
 		const blogContent = document.getElementById('blog-content')
 		const progressPercent = document.getElementById('progress-percent')
@@ -168,7 +172,7 @@ const audioText = markdown
 			return null
 		}
 
-		function updateProgressBar() {
+		function updateProgressBar(): void {
 			if (!blogContent) {
 				console.warn('blogContent is null, cannot update progress bar')
 				return
@@ -196,14 +200,14 @@ const audioText = markdown
 			}
 		}
 
-		const handleScroll = () => updateProgressBar()
-		const handleResize = () => updateProgressBar()
+		const handleScroll = (): void => updateProgressBar()
+		const handleResize = (): void => updateProgressBar()
 
 		window.addEventListener('scroll', handleScroll)
 		window.addEventListener('resize', handleResize)
 		updateProgressBar()
 
-		return () => {
+		return (): void => {
 			window.removeEventListener('scroll', handleScroll)
 			window.removeEventListener('resize', handleResize)
 		}
