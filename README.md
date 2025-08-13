@@ -1,53 +1,120 @@
 # 🚀 Nicolás Deyros Portfolio
 
-A modern, high-performance portfolio site built with Astro, featuring comprehensive testing, SEO optimization, and advanced blog functionality. Showcasing work as a Developer, Project Manager, and AI Enthusiast.
+A modern, high-performance portfolio built with Astro, featuring comprehensive testing, SEO optimization, and enterprise-level admin functionality.
 
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎨 **User Experience**
+### 🎨 **Modern User Experience**
 
-- **🌙 Dark/Light Mode**: Seamless theme switching with system preference detection
-- **📱 Responsive Design**: Optimized for all devices and screen sizes
-- **🎭 Animations**: Smooth entrance animations and hover effects with view transitions
-- **♿ Accessibility**: WCAG compliant with proper ARIA labels and keyboard navigation
+- **🌙 Smart Theme System**: Automatic dark/light mode with system preference detection
+- **📱 Responsive Design**: Optimized for all devices with smooth animations
+- **♿ Accessibility**: WCAG compliant with proper ARIA support
 
-### 📝 **Blog System**
+### 📝 **Advanced Blog System**
 
-- **📄 MDX Support**: Rich content with embedded components and interactive elements
-- **🎵 Enhanced Audio Player**: Advanced read-aloud functionality with Web Audio API integration
-- **📊 Reading Progress**: Visual progress bar tracking article reading progress
-- **🏷️ Tagging System**: Organized content with categories and tags
-- **🔗 Social Sharing**: Easy sharing functionality for blog posts
+- **📄 MDX Support**: Rich content with embedded interactive components
+- **🎵 Audio Integration**: Read-aloud functionality with Web Audio API
+- **📊 Reading Progress**: Visual progress tracking for articles
+- **🏷️ Smart Tagging**: Organized content with categories and filtering
 
-### 🔐 **Admin System**
+### 🔐 **Enterprise Admin System**
 
-- **🔒 Authentication-Based Navigation**: Smart admin menu that only appears on admin pages when authenticated
-- **📱 Responsive Admin Interface**: Consistent admin navigation across desktop and mobile breakpoints
-- **🎛️ Conditional Menu Items**: Admin Links and CRM menu items show/hide based on authentication state
-- **🚪 Secure Logout**: Proper cleanup and redirection with localStorage authentication management
-- **🔄 Cross-Platform Consistency**: Desktop and mobile admin navigation behavior unified
+- **� Advanced Pagination**: Configurable page sizes with SQL-optimized queries
+- **� Powerful Search**: Full-text search across content with tag filtering
+- **🛡️ Server-Side Validation**: Type-safe CRUD operations with Zod schemas
+- **🎯 Real-Time Feedback**: Interactive forms with immediate validation
+- **� Secure Authentication**: Token-based auth with session management
 
 ### 🚀 **Performance & SEO**
 
-- **⚡ Core Web Vitals**: Optimized LCP (1.2s avg), FID (0ms), CLS (0.000)
-- **🔍 SEO Optimized**: Meta tags, structured data, and sitemap generation
-- **� Performance Score**: 91.3/100 average Lighthouse performance score
-- **🖼️ Image Optimization**: Lazy loading and responsive images
-- **📱 Progressive Enhancement**: Works without JavaScript
+- **⚡ Core Web Vitals**: 91.3/100 Lighthouse score with optimized LCP/FID/CLS
+- **🔍 SEO Optimized**: Complete meta tags, structured data, and sitemaps
+- **🖼️ Image Optimization**: Lazy loading with responsive image processing
 
-### 🧪 **Testing & Quality**
+### 🧪 **Comprehensive Testing**
 
-- **🧪 Comprehensive Test Suite**: 15+ test files covering SEO, accessibility, performance, admin interface, and functionality
-- **🎯 Core Web Vitals Testing**: Automated performance monitoring with Puppeteer and Windows-compatible process spawning
-- **🔍 SEO Validation**: Meta tags, headings, and content quality checks
-- **♿ Accessibility Testing**: WCAG compliance and keyboard navigation validation
-- **🔗 Link Validation**: Automated broken link detection across all pages
+- **🎯 Performance Testing**: Automated Core Web Vitals monitoring
+- **🔍 SEO Validation**: Complete meta tags and content quality checks
+- **♿ Accessibility Testing**: WCAG compliance and keyboard navigation
+- **🔗 Link Validation**: Automated broken link detection
+
+## 🛠️ Tech Stack
+
+**Frontend**: Astro 5.x, TypeScript, Tailwind CSS, React (selective hydration)
+**Backend**: Astro DB, Server Actions, Zod validation
+**Testing**: Vitest, Puppeteer, custom performance monitoring
+**Infrastructure**: Vercel deployment with edge optimization
+
+## 🚀 Quick Start
+
+```bash
+# Clone and install
+git clone https://github.com/nicolas-deyros/astro-portfolio-v2
+cd astro-portfolio-v2
+npm install
+
+# Development
+npm run dev          # Start dev server
+npm run build        # Production build
+npm test            # Run test suite
+
+# Quality checks
+npm run lint         # Code linting
+npm run test:critical # Essential tests
+npm run check:all    # Complete validation
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── actions/         # Server-side actions and CRUD operations
+├── components/      # Reusable UI components
+├── content/        # Blog posts and content collections
+├── layouts/        # Page layouts and templates
+├── pages/          # Routes and API endpoints
+│   └── admin/      # Admin interface with pagination/search
+└── styles/         # Global styles and themes
+
+test/               # Comprehensive test suites
+├── admin-interface.test.ts  # Admin functionality tests
+├── performance.test.ts      # Core Web Vitals monitoring
+├── seo.test.ts             # SEO validation
+└── accessibility.test.ts    # WCAG compliance tests
+```
+
+## 🔧 Admin Features
+
+Access the admin panel at `/admin` with enterprise-level functionality:
+
+- **📊 Data Management**: Paginated tables with 10/20/50/100 items per page
+- **🔍 Advanced Search**: Real-time filtering by title, URL, tags
+- **✏️ In-Place Editing**: Seamless edit mode with form validation
+- **🗑️ Safe Operations**: Confirmation modals for destructive actions
+- **📈 Performance**: Server-side SQL queries with LIMIT/OFFSET optimization
+
+## 🧪 Testing Philosophy
+
+Comprehensive testing ensures reliability and performance:
+
+- **Performance**: Automated Lighthouse scoring with 91.3/100 target
+- **SEO**: Meta tag validation and content quality scoring
+- **Accessibility**: WCAG compliance with keyboard navigation testing
+- **Functionality**: Complete admin interface and user journey testing
+
+## 📄 License
+
+MIT License - feel free to use this project as inspiration for your own portfolio!
+
+---
+
+**Built with ❤️ by Nicolás Deyros** | [Portfolio](https://nicolas-deyros.vercel.app) | [LinkedIn](https://linkedin.com/in/nicolas-deyros)
+
 - **📝 Content Testing**: MDX frontmatter validation and blog post structure
 - **🔤 Grammar Testing**: Automated text quality and spelling validation
 - **⬆️ UI Component Testing**: Back-to-top button functionality across multiple test suites
@@ -846,8 +913,8 @@ Add your analytics scripts in `src/layouts/index.astro`:
 // Google Analytics 4
 ---
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
-></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID">
+</script>
 <script>
 	window.dataLayer = window.dataLayer || []
 	function gtag() {

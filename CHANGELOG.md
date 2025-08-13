@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2025-08-13
+
+### 🚀 Major Server-Side Admin Enhancements
+
+- **Comprehensive Pagination System**: Implemented advanced pagination with configurable page sizes (10/20/50/100 items per page)
+- **Advanced Search & Filtering**: Added full-text search across titles, URLs, and tags with dedicated tag filtering dropdown
+- **Server-Side Data Processing**: Migrated to Astro server actions with SQL-based queries using LIMIT/OFFSET for optimal performance
+- **Enhanced Form Validation**: Comprehensive client and server-side validation with detailed error messaging and success feedback
+- **Type-Safe CRUD Operations**: Complete create, read, update, delete functionality with Zod schema validation
+- **Robust Authentication**: Enhanced token-based authentication system with proper session management
+
+### 🎨 Enhanced User Experience
+
+- **Interactive Confirmation Modals**: Professional confirmation dialogs for delete and update operations
+- **Real-Time Form Feedback**: Immediate validation feedback with error highlighting and success messaging
+- **Advanced Edit Mode**: In-place editing with form state management and cancel functionality
+- **Responsive Pagination UI**: Complete pagination controls with first/last page navigation and current page indicators
+- **Smart URL Management**: Proper URL parameter handling for pagination, search, and filtering state persistence
+
+### 🛠️ Technical Improvements
+
+- **Server Actions Architecture**: Created dedicated `src/actions/links.ts` with enterprise-level CRUD operations
+- **Database Query Optimization**: Efficient SQL queries with conditional WHERE clauses and proper pagination
+- **Enhanced Error Handling**: Comprehensive error management with user-friendly messaging
+- **Improved Code Organization**: Separated concerns with dedicated server actions and improved component structure
+- **Comment Standardization**: Migrated from HTML comments to Astro JSX comments for better formatting compatibility
+
+### 🧪 Enhanced Testing Coverage
+
+- **Pagination Testing**: Added comprehensive tests for pagination controls and page size changes
+- **Search & Filter Testing**: Validation of search functionality and URL parameter management
+- **Enhanced Form Testing**: Expanded tests for validation, error handling, and confirmation modals
+- **Authentication Updates**: Updated authentication tests for new token-based system
+- **UI Component Testing**: Added tests for new interactive elements and form states
+
+### 🔧 Infrastructure Updates
+
+- **Consistent Admin Pattern**: Standardized authentication and comment patterns across all admin pages
+- **Performance Optimizations**: Server-side data fetching with optimized database queries
+- **Type Safety**: Full TypeScript integration with Zod validation schemas
+- **Code Quality**: Improved formatting, linting, and conventional commit compliance
+
 ## [2.6.0] - 2025-08-06
 
 ### 🔐 Enhanced Admin Navigation & Authentication
