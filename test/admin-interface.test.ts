@@ -55,7 +55,98 @@ describe('Admin Interface Tests', () => {
 		if (server) server.kill()
 	})
 
-	describe('Admin Page Access and Authentication', () => {
+	describe('Pagination and Search Features', () => {
+		beforeAll(async () => {
+			// Set authentication for this test suite
+			await page.evaluate(() => {
+				localStorage.setItem('admin_authenticated', 'true')
+				localStorage.setItem('auth_token', 'test-token')
+			})
+			await page.goto(`${adminUrl}/links`)
+		})
+
+		it('should have pagination controls when there are multiple pages', async () => {
+			// Check for pagination section
+			const paginationSection = await page.$(
+				'.flex.items-center.justify-between',
+			)
+			if (paginationSection) {
+				// Check for page navigation
+				const pageLinks = await page.$$('a[href*="page="]')
+				expect(pageLinks.length).toBeGreaterThan(0)
+			}
+		})
+
+		it('should have search and filter form', async () => {
+			// Check for search input
+			const searchInput = await page.$('input[name="search"]')
+			expect(searchInput).toBeTruthy()
+
+			// Check for tag filter dropdown
+			const tagFilter = await page.$('select[name="tag"]')
+			expect(tagFilter).toBeTruthy()
+
+			// Check for page size selector
+			const pageSizeSelect = await page.$('select[name="pageSize"]')
+			expect(pageSizeSelect).toBeTruthy()
+
+			// Check for search button
+			const searchButton = await page.$('button[type="submit"]')
+			expect(searchButton).toBeTruthy()
+		})
+
+		it('should update URL when changing page size', async () => {
+			const pageSizeSelect = await page.$('select[name="pageSize"]')
+			if (pageSizeSelect) {
+				await pageSizeSelect.select('20')
+				await page.click('button[type="submit"]')
+				await page.waitForLoadState('networkidle')
+
+				expect(page.url()).toContain('pageSize=20')
+			}
+		})
+
+		it('should show results summary', async () => {
+			const resultsSummary = await page.$('text="Showing"')
+			expect(resultsSummary).toBeTruthy()
+		})
+	})
+
+	describe('Enhanced Form Features', () => {
+		beforeAll(async () => {
+			await page.evaluate(() => {
+				localStorage.setItem('admin_authenticated', 'true')
+				localStorage.setItem('auth_token', 'test-token')
+			})
+			await page.goto(`${adminUrl}/links`)
+		})
+
+		it('should have form validation error display', async () => {
+			const errorContainer = await page.$('#form-errors')
+			expect(errorContainer).toBeTruthy()
+
+			const successContainer = await page.$('#form-success')
+			expect(successContainer).toBeTruthy()
+		})
+
+		it('should have confirmation modals', async () => {
+			const deleteModal = await page.$('#confirm-delete-modal')
+			expect(deleteModal).toBeTruthy()
+
+			const updateModal = await page.$('#confirm-update-modal')
+			expect(updateModal).toBeTruthy()
+		})
+
+		it('should have edit mode functionality', async () => {
+			const clearButton = await page.$('#clear-form-btn')
+			expect(clearButton).toBeTruthy()
+
+			const formTitle = await page.$('#form-title')
+			expect(formTitle).toBeTruthy()
+		})
+	})
+
+	describe('Basic Admin Page Tests', () => {
 		it('should load the admin page', async () => {
 			const response = await page.goto(adminUrl)
 			expect(response?.status()).toBe(200)
