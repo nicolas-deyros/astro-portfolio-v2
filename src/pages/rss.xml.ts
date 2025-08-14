@@ -28,8 +28,17 @@ export const GET: APIRoute = async context => {
 				'Programmer, Designer, and Creator - Insights on web development, AI, and technology',
 			site: context.site || 'https://nicolasdeyros.dev',
 			items: sortedPosts.map(post => {
+				// Clean MDX content by removing import statements and processing
+				const cleanMdxContent = post.body
+					// Remove import statements
+					.replace(/^import\s+.*$/gm, '')
+					// Remove empty lines that were left by imports
+					.replace(/^\s*\n/gm, '')
+					// Trim whitespace
+					.trim()
+
 				// Enhanced content processing
-				const rawHtml = parser.render(post.body)
+				const rawHtml = parser.render(cleanMdxContent)
 				const cleanContent = sanitizeHtml(rawHtml, {
 					allowedTags: [
 						...sanitizeHtml.defaults.allowedTags,
