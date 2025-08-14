@@ -1,0 +1,412 @@
+---
+title: Implementing Chrome AI APIs in Astro Blog
+slug: chrome-ai-translation-summarizer-implementation
+date: August 13 2025
+author: Nicolas Deyros
+description: Deep dive into implementing Chrome's experimental AI Translation and Summarizer APIs in an Astro-powered blog.
+draft: false
+category: Web Development
+tags:
+  [
+    'Chrome AI',
+    'Translation API',
+    'Summarizer API',
+    'Astro',
+    'TypeScript',
+    'Web APIs',
+    'Browser AI',
+    'Progressive Enhancement',
+    'Machine Learning',
+    'Claude Sonnet',
+  ]
+---
+
+import { Image } from 'astro:assets'
+import Video from '@components/Video.astro'
+
+The future of web development is here, and it runs directly in your browser. Recently, I integrated Chrome's experimental **AI Translation API** and **Summarizer API** into this Astro-powered blog, bringing client-side AI capabilities to enhance the reading experience. This implementation showcases how modern browsers are becoming powerful AI platforms.
+
+## Why Browser-Native AI?
+
+Traditional AI implementations require server-side processing, API keys, and external service dependencies. Chrome's experimental AI APIs change this paradigm by running **entirely in the browser**, offering:
+
+- **Zero latency** - No network requests needed
+- **Privacy-first** - Content never leaves the user's device
+- **Cost-effective** - No API usage fees or rate limits
+- **Offline capability** - Works without internet connectivity
+- **Progressive enhancement** - Graceful fallbacks for unsupported browsers
+
+## Technical Architecture Overview
+
+The implementation consists of two main components integrated into the Astro blog architecture:
+
+### Core Components Structure
+
+```
+src/
+├── components/
+│   ├── Translation/
+│   │   └── BlogTranslator.astro
+│   └── Summary/
+│       └── BlogSummarizer.astro
+├── utils/
+│   ├── translator.ts
+│   └── summarizer.ts
+└── pages/blog/
+    └── [slug].astro
+```
+
+## Chrome AI Translation API Implementation
+
+The [Chrome AI Translation API](https://developer.chrome.com/docs/ai/translator-api) provides on-device language translation capabilities. Here's how I implemented it:
+
+### 1. TypeScript Interface Definition
+
+```typescript
+// translator.ts
+declare global {
+	interface Window {
+		translation: {
+			canTranslate(options: {
+				sourceLanguage: string
+				targetLanguage: string
+			}): Promise<'readily' | 'after-download' | 'no'>
+
+			createTranslator(options: {
+				sourceLanguage: string
+				targetLanguage: string
+			}): Promise<{
+				translate(text: string): Promise<string>
+				destroy(): void
+			}>
+		}
+	}
+}
+```
+
+### 2. Translation Service Class
+
+```typescript
+export class BlogTranslator {
+	private translator: any = null
+	private isInitialized = false
+
+	async isSupported(): Promise<boolean> {
+		return 'translation' in window && 'canTranslate' in window.translation
+	}
+
+	async canTranslate(
+		sourceLanguage: string,
+		targetLanguage: string,
+	): Promise<string> {
+		if (!(await this.isSupported())) {
+			return 'no'
+		}
+
+		return await window.translation.canTranslate({
+			sourceLanguage,
+			targetLanguage,
+		})
+	}
+
+	async translateBlogPost(
+		content: string,
+		targetLanguage: string,
+		onProgress?: (progress: number) => void,
+	): Promise<TranslationResult> {
+		// Implementation details...
+	}
+}
+```
+
+### 3. Astro Component Integration
+
+The `BlogTranslator.astro` component provides a clean UI with:
+
+- **Language selection dropdown** with 50+ supported languages
+- **Real-time progress tracking** using semantic HTML `<progress>` elements
+- **Error handling** with user-friendly dialog messages
+- **Responsive design** that works across all device sizes
+
+```astro
+<!-- BlogTranslator.astro -->
+<div class="blog-translator">
+	<select id="language-selector">
+		<option value="es">Spanish</option>
+		<option value="fr">French</option>
+		<!-- ... more languages -->
+	</select>
+
+	<button id="translate-btn">🌐 Translate Article</button>
+
+	<progress id="progress-bar" value="0" max="100"></progress>
+</div>
+```
+
+## Chrome AI Summarizer API Implementation
+
+The [Chrome AI Summarizer API](https://developer.chrome.com/docs/ai/summarizer-api) generates intelligent content summaries. The implementation follows similar patterns:
+
+### 1. Summarizer TypeScript Interface
+
+```typescript
+// summarizer.ts
+type SummarizerType = 'teaser' | 'key-points' | 'headline'
+type SummarizerLength = 'short' | 'medium' | 'long'
+
+declare global {
+	interface Window {
+		Summarizer: {
+			availability(): Promise<'available' | 'downloadable' | 'no'>
+			create(options: {
+				type?: SummarizerType
+				length?: SummarizerLength
+				format?: 'markdown' | 'plain-text'
+			}): Promise<{
+				summarize(text: string): Promise<string>
+				destroy(): void
+			}>
+		}
+	}
+}
+```
+
+### 2. Summarizer Service Implementation
+
+```typescript
+export class BlogSummarizer {
+	async summarizeBlogPost(
+		markdown: string,
+		options: SummaryOptions,
+		onProgress?: (status: string) => void,
+	): Promise<SummaryResult> {
+		// Check API availability
+		const availability = await window.Summarizer.availability()
+		if (availability === 'downloadable') {
+			onProgress?.('Model downloading...')
+			await this.waitForModelDownload()
+		}
+
+		// Create summarizer instance
+		const summarizer = await window.Summarizer.create(options)
+
+		// Process and clean markdown content
+		const cleanText = this.cleanMarkdownForSummarization(markdown)
+
+		// Generate summary
+		const summary = await summarizer.summarize(cleanText)
+
+		return {
+			summary,
+			type: options.type,
+			length: options.length,
+			wordCount: summary.trim().split(/\s+/).length,
+			timestamp: new Date().toISOString(),
+		}
+	}
+}
+```
+
+### 3. Enhanced UI with Multiple Summary Types
+
+The summarizer component offers three summary types:
+
+- **TL;DR (Teaser)** - Quick, engaging overview
+- **Key Points** - Main concepts and takeaways
+- **Headline** - Concise, social-media ready summary
+
+```astro
+<div class="summary-controls">
+	<button data-type="teaser">TL;DR</button>
+	<button data-type="key-points">Key Points</button>
+	<button data-type="headline">Headline</button>
+</div>
+```
+
+## Key Implementation Challenges & Solutions
+
+### 1. API Compatibility Issues
+
+**Challenge**: The `'tl;dr'` summary type wasn't recognized by the API.
+
+**Solution**: Mapped user-friendly "TL;DR" to the valid `'teaser'` type internally while maintaining the familiar UI label.
+
+### 2. Progress Bar Standardization
+
+**Challenge**: Inconsistent progress implementations using div-based fake progress bars.
+
+**Solution**: Migrated to semantic HTML `<progress>` elements with cross-browser CSS styling:
+
+```css
+progress {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+progress::-webkit-progress-value {
+	background-color: rgb(37 99 235);
+	border-radius: 0.5rem;
+	transition: all 0.3s ease-in-out;
+}
+
+progress::-moz-progress-bar {
+	background-color: rgb(37 99 235);
+	border-radius: 0.5rem;
+}
+```
+
+### 3. Button Selection State Management
+
+**Challenge**: Selected summary type buttons had conflicting CSS classes causing invisible text.
+
+**Solution**: Implemented proper state management with complete class replacement:
+
+```javascript
+// Remove all state classes, then add appropriate ones
+summaryTypeBtns.forEach(b => {
+	b.classList.remove(
+		'bg-blue-600',
+		'text-white',
+		'border-blue-600',
+		'shadow-md',
+	)
+	b.classList.add('bg-white', 'text-gray-700', 'border-gray-300')
+})
+
+// Apply selected state to clicked button
+btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300')
+btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'shadow-md')
+```
+
+## Browser Support & Progressive Enhancement
+
+### Feature Detection
+
+Both APIs implement robust feature detection:
+
+```typescript
+async isSupported(): Promise<boolean> {
+  return 'translation' in window && 'canTranslate' in window.translation
+}
+
+async checkSummarizer(): Promise<boolean> {
+  return 'Summarizer' in window
+}
+```
+
+### Graceful Fallbacks
+
+When APIs aren't available, users see helpful information dialogs explaining:
+
+- How to enable Chrome flags
+- Alternative browser recommendations
+- Manual summarization suggestions
+
+### Chrome Flags Required
+
+Users need these experimental flags enabled:
+
+```
+chrome://flags/#optimization-guide-on-device-model
+chrome://flags/#translation-api
+chrome://flags/#summarization-api-for-gemini-nano
+```
+
+## Performance Optimizations
+
+### 1. Lazy Loading
+
+Components only initialize when needed, reducing initial bundle size.
+
+### 2. Efficient Content Processing
+
+Markdown content is cleaned and optimized before API processing:
+
+````typescript
+private cleanMarkdownForSummarization(markdown: string): string {
+  return markdown
+    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+    .replace(/`([^`]+)`/g, '$1')     // Remove inline code
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1') // Keep alt text only
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Keep link text only
+    .replace(/^#{1,6}\s+/gm, '')     // Remove headers
+    .replace(/\n\s*\n/g, '\n\n')     // Clean whitespace
+}
+````
+
+### 3. Smart Progress Animation
+
+Realistic progress indication based on actual processing stages rather than arbitrary increments.
+
+## Integration with Astro
+
+The APIs integrate seamlessly with Astro's architecture:
+
+### 1. Component Props
+
+```astro
+---
+interface Props {
+	className?: string
+	markdown?: string
+}
+
+const { className = '', markdown = '' } = Astro.props
+---
+
+<BlogSummarizer className={className} markdown={markdown} />
+```
+
+### 2. SSR Compatibility
+
+All AI processing happens client-side, maintaining Astro's SSR benefits while adding progressive enhancement.
+
+### 3. View Transitions Support
+
+Components properly handle Astro's view transitions with cleanup functions:
+
+```javascript
+document.addEventListener('astro:before-preparation', () => {
+	if (cleanup) {
+		cleanup()
+		cleanup = null
+	}
+})
+```
+
+## Future Possibilities
+
+This implementation opens doors for exciting possibilities:
+
+- **Multi-language content creation** workflows
+- **Accessibility improvements** with AI-generated descriptions
+- **Content optimization** based on AI-generated insights
+- **Personalized reading experiences** with AI-driven customization
+
+## Getting Started
+
+Want to implement these APIs in your own project? Here's the checklist:
+
+1. **Enable Chrome flags** for AI APIs
+2. **Implement TypeScript interfaces** for type safety
+3. **Create service classes** for API interaction
+4. **Build UI components** with proper error handling
+5. **Add progressive enhancement** for unsupported browsers
+6. **Test thoroughly** across different content types
+
+## Conclusion
+
+Chrome's AI APIs represent a paradigm shift toward privacy-focused, client-side AI processing. This implementation demonstrates how modern web applications can leverage browser-native AI capabilities while maintaining excellent user experiences and progressive enhancement principles.
+
+The integration of translation and summarization features directly into the blog enhances accessibility and user engagement without compromising performance or privacy. As these APIs mature and gain broader browser support, they'll become essential tools for creating intelligent, user-centric web applications.
+
+---
+
+_This implementation was developed with assistance from **Claude Sonnet**, whose insights were invaluable in solving complex integration challenges and optimizing the user experience. The complete source code is available in the [astro-portfolio-v2](https://github.com/nicolas-deyros/astro-portfolio-v2) repository._
+
+**Resources:**
+
+- [Chrome AI Translation API Documentation](https://developer.chrome.com/docs/ai/translator-api)
+- [Chrome AI Summarizer API Documentation](https://developer.chrome.com/docs/ai/summarizer-api)
+- [Astro Framework](https://astro.build)
+- [TypeScript](https://www.typescriptlang.org)

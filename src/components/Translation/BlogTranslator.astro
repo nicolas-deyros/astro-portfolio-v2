@@ -1,0 +1,586 @@
+---
+// Translation component for blog posts
+export interface Props {
+	className?: string
+}
+
+const { className = '' } = Astro.props
+---
+
+<div
+	class={`translation-panel bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700 ${className}`}>
+	<div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+		<div class="flex items-center gap-3">
+			<div
+				class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+				<span class="text-sm text-blue-600 dark:text-blue-400">🌐</span>
+			</div>
+			<div>
+				<h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+					Translate this article
+				</h3>
+				<p class="text-xs text-gray-600 dark:text-gray-400">
+					Powered by Chrome AI
+				</p>
+			</div>
+		</div>
+
+		<div class="flex items-center gap-3">
+			<select
+				id="language-selector"
+				class="focus:ring-opacity-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+				<option value="">Select language...</option>
+				<option value="es">🇪🇸 Español</option>
+				<option value="pt">🇵🇹 Português</option>
+				<option value="fr">🇫🇷 Français</option>
+				<option value="de">🇩🇪 Deutsch</option>
+				<option value="it">🇮🇹 Italiano</option>
+			</select>
+
+			<button
+				id="translate-btn"
+				disabled
+				class="focus:ring-opacity-20 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-400">
+				<span class="button-text">Translate</span>
+			</button>
+		</div>
+	</div>
+
+	<!-- API Support Warning -->
+	<div
+		id="api-warning"
+		class="mt-4 hidden rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20">
+		<div class="flex items-start gap-2">
+			<span class="text-yellow-600 dark:text-yellow-400">⚠️</span>
+			<div class="text-sm">
+				<p class="font-medium text-yellow-800 dark:text-yellow-200">
+					Chrome AI Translation API not available
+				</p>
+				<p class="mt-1 text-yellow-700 dark:text-yellow-300">
+					This feature requires a Chromium-based browser (Chrome, Edge, etc.)
+					with AI features enabled.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Model Download Warning -->
+	<div
+		id="download-warning"
+		class="mt-4 hidden rounded-md border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20">
+		<div class="flex items-start gap-2">
+			<span class="text-blue-600 dark:text-blue-400">📥</span>
+			<div class="text-sm">
+				<p class="font-medium text-blue-800 dark:text-blue-200">
+					Translation models downloading
+				</p>
+				<p class="mt-1 text-blue-700 dark:text-blue-300">
+					AI translation models are being downloaded. This may take a few
+					minutes on first use.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Translation Progress -->
+	<div id="translation-progress" class="mt-4 hidden">
+		<div class="flex items-center gap-3">
+			<div
+				class="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent">
+			</div>
+			<div>
+				<p class="text-sm font-medium text-gray-900 dark:text-white">
+					<span id="progress-text">Translating article...</span>
+				</p>
+				<p class="text-xs text-gray-600 dark:text-gray-400">
+					This may take a few moments
+				</p>
+			</div>
+		</div>
+		<div class="mt-3">
+			<progress
+				id="progress-bar"
+				class="h-2 w-full rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-gray-200 dark:[&::-webkit-progress-bar]:bg-gray-700 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-blue-600"
+				value="0"
+				max="100">
+			</progress>
+		</div>
+	</div>
+</div>
+
+<!-- Translation Result Modal -->
+<div id="translation-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+	<div class="flex min-h-screen items-center justify-center p-4">
+		<div class="bg-opacity-50 fixed inset-0 bg-black transition-opacity"></div>
+
+		<div
+			class="relative max-h-[80vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-800">
+			<!-- Modal Header -->
+			<div
+				class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700">
+				<div>
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+						Translated Article
+					</h3>
+					<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+						<span id="translation-info"></span>
+					</p>
+				</div>
+				<button
+					id="close-modal"
+					class="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200">
+					<svg
+						class="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M6 18L18 6M6 6l12 12">
+						</path>
+					</svg>
+				</button>
+			</div>
+
+			<!-- Modal Content -->
+			<div class="max-h-96 overflow-y-auto p-6">
+				<div
+					id="translated-content"
+					class="prose prose-gray dark:prose-invert max-w-none">
+					<!-- Translated content will be inserted here -->
+				</div>
+			</div>
+
+			<!-- Modal Footer -->
+			<div
+				class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-900">
+				<div class="text-xs text-gray-500 dark:text-gray-400">
+					Translation powered by Chrome AI • Quality may vary
+				</div>
+				<div class="flex gap-3">
+					<button
+						id="copy-translation"
+						class="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+						Copy Text
+					</button>
+					<button
+						id="close-modal-btn"
+						class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Translation Error Dialog -->
+<dialog
+	id="translation-error-dialog"
+	class="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+	<form method="dialog" class="flex flex-col items-center">
+		<div class="mb-4 flex items-center gap-3">
+			<svg
+				class="h-6 w-6 text-red-500 dark:text-red-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+				</path>
+			</svg>
+			<span class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+				Translation Error
+			</span>
+		</div>
+		<div
+			id="translation-error-message"
+			class="mb-6 max-h-64 overflow-y-auto text-center text-sm text-slate-700 dark:text-slate-300">
+		</div>
+		<button
+			class="rounded-md bg-blue-600 px-6 py-2 text-base font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-offset-slate-900"
+			value="close">
+			OK
+		</button>
+	</form>
+</dialog>
+
+<script>
+	import { blogTranslator } from '../../utils/translator'
+
+	interface TranslationElements {
+		languageSelector: HTMLSelectElement
+		translateBtn: HTMLButtonElement
+		apiWarning: HTMLElement
+		downloadWarning: HTMLElement
+		translationProgress: HTMLElement
+		progressBar: HTMLElement
+		progressText: HTMLElement
+		modal: HTMLElement
+		translatedContent: HTMLElement
+		translationInfo: HTMLElement
+		copyBtn: HTMLButtonElement
+		closeModalBtns: NodeListOf<HTMLButtonElement>
+	}
+
+	// Utility function to show error dialogs
+	function showTranslationError(message: string): void {
+		const dialog = document.getElementById(
+			'translation-error-dialog',
+		) as HTMLDialogElement
+		const messageEl = document.getElementById('translation-error-message')
+		if (messageEl) {
+			messageEl.textContent = message
+		}
+		dialog?.showModal()
+	}
+
+	async function initializeTranslation(): Promise<void> {
+		const elements = getElements()
+		if (!elements) return
+
+		// Check API availability
+		const isAvailable = await blogTranslator.isAPIAvailable()
+
+		if (!isAvailable) {
+			elements.apiWarning.classList.remove('hidden')
+			elements.translateBtn.disabled = true
+			elements.translateBtn.title = 'Chrome AI Translation API not available'
+			return
+		}
+
+		// Enable language selector
+		elements.languageSelector.addEventListener('change', () => {
+			elements.translateBtn.disabled = !elements.languageSelector.value
+		})
+
+		// Handle translation
+		elements.translateBtn.addEventListener('click', async () => {
+			const targetLanguage = elements.languageSelector.value
+			if (!targetLanguage) return
+
+			await performTranslation(elements, targetLanguage)
+		})
+
+		// Modal event listeners
+		elements.closeModalBtns.forEach(btn => {
+			btn.addEventListener('click', () => closeModal(elements))
+		})
+
+		// Copy translation
+		elements.copyBtn.addEventListener('click', () => {
+			copyTranslationToClipboard(elements)
+		})
+
+		// Close modal on backdrop click
+		elements.modal.addEventListener('click', e => {
+			if (e.target === elements.modal) {
+				closeModal(elements)
+			}
+		})
+
+		// Escape key to close modal
+		document.addEventListener('keydown', e => {
+			if (e.key === 'Escape' && !elements.modal.classList.contains('hidden')) {
+				closeModal(elements)
+			}
+		})
+	}
+
+	function getElements(): TranslationElements | null {
+		const languageSelector = document.getElementById(
+			'language-selector',
+		) as HTMLSelectElement
+		const translateBtn = document.getElementById(
+			'translate-btn',
+		) as HTMLButtonElement
+		const apiWarning = document.getElementById('api-warning')
+		const downloadWarning = document.getElementById('download-warning')
+		const translationProgress = document.getElementById('translation-progress')
+		const progressBar = document.getElementById('progress-bar')
+		const progressText = document.getElementById('progress-text')
+		const modal = document.getElementById('translation-modal')
+		const translatedContent = document.getElementById('translated-content')
+		const translationInfo = document.getElementById('translation-info')
+		const copyBtn = document.getElementById(
+			'copy-translation',
+		) as HTMLButtonElement
+		const closeModalBtns = document.querySelectorAll(
+			'#close-modal, #close-modal-btn',
+		) as NodeListOf<HTMLButtonElement>
+
+		if (
+			!languageSelector ||
+			!translateBtn ||
+			!apiWarning ||
+			!downloadWarning ||
+			!translationProgress ||
+			!progressBar ||
+			!progressText ||
+			!modal ||
+			!translatedContent ||
+			!translationInfo ||
+			!copyBtn
+		) {
+			console.error('Translation: Required elements not found')
+			return null
+		}
+
+		return {
+			languageSelector,
+			translateBtn,
+			apiWarning,
+			downloadWarning,
+			translationProgress,
+			progressBar,
+			progressText,
+			modal,
+			translatedContent,
+			translationInfo,
+			copyBtn,
+			closeModalBtns,
+		}
+	}
+
+	async function performTranslation(
+		elements: TranslationElements,
+		targetLanguage: string,
+	): Promise<void> {
+		// Get original content
+		const originalContent = getOriginalContent()
+		if (!originalContent) {
+			showTranslationError('Could not find article content to translate.')
+			return
+		}
+
+		// Hide any previous warnings
+		elements.downloadWarning.classList.add('hidden')
+
+		// Show progress
+		showTranslationProgress(elements)
+
+		try {
+			// Check model availability first
+			elements.progressText.textContent = 'Checking translation models...'
+
+			// Quick availability check
+			const availability = await blogTranslator.checkTranslationAvailability(
+				'en',
+				targetLanguage,
+			)
+
+			if (availability === 'after-download') {
+				elements.progressText.textContent = 'Waiting for models to download...'
+				elements.downloadWarning.classList.remove('hidden')
+
+				// Wait for models to be ready
+				const waitResult = await blogTranslator.waitForModelDownload(
+					'en',
+					targetLanguage,
+					60000,
+				)
+
+				if (waitResult === 'timeout') {
+					hideTranslationProgress(elements)
+					showTranslationError(
+						'Translation models are taking too long to download. Please try again later.',
+					)
+					return
+				}
+
+				if (waitResult === 'unavailable') {
+					hideTranslationProgress(elements)
+					showTranslationError(
+						'Translation is not available for this language pair.',
+					)
+					return
+				}
+			}
+
+			// Now proceed with translation
+			elements.progressText.textContent = 'Translating article...'
+			elements.downloadWarning.classList.add('hidden')
+
+			// Simulate progress updates
+			let progress = 20 // Start at 20% since we've done initial checks
+			const progressInterval = setInterval(() => {
+				progress += Math.random() * 10
+				if (progress > 90) progress = 90
+				const progressBar = elements.progressBar as HTMLProgressElement
+				progressBar.value = Math.round(progress)
+			}, 300)
+
+			// Perform translation
+			const result = await blogTranslator.translateBlogPost(
+				originalContent,
+				targetLanguage,
+			)
+
+			// Complete progress
+			clearInterval(progressInterval)
+			const progressBar = elements.progressBar as HTMLProgressElement
+			progressBar.value = 100
+
+			setTimeout(() => {
+				hideTranslationProgress(elements)
+
+				if (
+					result.success &&
+					result.translatedContent &&
+					result.sourceLanguage
+				) {
+					showTranslationResult(
+						elements,
+						result.translatedContent,
+						result.sourceLanguage,
+						targetLanguage,
+					)
+				} else {
+					// Show user-friendly error messages
+					if (
+						result.error?.includes('models need to be downloaded') ||
+						result.error?.includes('models are being downloaded')
+					) {
+						elements.downloadWarning.classList.remove('hidden')
+						showTranslationError(
+							'Translation models are still downloading. Please wait a moment and try again.',
+						)
+					} else {
+						showTranslationError(`Translation failed: ${result.error}`)
+					}
+				}
+			}, 500)
+		} catch (error) {
+			hideTranslationProgress(elements)
+			console.error('Translation error:', error)
+
+			// Handle specific error types
+			if (
+				error instanceof Error &&
+				(error.message.includes('user gesture') ||
+					error.message.includes('NotAllowedError') ||
+					error.message.includes('downloading'))
+			) {
+				elements.downloadWarning.classList.remove('hidden')
+				showTranslationError(
+					'Translation models are being downloaded. Please wait a moment and try again.',
+				)
+			} else {
+				showTranslationError('Translation failed. Please try again.')
+			}
+		}
+	}
+
+	function getOriginalContent(): string {
+		// Get the blog content from the page
+		const blogContent = document.getElementById('blog-content')
+		if (!blogContent) return ''
+
+		// Extract text content while preserving some structure
+		const content = blogContent.innerHTML
+
+		// Convert HTML back to a markdown-like format for better translation
+		const textContent = content
+			.replace(/<h([1-6])>/gi, '\n# ')
+			.replace(/<\/h[1-6]>/gi, '\n')
+			.replace(/<p>/gi, '\n')
+			.replace(/<\/p>/gi, '\n')
+			.replace(/<strong>/gi, '**')
+			.replace(/<\/strong>/gi, '**')
+			.replace(/<em>/gi, '*')
+			.replace(/<\/em>/gi, '*')
+			.replace(/<code>/gi, '`')
+			.replace(/<\/code>/gi, '`')
+			.replace(/<br\s*\/?>/gi, '\n')
+			.replace(/<[^>]*>/gi, '') // Remove remaining HTML tags
+			.replace(/\n\s*\n/g, '\n\n') // Clean up extra newlines
+			.trim()
+
+		return textContent
+	}
+
+	function showTranslationProgress(elements: TranslationElements): void {
+		elements.translateBtn.disabled = true
+		elements.languageSelector.disabled = true
+		elements.translationProgress.classList.remove('hidden')
+		const progressBar = elements.progressBar as HTMLProgressElement
+		progressBar.value = 0
+
+		const buttonText = elements.translateBtn.querySelector('.button-text')
+		if (buttonText) {
+			buttonText.textContent = 'Translating...'
+		}
+	}
+
+	function hideTranslationProgress(elements: TranslationElements): void {
+		elements.translateBtn.disabled = false
+		elements.languageSelector.disabled = false
+		elements.translationProgress.classList.add('hidden')
+
+		const buttonText = elements.translateBtn.querySelector('.button-text')
+		if (buttonText) {
+			buttonText.textContent = 'Translate'
+		}
+	}
+
+	function showTranslationResult(
+		elements: TranslationElements,
+		translatedContent: string,
+		sourceLanguage: string,
+		targetLanguage: string,
+	): void {
+		// Convert translated content to HTML for display
+		const htmlContent = translatedContent
+			.replace(/\n\n/g, '</p><p>')
+			.replace(/\n/g, '<br>')
+			.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+			.replace(/\*([^*]+)\*/g, '<em>$1</em>')
+			.replace(/`([^`]+)`/g, '<code>$1</code>')
+
+		elements.translatedContent.innerHTML = `<p>${htmlContent}</p>`
+
+		const sourceLangName = blogTranslator.getLanguageName(sourceLanguage)
+		const targetLangName = blogTranslator.getLanguageName(targetLanguage)
+		elements.translationInfo.textContent = `Translated from ${sourceLangName} to ${targetLangName}`
+
+		elements.modal.classList.remove('hidden')
+		document.body.style.overflow = 'hidden'
+	}
+
+	function closeModal(elements: TranslationElements): void {
+		elements.modal.classList.add('hidden')
+		document.body.style.overflow = ''
+	}
+
+	function copyTranslationToClipboard(elements: TranslationElements): void {
+		const text = elements.translatedContent.innerText
+		navigator.clipboard
+			.writeText(text)
+			.then(() => {
+				const originalText = elements.copyBtn.textContent
+				elements.copyBtn.textContent = 'Copied!'
+				setTimeout(() => {
+					elements.copyBtn.textContent = originalText
+				}, 2000)
+			})
+			.catch(err => {
+				console.error('Failed to copy:', err)
+				showTranslationError('Failed to copy to clipboard')
+			})
+	}
+
+	// Initialize when DOM is ready
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initializeTranslation)
+	} else {
+		initializeTranslation()
+	}
+
+	// Re-initialize on Astro page transitions
+	document.addEventListener('astro:page-load', initializeTranslation)
+</script>

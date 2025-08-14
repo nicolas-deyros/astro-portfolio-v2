@@ -20,6 +20,8 @@ const { Content } = await render()
 
 import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
 import Section from '@components/Section.astro'
+import BlogSummarizer from '@components/Summary/BlogSummarizer.astro'
+import BlogTranslator from '@components/Translation/BlogTranslator.astro'
 import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
 
@@ -135,6 +137,12 @@ const audioText = markdown
 				/>
 			</div>
 
+			<!-- Summary Component -->
+			<BlogSummarizer className="mb-6" markdown={markdown} />
+
+			<!-- Translation Component -->
+			<BlogTranslator className="mb-6" />
+
 			<div
 				id="blog-content"
 				class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl max-w-none">
@@ -145,6 +153,11 @@ const audioText = markdown
 </Layout>
 
 <!-- Enhanced Audio Player with Web Audio API + Web Speech API -->
+<script define:vars={{ markdown }}>
+	// Make markdown content available to summarizer
+	window.__BLOG_MARKDOWN__ = markdown
+</script>
+
 <script>
 	// Progress bar functionality only (audio handled by React component)
 	function initializeBlogFeatures(): (() => void) | null {
@@ -158,7 +171,7 @@ const audioText = markdown
 		}
 	}
 
-	function initProgressBar() {
+	function initProgressBar(): (() => void) | null {
 		const progressBar = document.getElementById('progress-bar')
 		const blogContent = document.getElementById('blog-content')
 		const progressPercent = document.getElementById('progress-percent')
@@ -168,7 +181,7 @@ const audioText = markdown
 			return null
 		}
 
-		function updateProgressBar() {
+		function updateProgressBar(): void {
 			if (!blogContent) {
 				console.warn('blogContent is null, cannot update progress bar')
 				return
@@ -196,14 +209,14 @@ const audioText = markdown
 			}
 		}
 
-		const handleScroll = () => updateProgressBar()
-		const handleResize = () => updateProgressBar()
+		const handleScroll = (): void => updateProgressBar()
+		const handleResize = (): void => updateProgressBar()
 
 		window.addEventListener('scroll', handleScroll)
 		window.addEventListener('resize', handleResize)
 		updateProgressBar()
 
-		return () => {
+		return (): void => {
 			window.removeEventListener('scroll', handleScroll)
 			window.removeEventListener('resize', handleResize)
 		}

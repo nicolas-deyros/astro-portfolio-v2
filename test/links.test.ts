@@ -1,5 +1,5 @@
-import { ChildProcess,spawn } from 'child_process'
-import { afterAll,beforeAll, describe, expect, it } from 'vitest'
+import { ChildProcess, spawn } from 'child_process'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 interface Link {
 	id: number
@@ -10,7 +10,10 @@ interface Link {
 }
 
 // Helper function to wait for server to be ready
-async function waitForServer(url: string, timeout: number = 60000): Promise<void> {
+async function waitForServer(
+	url: string,
+	timeout: number = 60000,
+): Promise<void> {
 	const start = Date.now()
 	console.log(`Waiting for server at ${url}...`)
 	while (Date.now() - start < timeout) {
@@ -18,12 +21,13 @@ async function waitForServer(url: string, timeout: number = 60000): Promise<void
 			const response = await fetch(url)
 			if (response.status === 200) {
 				const text = await response.text()
-				if (text.length > 2) { // check for non-empty array '[]'
+				if (text.length > 2) {
+					// check for non-empty array '[]'
 					console.log(`Server at ${url} is ready!`)
 					return
 				}
 			}
-		} catch (err) {
+		} catch {
 			// wait
 		}
 		await new Promise(resolve => setTimeout(resolve, 1000))
@@ -37,8 +41,8 @@ describe('Links API Endpoint Validation', () => {
 	const serverUrl = 'http://localhost:4321'
 
 	beforeAll(async () => {
-		server = spawn('npx', ['astro', 'dev', '--port', '4321']);
-		await waitForServer(`${serverUrl}/api/links.json`);
+		server = spawn('npx', ['astro', 'dev', '--port', '4321'])
+		await waitForServer(`${serverUrl}/api/links.json`)
 		const response = await fetch(`${serverUrl}/api/links.json`)
 		linksData = await response.json()
 	}, 90000)
@@ -108,7 +112,9 @@ describe('Links API Endpoint Validation', () => {
 					oneYearFromNow.setFullYear(now.getFullYear() + 1)
 
 					// Date should not be more than 1 year in the future
-					expect(linkDate.getTime()).toBeLessThanOrEqual(oneYearFromNow.getTime())
+					expect(linkDate.getTime()).toBeLessThanOrEqual(
+						oneYearFromNow.getTime(),
+					)
 
 					// Date should not be before 2020 (reasonable minimum)
 					const minDate = new Date('2020-01-01')

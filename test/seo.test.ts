@@ -1,7 +1,7 @@
-import { readdirSync,readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import matter from 'gray-matter'
 import { join } from 'path'
-import { beforeAll,describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 interface BlogPostData {
 	title: string
@@ -127,7 +127,7 @@ describe('SEO Validation', () => {
 					`Blog post ${post.slug} should have a description`,
 				).toBeTruthy()
 				expect(
-					post.data.description!.length,
+					post.data.description?.length || 0,
 					`Description in ${post.slug} should not be empty`,
 				).toBeGreaterThan(0)
 			})
@@ -163,7 +163,7 @@ describe('SEO Validation', () => {
 		it('should have unique descriptions across all blog posts', () => {
 			const descriptions = blogPosts
 				.filter(post => post.data.description)
-				.map(post => post.data.description!.toLowerCase())
+				.map(post => (post.data.description || '').toLowerCase())
 
 			const duplicates = descriptions.filter(
 				(desc, index) => descriptions.indexOf(desc) !== index,
