@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### ✨ Enhanced Browser Compatibility
+
+- **Browser Detection Utility**: Added `src/lib/browserDetection.ts` for Chrome AI compatibility detection
+  - Detects Chrome 129+ support for AI features
+  - Progressive enhancement for unsupported browsers
+  - Runtime API availability checking
+- **Component Visibility Control**: Chrome AI components now hide automatically for incompatible browsers
+  - BlogTranslator and BlogSummarizer respect browser capabilities
+  - Graceful degradation without breaking functionality
+  - User-friendly messaging for unsupported browsers
+- **Testing Coverage**: Added comprehensive browser detection tests
+  - User agent parsing validation
+  - API availability detection
+  - Fallback behavior verification
+  - Integration with existing Chrome AI test suite
+- **Documentation Updates**: Enhanced Chrome AI documentation with browser compatibility information
+
 ## [2.8.0] - 2025-08-14
 
 ### 🤖 Chrome AI Integration

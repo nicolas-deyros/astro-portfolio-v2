@@ -2,7 +2,38 @@
 
 ## Overview
 
-This project integrates Chrome's experimental AI APIs (Translation and Summarizer) to enhance blog content accessibility and user experience. The implementation includes robust testing infrastructure and fallback strategies.
+This project integrates Chrome's experimental AI APIs (Translation and Summarizer) to enhance blog content accessibility and user experience. The implementation includes robust testing infrastructure, browser compatibility detection, and fallback strategies.
+
+## Browser Compatibility
+
+### Requirements
+
+- **Chrome 129+**: Required for Chrome AI features
+- **Experimental Features**: Chrome flags must be enabled (see Setup section)
+- **Progressive Enhancement**: Components gracefully degrade for unsupported browsers
+
+### Browser Detection
+
+The implementation includes automatic browser detection via `src/lib/browserDetection.ts`:
+
+- **Supported**: Chrome 129+, Edge 129+ (future)
+- **Hidden**: Components are automatically hidden for incompatible browsers
+- **Non-blocking**: Compatible browsers show components even if AI APIs aren't immediately available
+
+```typescript
+import { detectBrowser, supportsAI } from '../../lib/browserDetection'
+
+// Detect browser capability
+const browserInfo = detectBrowser()
+if (browserInfo.isChrome && browserInfo.version >= 129) {
+	// Show AI components
+}
+
+// Check runtime AI availability
+if (supportsAI()) {
+	// AI APIs are ready to use
+}
+```
 
 ## Architecture
 
@@ -15,6 +46,7 @@ This project integrates Chrome's experimental AI APIs (Translation and Summarize
 - **Features**:
   - Language detection and validation
   - Progressive enhancement (works without JavaScript)
+  - Browser compatibility detection
   - Error handling with fallback messages
   - Translation caching for performance
 
@@ -24,6 +56,7 @@ This project integrates Chrome's experimental AI APIs (Translation and Summarize
 - **Features**:
   - Automatic content summarization
   - Configurable summary length
+  - Browser compatibility detection
   - Blog post compatibility
   - Accessibility considerations
 
@@ -119,6 +152,26 @@ npm run ai:all           # Complete Chrome AI test suite
 npm run test:coverage    # Coverage reports
 npm run test:watch       # Development mode
 ```
+
+### Testing Browser Compatibility
+
+```bash
+# Test browser detection utility
+npm test test/utils/browserDetection.test.ts
+
+# Test component behavior with browser detection
+npm test test/integration/chrome-ai-components.test.ts
+
+# Test error handling for unsupported browsers
+npm test test/error-handling/chrome-ai-errors.test.ts
+```
+
+### Browser Detection Tests
+
+- **User Agent Parsing**: Verify Chrome version detection accuracy
+- **API Availability**: Test runtime AI API detection
+- **Fallback Behavior**: Ensure graceful degradation for unsupported browsers
+- **Edge Cases**: Handle malformed user agents and edge conditions
 
 ## Implementation Guidelines
 

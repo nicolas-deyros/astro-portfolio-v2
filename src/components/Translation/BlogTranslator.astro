@@ -8,6 +8,7 @@ const { className = '' } = Astro.props
 ---
 
 <div
+	id="translation-panel"
 	class={`translation-panel bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700 ${className}`}>
 	<div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 		<div class="flex items-center gap-3">
@@ -46,7 +47,22 @@ const { className = '' } = Astro.props
 		</div>
 	</div>
 
-	<!-- API Support Warning -->
+	<!-- Browser Support Warning -->
+	<div
+		id="browser-warning"
+		class="mt-4 hidden rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20">
+		<div class="flex items-start gap-2">
+			<span class="text-red-600 dark:text-red-400">🚫</span>
+			<div class="text-sm">
+				<p class="font-medium text-red-800 dark:text-red-200">
+					Browser not supported
+				</p>
+				<p class="mt-1 text-red-700 dark:text-red-300" id="browser-message">
+					Translation requires Chrome 129+ with experimental features enabled.
+				</p>
+			</div>
+		</div>
+	</div>
 	<div
 		id="api-warning"
 		class="mt-4 hidden rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20">
@@ -211,12 +227,16 @@ const { className = '' } = Astro.props
 </dialog>
 
 <script>
+	import { detectBrowser } from '../../lib/browserDetection'
 	import { blogTranslator } from '../../utils/translator'
 
 	interface TranslationElements {
+		translationPanel: HTMLElement
 		languageSelector: HTMLSelectElement
 		translateBtn: HTMLButtonElement
 		apiWarning: HTMLElement
+		browserWarning: HTMLElement
+		browserMessage: HTMLElement
 		downloadWarning: HTMLElement
 		translationProgress: HTMLElement
 		progressBar: HTMLElement
@@ -241,10 +261,25 @@ const { className = '' } = Astro.props
 	}
 
 	async function initializeTranslation(): Promise<void> {
+		console.log('BlogTranslator: Initialize translation called')
+
+		// Check browser compatibility - only hide for incompatible browsers
+		const browserInfo = detectBrowser()
+		if (!browserInfo.isChrome || browserInfo.version < 129) {
+			console.log('Translation: Browser not compatible')
+			const elements = getElements()
+			if (elements) {
+				elements.translationPanel.style.display = 'none'
+				elements.browserWarning.classList.remove('hidden')
+				elements.browserMessage.textContent = `Translation requires Chrome 129+. You're using ${browserInfo.name} ${browserInfo.version}.`
+			}
+			return
+		}
+
 		const elements = getElements()
 		if (!elements) return
 
-		// Check API availability
+		// For Chrome 129+, proceed with API availability check
 		const isAvailable = await blogTranslator.isAPIAvailable()
 
 		if (!isAvailable) {
@@ -293,6 +328,7 @@ const { className = '' } = Astro.props
 	}
 
 	function getElements(): TranslationElements | null {
+		const translationPanel = document.getElementById('translation-panel')
 		const languageSelector = document.getElementById(
 			'language-selector',
 		) as HTMLSelectElement
@@ -300,6 +336,8 @@ const { className = '' } = Astro.props
 			'translate-btn',
 		) as HTMLButtonElement
 		const apiWarning = document.getElementById('api-warning')
+		const browserWarning = document.getElementById('browser-warning')
+		const browserMessage = document.getElementById('browser-message')
 		const downloadWarning = document.getElementById('download-warning')
 		const translationProgress = document.getElementById('translation-progress')
 		const progressBar = document.getElementById('progress-bar')
@@ -315,9 +353,12 @@ const { className = '' } = Astro.props
 		) as NodeListOf<HTMLButtonElement>
 
 		if (
+			!translationPanel ||
 			!languageSelector ||
 			!translateBtn ||
 			!apiWarning ||
+			!browserWarning ||
+			!browserMessage ||
 			!downloadWarning ||
 			!translationProgress ||
 			!progressBar ||
@@ -332,9 +373,12 @@ const { className = '' } = Astro.props
 		}
 
 		return {
+			translationPanel,
 			languageSelector,
 			translateBtn,
 			apiWarning,
+			browserWarning,
+			browserMessage,
 			downloadWarning,
 			translationProgress,
 			progressBar,

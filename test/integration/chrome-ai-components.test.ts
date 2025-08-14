@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { detectBrowser, supportsAI } from '../../src/lib/browserDetection'
 import { BlogSummarizer } from '../../src/utils/summarizer'
 import { BlogTranslator } from '../../src/utils/translator'
 
@@ -473,6 +474,83 @@ Check out [this link](https://example.com) and this image:
 
 			summarizer.destroy()
 			translator.destroy()
+		})
+	})
+
+	describe('Browser Detection Integration', () => {
+		beforeEach(() => {
+			// Mock Chrome 139 user agent
+			Object.defineProperty(window.navigator, 'userAgent', {
+				value:
+					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+				writable: true,
+				configurable: true,
+			})
+
+			// Mock window.ai object
+			Object.defineProperty(window, 'ai', {
+				value: {
+					translator: {},
+					summarizer: {},
+				},
+				writable: true,
+				configurable: true,
+			})
+		})
+
+		afterEach(() => {
+			// @ts-expect-error - Deleting for test cleanup
+			delete window.ai
+		})
+
+		it('should detect Chrome 139 as AI-compatible', () => {
+			const browserInfo = detectBrowser()
+
+			expect(browserInfo.name).toBe('Chrome')
+			expect(browserInfo.version).toBe(139)
+			expect(browserInfo.isChrome).toBe(true)
+			expect(browserInfo.supportsAI).toBe(true)
+		})
+
+		it('should confirm AI support when APIs are available', () => {
+			const aiSupported = supportsAI()
+
+			expect(aiSupported).toBe(true)
+		})
+
+		it('should work with AI utilities when browser is compatible', async () => {
+			// Test that AI utilities work when browser detection passes
+			const summarizer = new BlogSummarizer()
+			const translator = new BlogTranslator()
+
+			const isAPIAvailable = await summarizer.isAPIAvailable()
+			const isTranslatorAvailable = await translator.isAPIAvailable()
+
+			expect(isAPIAvailable).toBe(true)
+			expect(isTranslatorAvailable).toBe(true)
+
+			summarizer.destroy()
+			translator.destroy()
+		})
+
+		it('should handle incompatible browser gracefully', () => {
+			// Mock Firefox user agent
+			Object.defineProperty(window.navigator, 'userAgent', {
+				value:
+					'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
+				writable: true,
+				configurable: true,
+			})
+
+			// @ts-expect-error - Deleting for test
+			delete window.ai
+
+			const browserInfo = detectBrowser()
+			const aiSupported = supportsAI()
+
+			expect(browserInfo.name).toBe('other')
+			expect(browserInfo.supportsAI).toBe(false)
+			expect(aiSupported).toBe(false)
 		})
 	})
 })
