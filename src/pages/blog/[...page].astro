@@ -99,7 +99,7 @@ const getTagColor = (tag: string) => {
 
 				<Pagination
 					current={page.currentPage}
-					startUrl={page.start}
+					startUrl={page.currentPage === 1 ? null : '/blog'}
 					prevUrl={page.url.prev}
 					nextUrl={page.url.next}
 					currentUrl={page.url.current}

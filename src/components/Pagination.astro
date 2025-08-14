@@ -2,6 +2,9 @@
 import Link from '@components/Link/Link.astro'
 
 const { current, startUrl, prevUrl, nextUrl, currentUrl, lastUrl } = Astro.props
+
+// Determine base URL from the current URL
+const baseUrl = currentUrl?.includes('/links') ? '/links' : '/blog'
 ---
 
 <div
@@ -9,9 +12,12 @@ const { current, startUrl, prevUrl, nextUrl, currentUrl, lastUrl } = Astro.props
 	aria-label="Pagination">
 	{
 		startUrl ? (
-			<Link href="/blog" icon="ic:round-skip-previous" title="First Page">
-				<span class="sr-only">First Page</span>
-			</Link>
+			<Link
+				href={startUrl}
+				icon="ic:round-skip-previous"
+				title="First Page"
+				text="First"
+			/>
 		) : null
 	}
 	{
@@ -19,9 +25,9 @@ const { current, startUrl, prevUrl, nextUrl, currentUrl, lastUrl } = Astro.props
 			<Link
 				href={prevUrl}
 				icon="ic:round-navigate-before"
-				title="Previous Page">
-				<span class="sr-only">Previous Page</span>
-			</Link>
+				title="Previous Page"
+				text="Previous"
+			/>
 		) : null
 	}
 	{
@@ -33,21 +39,22 @@ const { current, startUrl, prevUrl, nextUrl, currentUrl, lastUrl } = Astro.props
 	}
 	{
 		nextUrl ? (
-			<Link href={nextUrl} icon="ic:round-navigate-next" title="Next Page">
-				<span class="sr-only">Next Page</span>
-			</Link>
+			<Link
+				href={nextUrl}
+				icon="ic:round-navigate-next"
+				title="Next Page"
+				text="Next"
+			/>
 		) : null
 	}
 	{
-		current === lastUrl ? (
-			''
-		) : lastUrl ? (
+		current !== lastUrl && lastUrl ? (
 			<Link
-				href={`/blog/${lastUrl}`}
+				href={`${baseUrl}/${lastUrl}`}
 				icon="ic:round-skip-next"
-				title="Last Page">
-				<span class="sr-only">Last Page</span>
-			</Link>
+				title="Last Page"
+				text="Last"
+			/>
 		) : null
 	}
 </div>

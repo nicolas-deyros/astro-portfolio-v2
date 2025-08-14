@@ -39,6 +39,14 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
   - **⚡ Progressive Enhancement**: Works gracefully without AI support
   - **🧪 Comprehensive Testing**: Full test suite for AI functionality
 
+### 🔗 **Curated Links System**
+
+- **📄 Pagination**: Server-rendered pagination with 12 links per page for optimal performance
+- **🏷️ Tag Filtering**: Client-side filtering within pages with responsive tag interface
+- **📡 RSS Feed**: Dedicated RSS feed (`/rss-links.xml`) with auto-discovery
+- **📱 Mobile-First**: Responsive design with separate mobile and desktop filtering UI
+- **🔍 Visual Feedback**: Active tag highlighting and "No results" messaging
+
 ### 🔐 **Enterprise Admin System**
 
 - **� Advanced Pagination**: Configurable page sizes with SQL-optimized queries
@@ -187,7 +195,10 @@ Comprehensive testing ensures reliability and performance:
 │   │   ├── 404.astro                     # 404 error page
 │   │   ├── contact.astro                 # Contact page
 │   │   ├── index.astro                   # Homepage
-│   │   └── links.astro                   # Links page
+│   │   ├── links.astro                   # Links redirect page
+│   │   ├── links/
+│   │   │   └── [...page].astro           # Links pagination
+│   │   └── rss-links.xml.ts              # Links RSS feed
 │   ├── schemas/
 │   │   └── index.tsx                     # Type definitions
 │   └── styles/
