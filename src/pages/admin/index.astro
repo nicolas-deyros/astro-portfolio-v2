@@ -16,16 +16,16 @@ import Layout from '@layouts/index.astro'
 						Admin Login
 					</h1>
 					<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-						Enter your secret key to access the admin panel
+						Sign in to your admin account
 					</p>
 				</div>
 				<form id="login-form" class="mt-8 space-y-6">
 					<div>
-						<label for="secret-key" class="sr-only">Secret Key</label>
+						<label for="secretKey" class="sr-only">Secret Key</label>
 						<input
 							type="password"
-							id="secret-key"
-							name="secret-key"
+							id="secretKey"
+							name="secretKey"
 							required
 							class="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
 							placeholder="Secret Key"
@@ -159,9 +159,6 @@ import Layout from '@layouts/index.astro'
 			const loginSection = document.getElementById('login-section')
 			const adminContent = document.getElementById('admin-content')
 			const loginForm = document.getElementById('login-form')
-			const secretKeyInput = document.getElementById(
-				'secret-key',
-			) as HTMLInputElement
 			const loginError = document.getElementById('login-error')
 
 			function showAdminContent(): void {
@@ -265,30 +262,42 @@ import Layout from '@layouts/index.astro'
 				document.addEventListener(event, resetInactivityTimer, true)
 			})
 
-			// Check authentication status
-			if (localStorage.getItem('admin_authenticated') === 'true') {
-				showAdminContent()
-			}
+			// Check authentication status on page load
+			checkAuthenticationStatus()
 
 			// Handle login
 			loginForm?.addEventListener('submit', async e => {
 				e.preventDefault()
 				loginError?.classList.add('hidden')
 
+				const secretKeyInput = document.getElementById(
+					'secretKey',
+				) as HTMLInputElement
+
 				try {
 					const response = await fetch('/api/auth.json', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ secretKey: secretKeyInput?.value }),
+						body: JSON.stringify({
+							action: 'login',
+							secretKey: secretKeyInput?.value,
+						}),
 					})
 
-					if (response.ok) {
-						const { token } = await response.json()
+					const data = await response.json()
+
+					if (response.ok && data.success) {
 						localStorage.setItem('admin_authenticated', 'true')
-						localStorage.setItem('auth_token', token)
+						localStorage.setItem('session_id', data.sessionId)
+						localStorage.setItem('session_expires', data.expiresAt)
 						showAdminContent()
 					} else {
 						loginError?.classList.remove('hidden')
+						const errorDiv = loginError?.querySelector('.text-sm')
+						if (errorDiv) {
+							errorDiv.textContent =
+								data.message || 'Invalid credentials. Please try again.'
+						}
 						secretKeyInput.value = ''
 					}
 				} catch (error) {
@@ -297,9 +306,89 @@ import Layout from '@layouts/index.astro'
 				}
 			})
 
-			// Attach to window object for onclick handlers
+			// Robust authentication checking
+			async function checkAuthenticationStatus(): Promise<void> {
+				try {
+					const response = await fetch('/api/auth.json', {
+						method: 'GET',
+						credentials: 'include', // Include cookies
+					})
+
+					const data = await response.json()
+
+					if (response.ok && data.success && data.authenticated) {
+						// Update local storage with session info
+						localStorage.setItem('admin_authenticated', 'true')
+						localStorage.setItem('session_id', data.sessionId)
+						localStorage.setItem('session_expires', data.expiresAt)
+						showAdminContent()
+					} else {
+						// Clear local storage and show login
+						localStorage.removeItem('admin_authenticated')
+						localStorage.removeItem('session_id')
+						localStorage.removeItem('session_expires')
+						showLoginSection()
+					}
+				} catch (error) {
+					console.error('Auth validation error:', error)
+					showLoginSection()
+				}
+			}
+
+			// Enhanced session validation for API calls
+			async function validateSession(): Promise<boolean> {
+				try {
+					const response = await fetch('/api/auth.json', {
+						method: 'GET',
+						credentials: 'include',
+					})
+
+					if (response.ok) {
+						const { authenticated } = await response.json()
+						if (!authenticated) {
+							showLoginSection()
+							return false
+						}
+						return true
+					} else {
+						showLoginSection()
+						return false
+					}
+				} catch (error) {
+					console.error('Session validation error:', error)
+					showLoginSection()
+					return false
+				}
+			}
+
+			// Periodic session validation (every 2 minutes)
+			setInterval(validateSession, 2 * 60 * 1000)
+
+			// Enhanced logout function
+			async function performLogout(): Promise<void> {
+				try {
+					await fetch('/api/auth.json', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ action: 'logout' }),
+						credentials: 'include',
+					})
+				} catch (error) {
+					console.error('Logout error:', error)
+				} finally {
+					// Always clear local storage
+					localStorage.removeItem('admin_authenticated')
+					localStorage.removeItem('session_id')
+					localStorage.removeItem('session_expires')
+					showLoginSection()
+				}
+			}
+
+			// Make functions globally available
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			;(window as any).closeSessionExpiredModal = closeSessionExpiredModal
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			;(window as any).performLogout = performLogout
 		})
 	</script>
 </Layout>

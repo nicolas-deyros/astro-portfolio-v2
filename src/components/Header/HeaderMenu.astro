@@ -399,11 +399,26 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 			}
 		}
 
-		function handleLogout(): void {
-			localStorage.removeItem('admin_authenticated')
-			localStorage.removeItem('auth_token')
-			// Always redirect to admin login page after logout
-			window.location.href = '/admin'
+		async function handleLogout(): Promise<void> {
+			try {
+				// Call server logout to invalidate session
+				await fetch('/api/auth.json', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ action: 'logout' }),
+					credentials: 'include',
+				})
+			} catch (error) {
+				console.error('Server logout error:', error)
+			} finally {
+				// Always clear local storage
+				localStorage.removeItem('admin_authenticated')
+				localStorage.removeItem('auth_token')
+				localStorage.removeItem('device_fingerprint')
+				localStorage.removeItem('session_expires')
+				// Always redirect to admin login page after logout
+				window.location.href = '/admin'
+			}
 		}
 
 		// Check admin status on page load

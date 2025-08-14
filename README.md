@@ -4,8 +4,20 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
+[![Tailwind CSS](#### **🎵 Hybrid Audio Player**
+
+- **Dual-Mode System**: Supports both text-to-speech and HTML5 audio file playback
+- **Auto-Detection**: Automatically chooses between modes based on content type
+- **Web Audio API Integration**: Advanced audio processing with Speech Synthesis API
+- **HTML5 Audio Support**: Native audio file playback (MP3, WAV, OGG) with full controls
+- **Smart Content Filtering**: Automatically excludes code blocks, images, and non-content elements
+- **Progress Tracking**: Real-time playback position with seek functionality for both modes
+- **Playback Controls**: Play, pause, stop with visual feedback and progress bar
+- **Volume Control**: Real-time volume adjustment for audio files
+- **Error Handling**: Robust error management with graceful fallbacks
+- **Performance Optimized**: Chunked text processing for long articles
+- **Cross-browser Compatibility**: Works across Chrome, Firefox, Safari, and Edgemg.shields.io/badge/Tailwind_CSS-38B2AC?Style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
 
 ## ✨ Key Features
 
@@ -18,7 +30,7 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 ### 📝 **Advanced Blog System**
 
 - **📄 MDX Support**: Rich content with embedded interactive components
-- **🎵 Audio Integration**: Read-aloud functionality with Web Audio API
+- **🎵 Audio Integration**: Read-aloud functionality with Hybrid Audio Player (Web Audio API + HTML5 Audio)
 - **📊 Reading Progress**: Visual progress tracking for articles
 - **🏷️ Smart Tagging**: Organized content with categories and filtering
 - **🤖 Chrome AI Integration**: Real-time translation and content summarization
@@ -27,13 +39,26 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
   - **⚡ Progressive Enhancement**: Works gracefully without AI support
   - **🧪 Comprehensive Testing**: Full test suite for AI functionality
 
+### 🔗 **Curated Links System**
+
+- **📄 Pagination**: Server-rendered pagination with 12 links per page for optimal performance
+- **🏷️ Tag Filtering**: Client-side filtering within pages with responsive tag interface
+- **📡 RSS Feed**: Dedicated RSS feed (`/rss-links.xml`) with auto-discovery
+- **📱 Mobile-First**: Responsive design with separate mobile and desktop filtering UI
+- **🔍 Visual Feedback**: Active tag highlighting and "No results" messaging
+
 ### 🔐 **Enterprise Admin System**
 
-- **� Advanced Pagination**: Configurable page sizes with SQL-optimized queries
-- **� Powerful Search**: Full-text search across content with tag filtering
+- **🔒 Enhanced Security**: Database-backed session management with device fingerprinting
+- **🛡️ Cross-Device Protection**: Device mismatch detection prevents session hijacking
+- **⏰ Smart Expiration**: 2-hour session timeout with automatic cleanup
+- **📱 Multi-Device Support**: Secure independent sessions per device
+- **🔐 Server-Side Validation**: Complete authentication state management
+- **🚫 Session Hijacking Protection**: Prevents unauthorized cross-device access
+- **📄 Advanced Pagination**: Configurable page sizes with SQL-optimized queries
+- **🔍 Powerful Search**: Full-text search across content with tag filtering
 - **🛡️ Server-Side Validation**: Type-safe CRUD operations with Zod schemas
 - **🎯 Real-Time Feedback**: Interactive forms with immediate validation
-- **� Secure Authentication**: Token-based auth with session management
 
 ### 🚀 **Performance & SEO**
 
@@ -175,7 +200,10 @@ Comprehensive testing ensures reliability and performance:
 │   │   ├── 404.astro                     # 404 error page
 │   │   ├── contact.astro                 # Contact page
 │   │   ├── index.astro                   # Homepage
-│   │   └── links.astro                   # Links page
+│   │   ├── links.astro                   # Links redirect page
+│   │   ├── links/
+│   │   │   └── [...page].astro           # Links pagination
+│   │   └── rss-links.xml.ts              # Links RSS feed
 │   ├── schemas/
 │   │   └── index.tsx                     # Type definitions
 │   └── styles/
@@ -730,11 +758,18 @@ import heroImage from '../assets/hero.jpg'
    - Vercel automatically detects Astro configuration
    - Builds deploy automatically on push
 
-3. **Environment Variables** (if needed):
+3. **Environment Variables**:
+
    ```env
-   # Add in Vercel dashboard
+   # Required for admin authentication
+   SECRET_KEY=your-secure-secret-key-here
+
+   # Optional for contact form
    CONTACT_EMAIL=your-email@domain.com
    ```
+
+   **For Development**: Create a `.env` file with your `SECRET_KEY`
+   **For Production**: Add environment variables in your hosting dashboard (Vercel, Netlify, etc.)
 
 ---
 
@@ -746,4 +781,4 @@ MIT License - feel free to use this project as inspiration for your own portfoli
 
 **Built with ❤️ by Nicolás Deyros** | [Portfolio](https://nicolasdeyros.dev) | [LinkedIn](https://linkedin.com/in/nicolas-deyros)
 
-_Last updated: August 13, 2025_
+_Last updated: January 18, 2025_

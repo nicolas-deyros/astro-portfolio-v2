@@ -20,7 +20,20 @@ const Links = defineTable({
 	},
 })
 
+const AdminSessions = defineTable({
+	columns: {
+		id: column.text({ primaryKey: true }), // session ID
+		token: column.text({ unique: true }),
+		deviceFingerprint: column.text(),
+		userAgent: column.text(),
+		ip: column.text(),
+		createdAt: column.date(),
+		expiresAt: column.date(),
+		lastActivity: column.date(),
+	},
+})
+
 // https://astro.build/db/config
 export default defineDb({
-	tables: { FormSubmissions, Links },
+	tables: { FormSubmissions, Links, AdminSessions },
 })

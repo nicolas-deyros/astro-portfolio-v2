@@ -241,15 +241,40 @@ export class BlogTranslator {
 			return true
 		}
 
-		// Skip HTML/JSX components
-		if (paragraph.trim().startsWith('<') && paragraph.trim().endsWith('>')) {
+		// Skip HTML/JSX components (improved detection)
+		const trimmed = paragraph.trim()
+		if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
 			return true
 		}
 
-		// Skip if paragraph is mostly special characters or very short
+		// Skip paragraphs that are mostly JSX/HTML (contain class attributes, etc.)
+		if (
+			trimmed.includes('className=') ||
+			trimmed.includes('class=') ||
+			trimmed.includes('<div') ||
+			trimmed.includes('</div>') ||
+			trimmed.includes('<span') ||
+			trimmed.includes('</span>') ||
+			trimmed.includes('import ') ||
+			trimmed.includes('export ')
+		) {
+			return true
+		}
+
+		// Skip if paragraph is mostly special characters, markdown syntax, or very short
 		if (
 			paragraph.trim().length < 3 ||
-			/^[\s\-#*>`[\](){}]+$/.test(paragraph.trim())
+			/^[\s\-#*>`[\](){}]+$/.test(paragraph.trim()) ||
+			/^#{1,6}\s*$/.test(paragraph.trim()) // Empty headings
+		) {
+			return true
+		}
+
+		// Skip lines that are mostly HTML attributes or CSS classes
+		if (
+			/^[\s]*[a-zA-Z-]+[\s]*[:=]/.test(trimmed) ||
+			/class.*=/.test(trimmed) ||
+			/^\s*[{}[\]]+\s*$/.test(trimmed)
 		) {
 			return true
 		}
@@ -261,14 +286,36 @@ export class BlogTranslator {
 		translator: ChromeAITranslator,
 		text: string,
 	): Promise<string> {
-		// Preserve inline code, links, and other markdown elements
+		// Preserve inline code, links, JSX/HTML elements, and other markdown elements
 		const preservePatterns = [
+			// Code and technical elements
 			{ pattern: /`([^`]+)`/g, placeholder: 'INLINE_CODE_' },
+			{ pattern: /```[\s\S]*?```/g, placeholder: 'CODE_BLOCK_' },
+
+			// HTML/JSX elements and attributes
+			{ pattern: /<[^>]+>/g, placeholder: 'HTML_ELEMENT_' },
+			{ pattern: /\{[^}]+\}/g, placeholder: 'JSX_EXPRESSION_' },
+			{ pattern: /className="[^"]*"/g, placeholder: 'CLASS_NAME_' },
+			{ pattern: /class="[^"]*"/g, placeholder: 'CLASS_ATTR_' },
+			{
+				pattern: /import\s+.*?from\s+['"][^'"]*['"]/g,
+				placeholder: 'IMPORT_STMT_',
+			},
+			{ pattern: /export\s+.*?[;\n]/g, placeholder: 'EXPORT_STMT_' },
+
+			// Markdown elements
 			{ pattern: /\[([^\]]+)\]\(([^)]+)\)/g, placeholder: 'MARKDOWN_LINK_' },
 			{ pattern: /!\[([^\]]*)\]\(([^)]+)\)/g, placeholder: 'MARKDOWN_IMAGE_' },
 			{ pattern: /\*\*([^*]+)\*\*/g, placeholder: 'BOLD_TEXT_' },
 			{ pattern: /\*([^*]+)\*/g, placeholder: 'ITALIC_TEXT_' },
-			{ pattern: /#{1,6}\s+/g, placeholder: 'HEADING_' },
+			{ pattern: /^#{1,6}\s+/gm, placeholder: 'HEADING_' },
+
+			// URLs and email addresses
+			{ pattern: /https?:\/\/[^\s]+/g, placeholder: 'URL_' },
+			{
+				pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+				placeholder: 'EMAIL_',
+			},
 		]
 
 		let protectedText = text
@@ -284,11 +331,16 @@ export class BlogTranslator {
 			})
 		})
 
+		// Additional cleanup: remove any remaining HTML/CSS class patterns
+		const cleanedText = protectedText
+			.replace(/[\w-]+:/g, 'PROPERTY_NAME:') // CSS property names
+			.replace(/\b[a-z-]+\s*=\s*["'][^"']*["']/g, 'ATTRIBUTE_VALUE') // HTML attributes
+
 		// Translate the text with placeholders
 		let translatedText: string
 		try {
 			// Only translate if there's actual text content after removing placeholders
-			const textToTranslate = protectedText.replace(/[A-Z_]+\d+/g, '').trim()
+			const textToTranslate = cleanedText.replace(/[A-Z_]+\d+/g, '').trim()
 			if (textToTranslate.length < 3) {
 				translatedText = protectedText // Don't translate if mostly placeholders
 			} else {

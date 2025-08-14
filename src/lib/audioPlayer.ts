@@ -217,7 +217,10 @@ export class EnhancedAudioPlayer {
 
 		// Reset mock visualization data
 		this.mockFrequencyData = null
-		this.isIntentionalPause = false
+		// Keep isIntentionalPause true for a bit longer to catch async events
+		setTimeout(() => {
+			this.isIntentionalPause = false
+		}, 100)
 	}
 
 	/**
@@ -724,6 +727,12 @@ export class EnhancedAudioPlayer {
 			) {
 				console.log('Speech intentionally paused/stopped/canceled')
 				this.isIntentionalPause = false
+				return
+			}
+
+			// Always ignore 'interrupted' errors - they occur during normal stop operations
+			if (event.error === 'interrupted') {
+				console.log('Speech interrupted (normal during stop/pause operations)')
 				return
 			}
 

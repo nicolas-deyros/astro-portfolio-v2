@@ -12,23 +12,24 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 <head>
 	<!-- Theme initialization script - runs before page render to prevent flash -->
 
-	<!-- Google tag (gtag.js) -->
-	<!-- Google tag (gtag.js) -->
-	<script
-		type="text/partytown"
-		async
-		src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
-	></script>
-	<script type="text/partytown">
-		window.dataLayer = window.dataLayer || []
-		function gtag() {
-			// eslint-disable-next-line prefer-rest-params
-			dataLayer.push(arguments)
-		}
-		gtag('js', new Date())
-
-		gtag('config', 'G-SW4ZXZJ9WH')
-	</script>
+	<!-- Google tag (gtag.js) - Only load in production -->
+	{
+		Astro.url.hostname !== 'localhost' && (
+			<>
+				<script
+					type="text/partytown"
+					async
+					src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
+				/>
+				<script type="text/partytown">
+					/* eslint-disable */ window.dataLayer = window.dataLayer || []
+					function gtag() {dataLayer.push(arguments)}
+					gtag('js', new Date()) gtag('config', 'G-SW4ZXZJ9WH') /* eslint-enable
+					*/
+				</script>
+			</>
+		)
+	}
 
 	<meta charset="utf-8" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.ico" />

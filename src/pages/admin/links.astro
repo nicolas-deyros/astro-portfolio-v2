@@ -141,17 +141,30 @@ try {
 		// Hide page initially
 		document.documentElement.style.visibility = 'hidden'
 
-		// Check authentication immediately
-		if (
-			typeof localStorage !== 'undefined' &&
-			localStorage.getItem('admin_authenticated') === 'true'
-		) {
-			// Authenticated - show page
-			document.documentElement.style.visibility = 'visible'
-		} else {
-			// Not authenticated - redirect immediately
-			window.location.href = '/admin'
+		// Check authentication using the new cookie-based system
+		async function checkAuth() {
+			try {
+				const response = await fetch('/api/auth.json', {
+					method: 'GET',
+					credentials: 'include',
+				})
+				const data = await response.json()
+
+				if (response.ok && data.success && data.authenticated) {
+					// Authenticated - show page
+					document.documentElement.style.visibility = 'visible'
+				} else {
+					// Not authenticated - redirect immediately
+					window.location.href = '/admin'
+				}
+			} catch (error) {
+				console.error('Auth check failed:', error)
+				window.location.href = '/admin'
+			}
 		}
+
+		// Run auth check
+		checkAuth()
 	</script>
 
 	<div class="min-h-screen bg-white dark:bg-gray-900">
@@ -896,16 +909,22 @@ try {
 
 	<script>
 		// Auth check and redirect
-		document.addEventListener('astro:page-load', () => {
-			// Check if authenticated
-			const isAuthenticated =
-				localStorage.getItem('admin_authenticated') === 'true'
-			const authToken = localStorage.getItem('auth_token')
+		document.addEventListener('astro:page-load', async () => {
+			// Check authentication using the new cookie-based system
+			try {
+				const response = await fetch('/api/auth.json', {
+					method: 'GET',
+					credentials: 'include',
+				})
+				const data = await response.json()
 
-			console.log('Auth check:', { isAuthenticated, hasToken: !!authToken })
-
-			if (!isAuthenticated || !authToken) {
-				console.log('Not authenticated or no token, redirecting to admin')
+				if (!response.ok || !data.success || !data.authenticated) {
+					console.log('Not authenticated, redirecting to admin')
+					window.location.href = '/admin'
+					return
+				}
+			} catch (error) {
+				console.error('Auth check failed:', error)
 				window.location.href = '/admin'
 				return
 			}
@@ -923,29 +942,18 @@ try {
 
 				newConfirmBtn?.addEventListener('click', async () => {
 					try {
-						const authToken = localStorage.getItem('auth_token')
-						if (!authToken) {
-							showErrorModal(
-								'Authentication token not found. Please log in again.',
-							)
-							return
-						}
-
-						const response = await fetch('/api/links.json', {
+						const response = await fetch(`/api/links.json?id=${id}`, {
 							method: 'DELETE',
 							headers: {
 								'Content-Type': 'application/json',
-								Authorization: `Bearer ${authToken}`,
 							},
-							body: JSON.stringify({ id: parseInt(id) }),
+							credentials: 'include',
 						})
 						if (response.ok) {
 							location.reload()
 						} else if (response.status === 401) {
 							modal.close()
 							showErrorModal('Session expired. Please log in again.')
-							localStorage.removeItem('admin_authenticated')
-							localStorage.removeItem('auth_token')
 							window.location.href = '/admin'
 						} else {
 							modal.close()
@@ -972,21 +980,13 @@ try {
 				newConfirmBtn?.addEventListener('click', async () => {
 					if (pendingFormData && editingLinkId) {
 						try {
-							const authToken = localStorage.getItem('auth_token')
-							if (!authToken) {
-								showErrorModal(
-									'Authentication token not found. Please log in again.',
-								)
-								return
-							}
-
 							const data = Object.fromEntries(pendingFormData.entries())
 							const response = await fetch('/api/links.json', {
 								method: 'PUT',
 								headers: {
 									'Content-Type': 'application/json',
-									Authorization: `Bearer ${authToken}`,
 								},
+								credentials: 'include',
 								body: JSON.stringify({ id: editingLinkId, ...data }),
 							})
 
@@ -995,8 +995,6 @@ try {
 							} else if (response.status === 401) {
 								modal.close()
 								showErrorModal('Session expired. Please log in again.')
-								localStorage.removeItem('admin_authenticated')
-								localStorage.removeItem('auth_token')
 								window.location.href = '/admin'
 							} else {
 								modal.close()
@@ -1264,14 +1262,6 @@ try {
 					submitBtn.textContent = editMode ? 'Updating...' : 'Adding...'
 
 					try {
-						const authToken = localStorage.getItem('auth_token')
-						if (!authToken) {
-							showFormErrors([
-								'Authentication token not found. Please log in again.',
-							])
-							return
-						}
-
 						if (editMode && editingLinkId) {
 							// Store form data and show confirmation modal
 							pendingFormData = formData
@@ -1282,8 +1272,8 @@ try {
 								method: 'POST',
 								headers: {
 									'Content-Type': 'application/json',
-									Authorization: `Bearer ${authToken}`,
 								},
+								credentials: 'include',
 								body: JSON.stringify(Object.fromEntries(formData)),
 							})
 
@@ -1298,8 +1288,6 @@ try {
 								}, 1500)
 							} else if (response.status === 401) {
 								showFormErrors(['Session expired. Please log in again.'])
-								localStorage.removeItem('admin_authenticated')
-								localStorage.removeItem('auth_token')
 								setTimeout(() => {
 									window.location.href = '/admin'
 								}, 2000)

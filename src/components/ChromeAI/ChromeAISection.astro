@@ -1,0 +1,982 @@
+---
+// Unified Chrome AI component with tabbed interface for translation and summarization
+export interface Props {
+	className?: string
+	markdown?: string
+}
+
+const { className = '', markdown = '' } = Astro.props
+---
+
+<div
+	id="chrome-ai-section"
+	class={`chrome-ai-section ${className}`}
+	data-markdown={markdown}>
+	<!-- Header -->
+	<div
+		class="rounded-t-lg bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
+		<div class="flex items-center gap-3">
+			<svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+				<path
+					d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z">
+				</path>
+			</svg>
+			<h3 class="text-lg font-semibold">Powered by Chrome AI</h3>
+			<span class="rounded-full bg-white/20 px-2 py-1 text-xs">
+				Chrome 129+
+			</span>
+		</div>
+	</div>
+
+	<!-- Tab Navigation -->
+	<div
+		class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+		<nav class="flex">
+			<button
+				id="summary-tab"
+				class="tab-button flex-1 px-4 py-3 text-center font-medium transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-inset"
+				data-tab="summary"
+				aria-selected="true">
+				<span class="flex items-center justify-center gap-2">
+					<span>📝</span>
+					<span>Summarize</span>
+				</span>
+			</button>
+			<button
+				id="translate-tab"
+				class="tab-button flex-1 px-4 py-3 text-center font-medium transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-inset"
+				data-tab="translate"
+				aria-selected="false">
+				<span class="flex items-center justify-center gap-2">
+					<span>🌐</span>
+					<span>Translate</span>
+				</span>
+			</button>
+		</nav>
+	</div>
+
+	<!-- Tab Content -->
+	<div class="rounded-b-lg bg-white shadow-lg dark:bg-gray-800">
+		<!-- Summary Tab Content -->
+		<div id="summary-content" class="tab-content p-6">
+			<div class="space-y-4">
+				<p class="text-gray-600 dark:text-gray-400">
+					Get an AI-powered summary of this blog post in seconds.
+				</p>
+
+				<!-- Summary Options -->
+				<div class="mb-4 grid grid-cols-2 gap-4">
+					<div>
+						<label
+							class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Summary Type:
+						</label>
+						<select
+							id="summary-type-selector"
+							class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+							<option value="teaser">Teaser</option>
+							<option value="key-points">Key Points</option>
+							<option value="headline">Headline</option>
+						</select>
+					</div>
+					<div>
+						<label
+							class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Length:
+						</label>
+						<select
+							id="summary-length-selector"
+							class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+							<option value="short">Short</option>
+							<option value="medium" selected>Medium</option>
+							<option value="long">Long</option>
+						</select>
+					</div>
+				</div>
+
+				<button
+					id="generate-summary-btn"
+					class="w-full rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
+					Generate Summary
+				</button>
+
+				<!-- Summary Progress -->
+				<div id="summary-progress" class="hidden">
+					<div class="mb-2 flex items-center justify-between">
+						<span
+							id="summary-progress-text"
+							class="text-sm text-gray-600 dark:text-gray-400">
+							Initializing...
+						</span>
+						<span
+							id="summary-progress-percentage"
+							class="text-xs text-gray-500 dark:text-gray-400">
+							0%
+						</span>
+					</div>
+					<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+						<div
+							id="summary-progress-bar"
+							class="h-2 rounded-full bg-blue-600 transition-all duration-300"
+							style="width: 0%">
+						</div>
+					</div>
+				</div>
+
+				<!-- Summary Result -->
+				<div
+					id="summary-result"
+					class="hidden rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+					<div class="mb-2 flex items-center justify-between">
+						<h4 class="font-medium text-gray-900 dark:text-white">
+							<span id="summary-type-display">Summary</span>
+						</h4>
+						<span
+							id="summary-meta"
+							class="text-xs text-gray-500 dark:text-gray-400">
+						</span>
+					</div>
+					<div
+						id="summary-content-text"
+						class="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+					</div>
+				</div>
+
+				<!-- Summary Error -->
+				<div
+					id="summary-error"
+					class="hidden rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+					<div class="flex items-start gap-3">
+						<svg
+							class="mt-0.5 h-5 w-5 text-red-500 dark:text-red-400"
+							fill="currentColor"
+							viewBox="0 0 20 20">
+							<path
+								fill-rule="evenodd"
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+								clip-rule="evenodd">
+							</path>
+						</svg>
+						<div>
+							<h4 class="text-sm font-medium text-red-800 dark:text-red-200">
+								Summary Failed
+							</h4>
+							<p
+								id="summary-error-message"
+								class="mt-1 text-sm text-red-700 dark:text-red-300">
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Translation Tab Content -->
+		<div id="translate-content" class="tab-content hidden p-6">
+			<div class="space-y-4">
+				<p class="text-gray-600 dark:text-gray-400">
+					Translate this article to your preferred language.
+				</p>
+
+				<div class="flex gap-3">
+					<select
+						id="language-selector"
+						class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+						<option value="">Select language...</option>
+						<option value="es">🇪🇸 Español</option>
+						<option value="pt">🇵🇹 Português</option>
+						<option value="fr">🇫🇷 Français</option>
+						<option value="de">🇩🇪 Deutsch</option>
+						<option value="it">🇮🇹 Italiano</option>
+						<option value="zh">🇨🇳 中文</option>
+						<option value="ja">🇯🇵 日本語</option>
+						<option value="ko">🇰🇷 한국어</option>
+						<option value="ru">🇷🇺 Русский</option>
+						<option value="ar">🇸🇦 العربية</option>
+					</select>
+					<button
+						id="translate-btn"
+						disabled
+						class="rounded-lg bg-purple-600 px-6 py-2 font-medium text-white transition-colors hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
+						Translate
+					</button>
+				</div>
+
+				<!-- Translation Progress -->
+				<div id="translation-progress" class="hidden">
+					<div class="mb-2 flex items-center justify-between">
+						<span
+							id="translation-progress-text"
+							class="text-sm text-gray-600 dark:text-gray-400">
+							Preparing translation...
+						</span>
+						<span
+							id="translation-progress-percentage"
+							class="text-xs text-gray-500 dark:text-gray-400">
+							0%
+						</span>
+					</div>
+					<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+						<div
+							id="translation-progress-bar"
+							class="h-2 rounded-full bg-purple-600 transition-all duration-300"
+							style="width: 0%">
+						</div>
+					</div>
+				</div>
+
+				<!-- Translation Result -->
+				<div
+					id="translation-result"
+					class="hidden max-h-96 overflow-y-auto rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+					<div class="mb-3 flex items-center justify-between">
+						<h4 class="font-medium text-gray-900 dark:text-white">
+							Translated Content
+						</h4>
+						<div class="flex items-center gap-2">
+							<span
+								id="translation-language"
+								class="rounded-full bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
+							</span>
+						</div>
+					</div>
+					<div
+						id="translation-content-text"
+						class="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
+					</div>
+				</div>
+
+				<!-- Translation Error -->
+				<div
+					id="translation-error"
+					class="hidden rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+					<div class="flex items-start gap-3">
+						<svg
+							class="mt-0.5 h-5 w-5 text-red-500 dark:text-red-400"
+							fill="currentColor"
+							viewBox="0 0 20 20">
+							<path
+								fill-rule="evenodd"
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+								clip-rule="evenodd">
+							</path>
+						</svg>
+						<div>
+							<h4 class="text-sm font-medium text-red-800 dark:text-red-200">
+								Translation Failed
+							</h4>
+							<p
+								id="translation-error-message"
+								class="mt-1 text-sm text-red-700 dark:text-red-300">
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Browser Support Warning Modal -->
+	<dialog
+		id="browser-not-supported-dialog"
+		class="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+		<form method="dialog" class="flex flex-col items-center">
+			<div class="mb-4 flex items-center gap-3">
+				<svg
+					class="h-6 w-6 text-red-500 dark:text-red-400"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+					</path>
+				</svg>
+				<span class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+					Browser Not Supported
+				</span>
+			</div>
+			<p
+				id="browser-support-message"
+				class="mb-6 text-center text-slate-600 dark:text-slate-400">
+				Chrome AI features require Chrome 129+ with experimental features
+				enabled.
+			</p>
+			<button
+				type="submit"
+				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+				Close
+			</button>
+		</form>
+	</dialog>
+
+	<!-- AI Not Supported Dialog -->
+	<dialog
+		id="ai-not-supported-dialog"
+		class="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+		<form method="dialog" class="flex flex-col items-center">
+			<div class="mb-4 flex items-center gap-3">
+				<svg
+					class="h-6 w-6 text-amber-500 dark:text-amber-400"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+					</path>
+				</svg>
+				<span class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+					AI Features Not Available
+				</span>
+			</div>
+			<div
+				id="ai-not-supported-message"
+				class="mb-6 text-center text-slate-600 dark:text-slate-400">
+				<p>
+					Chrome AI features are not available in your current browser setup.
+				</p>
+			</div>
+			<button
+				type="submit"
+				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+				Close
+			</button>
+		</form>
+	</dialog>
+</div>
+
+<style>
+	/* Tab button styles */
+	.tab-button[aria-selected='true'] {
+		color: rgb(37 99 235);
+		border-bottom: 2px solid rgb(37 99 235);
+		background-color: rgb(239 246 255);
+	}
+
+	:global(.dark) .tab-button[aria-selected='true'] {
+		color: rgb(96 165 250);
+		border-bottom-color: rgb(96 165 250);
+		background-color: rgb(30 58 138 / 0.2);
+	}
+
+	.tab-button[aria-selected='false'] {
+		color: rgb(107 114 128);
+	}
+
+	.tab-button[aria-selected='false']:hover {
+		color: rgb(55 65 81);
+	}
+
+	:global(.dark) .tab-button[aria-selected='false'] {
+		color: rgb(156 163 175);
+	}
+
+	:global(.dark) .tab-button[aria-selected='false']:hover {
+		color: rgb(209 213 219);
+	}
+
+	/* Progress bar animation */
+	.progress-bar {
+		transition: width 0.3s ease-in-out;
+	}
+
+	/* Dialog backdrop */
+	dialog::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(4px);
+	}
+
+	/* Enhanced focus styles for accessibility */
+	.tab-button:focus {
+		outline: 2px solid #3b82f6;
+		outline-offset: -2px;
+	}
+</style>
+
+<script>
+	import { detectBrowser } from '../../lib/browserDetection'
+
+	console.log('ChromeAI script loading...')
+
+	function initializeChromeAI(): (() => void) | null {
+		console.log('Initializing Chrome AI section...')
+
+		// Helper function to clean content for translation
+		function cleanContentForTranslation(content: string): string {
+			return (
+				content
+					// Remove import/export statements
+					.replace(/^import\s+.*?from\s+['"][^'"]*['"];?\s*$/gm, '')
+					.replace(/^export\s+.*?[;\n]/gm, '')
+
+					// Remove JSX/HTML elements and their attributes
+					.replace(/<[^>]*>/g, ' ')
+					.replace(/\{[^}]*\}/g, ' ')
+
+					// Remove code blocks
+					.replace(/```[\s\S]*?```/g, '')
+					.replace(/`[^`]*`/g, '')
+
+					// Remove markdown links but keep text
+					.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+					.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+
+					// Remove markdown headers symbols but keep content
+					.replace(/^#{1,6}\s+/gm, '')
+
+					// Remove markdown emphasis symbols but keep content
+					.replace(/(\*{1,2}|_{1,2})(.*?)\1/g, '$2')
+
+					// Remove blockquote symbols but keep content
+					.replace(/^>\s*/gm, '')
+
+					// Remove list markers but keep content
+					.replace(/^[\s]*[-*+]\s+/gm, '')
+					.replace(/^[\s]*\d+\.\s+/gm, '')
+
+					// Clean extra whitespace and normalize
+					.replace(/\n\s*\n/g, '\n\n')
+					.replace(/\s+/g, ' ')
+					.trim()
+			)
+		}
+
+		// Get all required elements
+		const chromeAISection = document.getElementById(
+			'chrome-ai-section',
+		) as HTMLElement
+		const summaryTab = document.getElementById(
+			'summary-tab',
+		) as HTMLButtonElement
+		const translateTab = document.getElementById(
+			'translate-tab',
+		) as HTMLButtonElement
+		const summaryContent = document.getElementById(
+			'summary-content',
+		) as HTMLElement
+		const translateContent = document.getElementById(
+			'translate-content',
+		) as HTMLElement
+
+		// Browser support dialogs
+		const browserNotSupportedDialog = document.getElementById(
+			'browser-not-supported-dialog',
+		) as HTMLDialogElement
+		const aiNotSupportedDialog = document.getElementById(
+			'ai-not-supported-dialog',
+		) as HTMLDialogElement
+
+		// Summary elements
+		const generateSummaryBtn = document.getElementById(
+			'generate-summary-btn',
+		) as HTMLButtonElement
+		const summaryTypeSelector = document.getElementById(
+			'summary-type-selector',
+		) as HTMLSelectElement
+		const summaryLengthSelector = document.getElementById(
+			'summary-length-selector',
+		) as HTMLSelectElement
+		const summaryProgress = document.getElementById(
+			'summary-progress',
+		) as HTMLElement
+		const summaryProgressText = document.getElementById(
+			'summary-progress-text',
+		) as HTMLElement
+		const summaryProgressBar = document.getElementById(
+			'summary-progress-bar',
+		) as HTMLElement
+		const summaryProgressPercentage = document.getElementById(
+			'summary-progress-percentage',
+		) as HTMLElement
+		const summaryResult = document.getElementById(
+			'summary-result',
+		) as HTMLElement
+		const summaryContentText = document.getElementById(
+			'summary-content-text',
+		) as HTMLElement
+		const summaryTypeDisplay = document.getElementById(
+			'summary-type-display',
+		) as HTMLElement
+		const summaryMeta = document.getElementById('summary-meta') as HTMLElement
+		const summaryError = document.getElementById('summary-error') as HTMLElement
+		const summaryErrorMessage = document.getElementById(
+			'summary-error-message',
+		) as HTMLElement
+
+		// Translation elements
+		const languageSelector = document.getElementById(
+			'language-selector',
+		) as HTMLSelectElement
+		const translateBtn = document.getElementById(
+			'translate-btn',
+		) as HTMLButtonElement
+		const translationProgress = document.getElementById(
+			'translation-progress',
+		) as HTMLElement
+		const translationProgressText = document.getElementById(
+			'translation-progress-text',
+		) as HTMLElement
+		const translationProgressBar = document.getElementById(
+			'translation-progress-bar',
+		) as HTMLElement
+		const translationProgressPercentage = document.getElementById(
+			'translation-progress-percentage',
+		) as HTMLElement
+		const translationResult = document.getElementById(
+			'translation-result',
+		) as HTMLElement
+		const translationContentText = document.getElementById(
+			'translation-content-text',
+		) as HTMLElement
+		const translationLanguage = document.getElementById(
+			'translation-language',
+		) as HTMLElement
+		const translationError = document.getElementById(
+			'translation-error',
+		) as HTMLElement
+		const translationErrorMessage = document.getElementById(
+			'translation-error-message',
+		) as HTMLElement
+
+		if (
+			!chromeAISection ||
+			!summaryTab ||
+			!translateTab ||
+			!summaryContent ||
+			!translateContent
+		) {
+			console.warn('Chrome AI elements not found')
+			return null
+		}
+
+		// Initialize component - check browser compatibility
+		console.log('ChromeAI: Initializing...')
+		const browserInfo = detectBrowser()
+
+		// Only hide for browsers that definitely don't support AI
+		if (!browserInfo.isChrome || browserInfo.version < 129) {
+			console.log('ChromeAI: Browser not supported, hiding component')
+			chromeAISection.style.display = 'none'
+		} else {
+			console.log('ChromeAI: Chrome 129+ detected, component available')
+			chromeAISection.style.display = 'block'
+		}
+
+		// Tab switching functionality
+		function switchTab(activeTabId: string): void {
+			// Update tab buttons
+			;[summaryTab, translateTab].forEach(tab => {
+				const isActive = tab.id === activeTabId + '-tab'
+				tab.setAttribute('aria-selected', isActive.toString())
+			})
+
+			// Update tab content
+			if (activeTabId === 'summary') {
+				summaryContent.classList.remove('hidden')
+				translateContent.classList.add('hidden')
+			} else {
+				summaryContent.classList.add('hidden')
+				translateContent.classList.remove('hidden')
+			}
+		}
+
+		// Add tab click handlers
+		summaryTab.addEventListener('click', () => switchTab('summary'))
+		translateTab.addEventListener('click', () => switchTab('translate'))
+
+		// Summary functionality
+		async function handleSummaryGeneration(): Promise<void> {
+			if (
+				!generateSummaryBtn ||
+				!summaryProgress ||
+				!summaryProgressText ||
+				!summaryProgressBar
+			) {
+				console.error('Missing summary elements')
+				return
+			}
+
+			// Hide previous results and errors
+			summaryError.classList.add('hidden')
+			summaryResult.classList.add('hidden')
+			summaryProgress.classList.remove('hidden')
+
+			generateSummaryBtn.disabled = true
+			generateSummaryBtn.textContent = 'Generating...'
+
+			try {
+				// Get content to summarize - prefer markdown over text content
+				const summarizerContainer = document.querySelector(
+					'.chrome-ai-section',
+				) as HTMLElement
+				let contentToSummarize = summarizerContainer?.dataset.markdown || ''
+
+				// If no markdown is available, fall back to text content
+				if (!contentToSummarize.trim()) {
+					const blogContentElement = document.getElementById('blog-content')
+					contentToSummarize =
+						blogContentElement?.textContent ||
+						document.querySelector('article')?.textContent ||
+						document.querySelector('main')?.textContent ||
+						''
+					console.log('Using fallback text content instead of markdown')
+				} else {
+					console.log('Using markdown content for summarization')
+				}
+
+				if (!contentToSummarize.trim()) {
+					throw new Error('No blog content found to summarize')
+				}
+
+				console.log('Original content length:', contentToSummarize.length)
+
+				// Truncate content to avoid quota limits (Chrome AI Summarizer has ~4000 character limit)
+				const MAX_CONTENT_LENGTH = 4000
+				if (contentToSummarize.length > MAX_CONTENT_LENGTH) {
+					// Try to truncate at sentence boundaries for better results
+					const truncated = contentToSummarize.substring(0, MAX_CONTENT_LENGTH)
+					const lastSentenceEnd = Math.max(
+						truncated.lastIndexOf('.'),
+						truncated.lastIndexOf('!'),
+						truncated.lastIndexOf('?'),
+					)
+
+					if (lastSentenceEnd > MAX_CONTENT_LENGTH * 0.7) {
+						// If we found a sentence end in the last 30%, use it
+						contentToSummarize = truncated.substring(0, lastSentenceEnd + 1)
+					} else {
+						// Otherwise, truncate at word boundary
+						const lastSpace = truncated.lastIndexOf(' ')
+						contentToSummarize =
+							lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated
+					}
+
+					console.log(
+						'Content truncated to:',
+						contentToSummarize.length,
+						'characters',
+					)
+
+					// Show truncation notice to user
+					if (summaryProgressText) {
+						summaryProgressText.textContent =
+							'Content truncated for AI processing...'
+					}
+				}
+
+				// Import and use the BlogSummarizer
+				const { BlogSummarizer } = await import('../../utils/summarizer.js')
+				const summarizer = new BlogSummarizer()
+
+				// Get selected options
+				const selectedType = summaryTypeSelector.value as
+					| 'teaser'
+					| 'key-points'
+					| 'headline'
+				const selectedLength = summaryLengthSelector.value as
+					| 'short'
+					| 'medium'
+					| 'long'
+
+				// Generate summary with progress tracking
+				let currentProgress = 0
+				const result = await summarizer.summarizeBlogPost(
+					contentToSummarize,
+					{ type: selectedType, length: selectedLength },
+					(status: string) => {
+						if (summaryProgressText) summaryProgressText.textContent = status
+
+						// Animate progress
+						currentProgress = Math.min(currentProgress + 15, 90)
+						if (summaryProgressBar) {
+							summaryProgressBar.style.width = `${currentProgress}%`
+						}
+						if (summaryProgressPercentage) {
+							summaryProgressPercentage.textContent = `${currentProgress}%`
+						}
+					},
+				)
+
+				// Complete progress
+				if (summaryProgressBar) summaryProgressBar.style.width = '100%'
+				if (summaryProgressPercentage)
+					summaryProgressPercentage.textContent = '100%'
+				if (summaryProgressText)
+					summaryProgressText.textContent = 'Summary generated!'
+
+				setTimeout(() => {
+					summaryProgress.classList.add('hidden')
+					summaryResult.classList.remove('hidden')
+
+					if (summaryContentText)
+						summaryContentText.textContent = result.summary
+					if (summaryTypeDisplay)
+						summaryTypeDisplay.textContent = selectedType.toUpperCase()
+					if (summaryMeta) {
+						summaryMeta.textContent = `${result.wordCount} words • ${selectedLength} • ${new Date(result.timestamp).toLocaleTimeString()}`
+					}
+				}, 500)
+			} catch (error) {
+				console.error('Summary generation failed:', error)
+				summaryProgress.classList.add('hidden')
+				summaryError.classList.remove('hidden')
+				if (summaryErrorMessage) {
+					if (error instanceof Error) {
+						if (
+							error.name === 'QuotaExceededError' ||
+							error.message.includes('too large')
+						) {
+							summaryErrorMessage.textContent =
+								'Content is too large for AI processing. The article has been automatically truncated, but still exceeds limits. Please try again or contact support.'
+						} else {
+							summaryErrorMessage.textContent = error.message
+						}
+					} else {
+						summaryErrorMessage.textContent =
+							'An unexpected error occurred during summarization'
+					}
+				}
+			} finally {
+				generateSummaryBtn.disabled = false
+				generateSummaryBtn.textContent = 'Generate Summary'
+			}
+		}
+
+		// Translation functionality
+		async function handleTranslation(): Promise<void> {
+			const selectedLanguage = languageSelector.value
+			if (!selectedLanguage || !translateBtn || !translationProgress) {
+				return
+			}
+
+			// Hide previous results and errors
+			translationError.classList.add('hidden')
+			translationResult.classList.add('hidden')
+			translationProgress.classList.remove('hidden')
+
+			translateBtn.disabled = true
+			translateBtn.textContent = 'Translating...'
+
+			try {
+				// Get content to translate - prefer markdown over text content
+				const translatorContainer = document.querySelector(
+					'.chrome-ai-section',
+				) as HTMLElement
+				let contentToTranslate = translatorContainer?.dataset.markdown || ''
+
+				// If no markdown is available, fall back to text content
+				if (!contentToTranslate.trim()) {
+					const blogContentElement = document.getElementById('blog-content')
+					contentToTranslate =
+						blogContentElement?.textContent ||
+						document.querySelector('article')?.textContent ||
+						document.querySelector('main')?.textContent ||
+						''
+					console.log(
+						'Using fallback text content instead of markdown for translation',
+					)
+				} else {
+					console.log('Using markdown content for translation')
+				}
+
+				if (!contentToTranslate.trim()) {
+					throw new Error('No blog content found to translate')
+				}
+
+				console.log(
+					'Original translation content length:',
+					contentToTranslate.length,
+				)
+
+				// Clean content for translation - remove JSX/HTML and keep only readable text
+				contentToTranslate = cleanContentForTranslation(contentToTranslate)
+				console.log(
+					'Cleaned translation content length:',
+					contentToTranslate.length,
+				)
+
+				// Truncate content to avoid quota limits (Chrome AI Translation has similar limits)
+				const MAX_TRANSLATION_LENGTH = 3000 // Slightly smaller for translation
+				if (contentToTranslate.length > MAX_TRANSLATION_LENGTH) {
+					// Try to truncate at sentence boundaries for better results
+					const truncated = contentToTranslate.substring(
+						0,
+						MAX_TRANSLATION_LENGTH,
+					)
+					const lastSentenceEnd = Math.max(
+						truncated.lastIndexOf('.'),
+						truncated.lastIndexOf('!'),
+						truncated.lastIndexOf('?'),
+					)
+
+					if (lastSentenceEnd > MAX_TRANSLATION_LENGTH * 0.7) {
+						// If we found a sentence end in the last 30%, use it
+						contentToTranslate = truncated.substring(0, lastSentenceEnd + 1)
+					} else {
+						// Otherwise, truncate at word boundary
+						const lastSpace = truncated.lastIndexOf(' ')
+						contentToTranslate =
+							lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated
+					}
+
+					console.log(
+						'Translation content truncated to:',
+						contentToTranslate.length,
+						'characters',
+					)
+
+					// Show truncation notice to user
+					if (translationProgressText) {
+						translationProgressText.textContent =
+							'Content truncated for AI processing...'
+					}
+				}
+
+				// Import and use the Translator
+				const { BlogTranslator } = await import('../../utils/translator.js')
+				const translator = new BlogTranslator()
+
+				// Simulate progress
+				let currentProgress = 0
+				const progressInterval = setInterval(() => {
+					currentProgress = Math.min(currentProgress + 10, 80)
+					if (translationProgressBar) {
+						translationProgressBar.style.width = `${currentProgress}%`
+					}
+					if (translationProgressPercentage) {
+						translationProgressPercentage.textContent = `${currentProgress}%`
+					}
+				}, 300)
+
+				const result = await translator.translateBlogPost(
+					contentToTranslate,
+					selectedLanguage,
+				)
+
+				clearInterval(progressInterval)
+
+				// Complete progress
+				if (translationProgressBar) translationProgressBar.style.width = '100%'
+				if (translationProgressPercentage)
+					translationProgressPercentage.textContent = '100%'
+				if (translationProgressText)
+					translationProgressText.textContent = 'Translation complete!'
+
+				setTimeout(() => {
+					translationProgress.classList.add('hidden')
+					translationResult.classList.remove('hidden')
+
+					if (translationContentText)
+						translationContentText.textContent = result.translatedContent || ''
+					if (translationLanguage) {
+						const languageOption =
+							languageSelector.options[languageSelector.selectedIndex]
+						translationLanguage.textContent =
+							languageOption.textContent || selectedLanguage
+					}
+				}, 500)
+			} catch (error) {
+				console.error('Translation failed:', error)
+				translationProgress.classList.add('hidden')
+				translationError.classList.remove('hidden')
+				if (translationErrorMessage) {
+					if (error instanceof Error) {
+						if (
+							error.name === 'QuotaExceededError' ||
+							error.message.includes('too large')
+						) {
+							translationErrorMessage.textContent =
+								'Content is too large for AI translation. The article has been automatically truncated, but still exceeds limits. Please try again or contact support.'
+						} else {
+							translationErrorMessage.textContent = error.message
+						}
+					} else {
+						translationErrorMessage.textContent =
+							'An unexpected error occurred during translation'
+					}
+				}
+			} finally {
+				translateBtn.disabled = false
+				translateBtn.textContent = 'Translate'
+			}
+		}
+
+		// Add event listeners
+		generateSummaryBtn?.addEventListener('click', handleSummaryGeneration)
+		translateBtn?.addEventListener('click', handleTranslation)
+
+		// Enable translate button when language is selected
+		languageSelector?.addEventListener('change', () => {
+			if (translateBtn) {
+				translateBtn.disabled = !languageSelector.value
+			}
+		})
+
+		// Add click outside to close behavior for dialogs
+		const addDialogOutsideClickHandler = (dialog: HTMLDialogElement): void => {
+			dialog.addEventListener('click', e => {
+				const rect = dialog.getBoundingClientRect()
+				if (
+					e.clientX < rect.left ||
+					e.clientX > rect.right ||
+					e.clientY < rect.top ||
+					e.clientY > rect.bottom
+				) {
+					dialog.close()
+				}
+			})
+		}
+
+		addDialogOutsideClickHandler(browserNotSupportedDialog)
+		addDialogOutsideClickHandler(aiNotSupportedDialog)
+
+		// Return cleanup function
+		return (): void => {
+			generateSummaryBtn?.removeEventListener('click', handleSummaryGeneration)
+			translateBtn?.removeEventListener('click', handleTranslation)
+			summaryTab?.removeEventListener('click', () => switchTab('summary'))
+			translateTab?.removeEventListener('click', () => switchTab('translate'))
+		}
+	}
+
+	// Enhanced cleanup for Astro view transitions
+	let chromeAICleanup: (() => void) | null = null
+
+	// Clean up before navigation
+	document.addEventListener('astro:before-preparation', () => {
+		if (chromeAICleanup) {
+			chromeAICleanup()
+			chromeAICleanup = null
+		}
+	})
+
+	// Initialize on Astro page load
+	document.addEventListener('astro:page-load', () => {
+		if (chromeAICleanup) chromeAICleanup()
+		setTimeout(() => {
+			chromeAICleanup = initializeChromeAI()
+		}, 100)
+	})
+
+	// Fallback for direct page loads
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				if (!chromeAICleanup) {
+					chromeAICleanup = initializeChromeAI()
+				}
+			}, 100)
+		})
+	} else {
+		setTimeout(() => {
+			if (!chromeAICleanup) {
+				chromeAICleanup = initializeChromeAI()
+			}
+		}, 50)
+	}
+</script>
