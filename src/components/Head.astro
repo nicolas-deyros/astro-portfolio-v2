@@ -22,14 +22,10 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 					src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
 				/>
 				<script type="text/partytown">
-					/* eslint-disable */
-					window.dataLayer = window.dataLayer || []
-					function gtag() {
-						dataLayer.push(arguments)
-					}
-					gtag('js', new Date())
-					gtag('config', 'G-SW4ZXZJ9WH')
-					/* eslint-enable */
+					/* eslint-disable */ window.dataLayer = window.dataLayer || []
+					function gtag() {dataLayer.push(arguments)}
+					gtag('js', new Date()) gtag('config', 'G-SW4ZXZJ9WH') /* eslint-enable
+					*/
 				</script>
 			</>
 		)
