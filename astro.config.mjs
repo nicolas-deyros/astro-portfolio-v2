@@ -22,7 +22,12 @@ export default defineConfig({
 
 	integrations: [
 		mdx(),
-		partytown(),
+		partytown({
+			config: {
+				forward: ['dataLayer.push'],
+				debug: false,
+			},
+		}),
 		sitemap({
 			filter: page => page !== 'https://www.nicolasdeyros.dev/admin',
 		}),

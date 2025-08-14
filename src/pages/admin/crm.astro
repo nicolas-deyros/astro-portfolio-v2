@@ -63,17 +63,30 @@ try {
 		// Hide page initially
 		document.documentElement.style.visibility = 'hidden'
 
-		// Check authentication immediately
-		if (
-			typeof localStorage !== 'undefined' &&
-			localStorage.getItem('admin_authenticated') === 'true'
-		) {
-			// Authenticated - show page
-			document.documentElement.style.visibility = 'visible'
-		} else {
-			// Not authenticated - redirect immediately
-			window.location.href = '/admin'
+		// Check authentication using the new cookie-based system
+		async function checkAuth() {
+			try {
+				const response = await fetch('/api/auth.json', {
+					method: 'GET',
+					credentials: 'include',
+				})
+				const data = await response.json()
+
+				if (response.ok && data.success && data.authenticated) {
+					// Authenticated - show page
+					document.documentElement.style.visibility = 'visible'
+				} else {
+					// Not authenticated - redirect immediately
+					window.location.href = '/admin'
+				}
+			} catch (error) {
+				console.error('Auth check failed:', error)
+				window.location.href = '/admin'
+			}
 		}
+
+		// Run auth check
+		checkAuth()
 	</script>
 
 	<div class="min-h-screen bg-white dark:bg-gray-900">
@@ -284,16 +297,22 @@ try {
 
 	<!-- Client-side functionality -->
 	<script>
-		document.addEventListener('astro:page-load', () => {
-			// Check if authenticated
-			const isAuthenticated =
-				localStorage.getItem('admin_authenticated') === 'true'
-			const authToken = localStorage.getItem('auth_token')
+		document.addEventListener('astro:page-load', async () => {
+			// Check authentication using the new cookie-based system
+			try {
+				const response = await fetch('/api/auth.json', {
+					method: 'GET',
+					credentials: 'include',
+				})
+				const data = await response.json()
 
-			console.log('Auth check:', { isAuthenticated, hasToken: !!authToken })
-
-			if (!isAuthenticated || !authToken) {
-				console.log('Not authenticated or no token, redirecting to admin')
+				if (!response.ok || !data.success || !data.authenticated) {
+					console.log('Not authenticated, redirecting to admin')
+					window.location.href = '/admin'
+					return
+				}
+			} catch (error) {
+				console.error('Auth check failed:', error)
 				window.location.href = '/admin'
 				return
 			}

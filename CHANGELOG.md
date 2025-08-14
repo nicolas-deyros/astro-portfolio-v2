@@ -1,6 +1,67 @@
-# Chang## [Unreleased]
+# Changelog
 
-### � Links Page Pagination & RSS Enhancement
+## [Unreleased]
+
+### � Critical Authentication & API Fixes
+
+- **Fixed Authentication System**: Resolved critical authentication issues in admin interface
+  - Fixed database query syntax errors in `/src/pages/api/links.json.ts` (`db.eq` → `eq`)
+  - Fixed session cookie mismatch between auth creation and verification
+  - Updated authentication system to use `admin_token` cookie for session validation
+  - Resolved BigInt serialization error in API responses
+- **Fixed Links API CRUD Operations**: Complete admin links management functionality
+  - ✅ **POST**: Create new links with proper authentication
+  - ✅ **PUT**: Update existing links (reserved for future implementation)
+  - ✅ **DELETE**: Fixed query parameter handling for link deletion
+  - ✅ **GET**: Fetch links (already working)
+- **Authentication Test Updates**: Updated test suite for new secret key authentication
+  - Migrated from username/password to `secretKey` authentication system
+  - Updated all auth tests to use environment variable `API_SECRET_KEY`
+  - Fixed test configuration to properly handle new authentication flow
+- **Production Environment Fixes**: Resolved Google Analytics integration issues
+  - Fixed Partytown configuration for Google Analytics in development
+  - Implemented production-only Google Analytics loading (localhost excluded)
+  - Enhanced Partytown config with proper `forward` and `debug` settings
+- **Code Quality Improvements**: Fixed ESLint errors and improved code standards
+  - Fixed parsing errors in Google Analytics script declarations
+  - Removed unused imports in database seed file
+  - Improved error handling and response formatting
+
+### �🔐 Enhanced Authentication Security
+
+- **Database-Backed Sessions**: Completely redesigned authentication system with persistent session storage
+  - Created `AdminSessions` table in Astro DB for secure session management
+  - Server-side session validation with automatic cleanup of expired sessions
+  - 2-hour session expiration (reduced from 24 hours for improved security)
+  - Session tracking with creation time, last activity, and expiration timestamps
+- **Device Fingerprinting**: Advanced security to prevent cross-device session hijacking
+  - Device fingerprint generation based on User-Agent and IP address
+  - Session validation includes device matching to prevent unauthorized access
+  - Cross-device login attempts are automatically rejected with clear error messages
+  - Each device requires its own separate authentication session
+- **Enhanced API Security**: Robust authentication endpoints with comprehensive validation
+  - Updated `/src/pages/api/auth.json.ts` with login, logout, and validate actions
+  - Secure HTTP-only cookies with proper SameSite and Secure flags
+  - Device mismatch detection with automatic session invalidation
+  - Improved error handling with specific messages for different failure scenarios
+- **Admin Interface Updates**: Enhanced admin components with server-side session validation
+  - Updated `/src/pages/admin/index.astro` with robust authentication checks
+  - Enhanced `/src/components/Header/HeaderMenu.astro` with secure logout functionality
+  - Real-time session validation with proper error handling
+  - Better user feedback for authentication state changes
+- **Security Documentation**: Comprehensive security documentation and testing
+  - Created `SECURITY.md` with detailed security practices and implementation notes
+  - Updated test suite with device fingerprinting and cross-device security tests
+  - Enhanced authentication tests to cover new session management features
+
+### 🔧 Authentication System Improvements
+
+- **Session Management**: Automatic cleanup of expired sessions on each API request
+- **Cross-Device Security**: Resolves original issue where users could browse on mobile after desktop login but get logged out when interacting
+- **Error Handling**: Comprehensive error handling with specific messages for session expiry, device mismatch, and invalid credentials
+- **Performance**: Optimized database queries with proper indexing for session lookups
+
+### 📄 Links Page Pagination & RSS Enhancement
 
 - **Links Page Pagination**: Added comprehensive pagination system for links page
   - Created `/src/pages/links/[...page].astro` with server-side rendering (`prerender = false`)

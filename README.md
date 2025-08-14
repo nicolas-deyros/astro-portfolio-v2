@@ -49,11 +49,16 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 
 ### 🔐 **Enterprise Admin System**
 
-- **� Advanced Pagination**: Configurable page sizes with SQL-optimized queries
-- **� Powerful Search**: Full-text search across content with tag filtering
+- **🔒 Enhanced Security**: Database-backed session management with device fingerprinting
+- **🛡️ Cross-Device Protection**: Device mismatch detection prevents session hijacking
+- **⏰ Smart Expiration**: 2-hour session timeout with automatic cleanup
+- **📱 Multi-Device Support**: Secure independent sessions per device
+- **🔐 Server-Side Validation**: Complete authentication state management
+- **🚫 Session Hijacking Protection**: Prevents unauthorized cross-device access
+- **📄 Advanced Pagination**: Configurable page sizes with SQL-optimized queries
+- **🔍 Powerful Search**: Full-text search across content with tag filtering
 - **🛡️ Server-Side Validation**: Type-safe CRUD operations with Zod schemas
 - **🎯 Real-Time Feedback**: Interactive forms with immediate validation
-- **� Secure Authentication**: Token-based auth with session management
 
 ### 🚀 **Performance & SEO**
 
@@ -753,11 +758,18 @@ import heroImage from '../assets/hero.jpg'
    - Vercel automatically detects Astro configuration
    - Builds deploy automatically on push
 
-3. **Environment Variables** (if needed):
+3. **Environment Variables**:
+
    ```env
-   # Add in Vercel dashboard
+   # Required for admin authentication
+   SECRET_KEY=your-secure-secret-key-here
+
+   # Optional for contact form
    CONTACT_EMAIL=your-email@domain.com
    ```
+
+   **For Development**: Create a `.env` file with your `SECRET_KEY`
+   **For Production**: Add environment variables in your hosting dashboard (Vercel, Netlify, etc.)
 
 ---
 
@@ -769,4 +781,4 @@ MIT License - feel free to use this project as inspiration for your own portfoli
 
 **Built with ❤️ by Nicolás Deyros** | [Portfolio](https://nicolasdeyros.dev) | [LinkedIn](https://linkedin.com/in/nicolas-deyros)
 
-_Last updated: August 13, 2025_
+_Last updated: January 18, 2025_
