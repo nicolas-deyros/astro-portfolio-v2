@@ -175,6 +175,40 @@ const { className = '' } = Astro.props
 	</div>
 </div>
 
+<!-- Translation Error Dialog -->
+<dialog
+	id="translation-error-dialog"
+	class="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+	<form method="dialog" class="flex flex-col items-center">
+		<div class="mb-4 flex items-center gap-3">
+			<svg
+				class="h-6 w-6 text-red-500 dark:text-red-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+				</path>
+			</svg>
+			<span class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+				Translation Error
+			</span>
+		</div>
+		<div
+			id="translation-error-message"
+			class="mb-6 max-h-64 overflow-y-auto text-center text-sm text-slate-700 dark:text-slate-300">
+		</div>
+		<button
+			class="rounded-md bg-blue-600 px-6 py-2 text-base font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-offset-slate-900"
+			value="close">
+			OK
+		</button>
+	</form>
+</dialog>
+
 <script>
 	import { blogTranslator } from '../../utils/translator'
 
@@ -191,6 +225,18 @@ const { className = '' } = Astro.props
 		translationInfo: HTMLElement
 		copyBtn: HTMLButtonElement
 		closeModalBtns: NodeListOf<HTMLButtonElement>
+	}
+
+	// Utility function to show error dialogs
+	function showTranslationError(message: string): void {
+		const dialog = document.getElementById(
+			'translation-error-dialog',
+		) as HTMLDialogElement
+		const messageEl = document.getElementById('translation-error-message')
+		if (messageEl) {
+			messageEl.textContent = message
+		}
+		dialog?.showModal()
 	}
 
 	async function initializeTranslation(): Promise<void> {
@@ -307,7 +353,7 @@ const { className = '' } = Astro.props
 		// Get original content
 		const originalContent = getOriginalContent()
 		if (!originalContent) {
-			alert('Could not find article content to translate.')
+			showTranslationError('Could not find article content to translate.')
 			return
 		}
 
@@ -340,7 +386,7 @@ const { className = '' } = Astro.props
 
 				if (waitResult === 'timeout') {
 					hideTranslationProgress(elements)
-					alert(
+					showTranslationError(
 						'Translation models are taking too long to download. Please try again later.',
 					)
 					return
@@ -348,7 +394,9 @@ const { className = '' } = Astro.props
 
 				if (waitResult === 'unavailable') {
 					hideTranslationProgress(elements)
-					alert('Translation is not available for this language pair.')
+					showTranslationError(
+						'Translation is not available for this language pair.',
+					)
 					return
 				}
 			}
@@ -396,11 +444,11 @@ const { className = '' } = Astro.props
 						result.error?.includes('models are being downloaded')
 					) {
 						elements.downloadWarning.classList.remove('hidden')
-						alert(
+						showTranslationError(
 							'Translation models are still downloading. Please wait a moment and try again.',
 						)
 					} else {
-						alert(`Translation failed: ${result.error}`)
+						showTranslationError(`Translation failed: ${result.error}`)
 					}
 				}
 			}, 500)
@@ -416,11 +464,11 @@ const { className = '' } = Astro.props
 					error.message.includes('downloading'))
 			) {
 				elements.downloadWarning.classList.remove('hidden')
-				alert(
+				showTranslationError(
 					'Translation models are being downloaded. Please wait a moment and try again.',
 				)
 			} else {
-				alert('Translation failed. Please try again.')
+				showTranslationError('Translation failed. Please try again.')
 			}
 		}
 	}
@@ -518,7 +566,7 @@ const { className = '' } = Astro.props
 			})
 			.catch(err => {
 				console.error('Failed to copy:', err)
-				alert('Failed to copy to clipboard')
+				showTranslationError('Failed to copy to clipboard')
 			})
 	}
 
