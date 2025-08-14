@@ -93,28 +93,22 @@ const { className = '', markdown = '' } = Astro.props
 						class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
 						Summary Type:
 					</label>
-					<div class="grid grid-cols-2 gap-2 md:grid-cols-4">
+					<div class="grid grid-cols-3 gap-2">
 						<button
 							type="button"
-							class="summary-type-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-							data-type="tl;dr">
-							TL;DR
-						</button>
-						<button
-							type="button"
-							class="summary-type-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-type-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-type="key-points">
 							Key Points
 						</button>
 						<button
 							type="button"
-							class="summary-type-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-type-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-type="teaser">
 							Teaser
 						</button>
 						<button
 							type="button"
-							class="summary-type-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-type-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-type="headline">
 							Headline
 						</button>
@@ -130,19 +124,19 @@ const { className = '', markdown = '' } = Astro.props
 					<div class="grid grid-cols-3 gap-2">
 						<button
 							type="button"
-							class="summary-length-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-length-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-length="short">
 							Short
 						</button>
 						<button
 							type="button"
-							class="summary-length-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-length-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-length="medium">
 							Medium
 						</button>
 						<button
 							type="button"
-							class="summary-length-btn rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							class="summary-length-btn rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							data-length="long">
 							Long
 						</button>
@@ -165,14 +159,20 @@ const { className = '', markdown = '' } = Astro.props
 							class="text-sm text-gray-600 dark:text-gray-400">
 							Initializing...
 						</span>
+						<span
+							id="progress-percentage"
+							class="text-xs text-gray-500 dark:text-gray-400">
+							0%
+						</span>
 					</div>
-					<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-						<div
-							id="progress-fill"
-							class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-							style="width: 0%">
-						</div>
-					</div>
+					<progress
+						id="progress-bar"
+						class="h-3 w-full rounded-lg transition-all duration-300 ease-in-out [&::-moz-progress-bar]:rounded-lg [&::-moz-progress-bar]:bg-blue-600 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-bar]:bg-gray-200 dark:[&::-webkit-progress-bar]:bg-gray-700 [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-value]:bg-blue-600 [&::-webkit-progress-value]:transition-all [&::-webkit-progress-value]:duration-300"
+						style="background-color: rgb(229 231 235); border-radius: 0.5rem;"
+						value="0"
+						max="100">
+						0%
+					</progress>
 				</div>
 
 				<!-- Error Display -->
@@ -225,6 +225,56 @@ const { className = '', markdown = '' } = Astro.props
 		</form>
 	</dialog>
 </div>
+
+<style>
+	/* Cross-browser progress bar styling with animations */
+	progress {
+		appearance: none;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+	}
+
+	/* WebKit browsers (Chrome, Safari, Edge) */
+	progress::-webkit-progress-bar {
+		background-color: rgb(229 231 235);
+		border-radius: 0.5rem;
+		transition: all 0.3s ease-in-out;
+	}
+
+	progress::-webkit-progress-value {
+		background-color: rgb(37 99 235);
+		border-radius: 0.5rem;
+		transition: all 0.3s ease-in-out;
+	}
+
+	/* Firefox */
+	progress::-moz-progress-bar {
+		background-color: rgb(37 99 235);
+		border-radius: 0.5rem;
+		transition: all 0.3s ease-in-out;
+	}
+
+	/* Dark mode support */
+	:global(.dark) progress::-webkit-progress-bar {
+		background-color: rgb(55 65 81);
+	}
+
+	:global(.dark) progress {
+		background-color: rgb(55 65 81);
+	}
+
+	/* Fallback for unsupported browsers */
+	progress {
+		background-color: rgb(229 231 235);
+		border: none;
+		border-radius: 0.5rem;
+		overflow: hidden;
+	}
+
+	:global(.dark) progress {
+		background-color: rgb(55 65 81);
+	}
+</style>
 
 <script>
 	console.log('BlogSummarizer script loading...')
@@ -325,7 +375,10 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 			) as HTMLButtonElement
 			const progressContainer = document.getElementById('summary-progress')
 			const progressText = document.getElementById('progress-text')
-			const progressFill = document.getElementById('progress-fill')
+			const progressBar = document.getElementById(
+				'progress-bar',
+			) as HTMLProgressElement
+			const progressPercentage = document.getElementById('progress-percentage')
 			const errorContainer = document.getElementById('summary-error')
 			const errorMessage = document.getElementById('error-message')
 			const resultContainer = document.getElementById('summary-result')
@@ -333,7 +386,7 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 			const summaryTypeDisplay = document.getElementById('summary-type-display')
 			const summaryMeta = document.getElementById('summary-meta')
 
-			let selectedType = 'tl;dr'
+			let selectedType = 'teaser'
 			let selectedLength = 'medium'
 
 			// Handle summary type selection
@@ -341,11 +394,41 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 				btn.addEventListener('click', e => {
 					e.preventDefault()
 					e.stopPropagation()
-					summaryTypeBtns.forEach(b =>
-						b.classList.remove('bg-blue-600', 'text-white'),
+					summaryTypeBtns.forEach(b => {
+						// Remove selected state classes
+						b.classList.remove(
+							'bg-blue-600',
+							'text-white',
+							'border-blue-600',
+							'shadow-md',
+						)
+						// Add unselected state classes
+						b.classList.add(
+							'bg-white',
+							'text-gray-700',
+							'border-gray-300',
+							'dark:bg-gray-800',
+							'dark:text-gray-200',
+							'dark:border-gray-600',
+						)
+					})
+					// Remove unselected state classes from clicked button
+					btn.classList.remove(
+						'bg-white',
+						'text-gray-700',
+						'border-gray-300',
+						'dark:bg-gray-800',
+						'dark:text-gray-200',
+						'dark:border-gray-600',
 					)
-					btn.classList.add('bg-blue-600', 'text-white')
-					selectedType = btn.getAttribute('data-type') || 'tl;dr'
+					// Add selected state classes to clicked button
+					btn.classList.add(
+						'bg-blue-600',
+						'text-white',
+						'border-blue-600',
+						'shadow-md',
+					)
+					selectedType = btn.getAttribute('data-type') || 'teaser'
 				})
 			})
 
@@ -354,17 +437,73 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 				btn.addEventListener('click', e => {
 					e.preventDefault()
 					e.stopPropagation()
-					summaryLengthBtns.forEach(b =>
-						b.classList.remove('bg-blue-600', 'text-white'),
+					summaryLengthBtns.forEach(b => {
+						// Remove selected state classes
+						b.classList.remove(
+							'bg-blue-600',
+							'text-white',
+							'border-blue-600',
+							'shadow-md',
+						)
+						// Add unselected state classes
+						b.classList.add(
+							'bg-white',
+							'text-gray-700',
+							'border-gray-300',
+							'dark:bg-gray-800',
+							'dark:text-gray-200',
+							'dark:border-gray-600',
+						)
+					})
+					// Remove unselected state classes from clicked button
+					btn.classList.remove(
+						'bg-white',
+						'text-gray-700',
+						'border-gray-300',
+						'dark:bg-gray-800',
+						'dark:text-gray-200',
+						'dark:border-gray-600',
 					)
-					btn.classList.add('bg-blue-600', 'text-white')
+					// Add selected state classes to clicked button
+					btn.classList.add(
+						'bg-blue-600',
+						'text-white',
+						'border-blue-600',
+						'shadow-md',
+					)
 					selectedLength = btn.getAttribute('data-length') || 'medium'
 				})
 			})
 
 			// Set default selections
-			summaryTypeBtns[0]?.classList.add('bg-blue-600', 'text-white')
-			summaryLengthBtns[1]?.classList.add('bg-blue-600', 'text-white')
+			summaryTypeBtns[0]?.classList.remove(
+				'bg-white',
+				'text-gray-700',
+				'border-gray-300',
+				'dark:bg-gray-800',
+				'dark:text-gray-200',
+				'dark:border-gray-600',
+			)
+			summaryTypeBtns[0]?.classList.add(
+				'bg-blue-600',
+				'text-white',
+				'border-blue-600',
+				'shadow-md',
+			)
+			summaryLengthBtns[1]?.classList.remove(
+				'bg-white',
+				'text-gray-700',
+				'border-gray-300',
+				'dark:bg-gray-800',
+				'dark:text-gray-200',
+				'dark:border-gray-600',
+			)
+			summaryLengthBtns[1]?.classList.add(
+				'bg-blue-600',
+				'text-white',
+				'border-blue-600',
+				'shadow-md',
+			)
 
 			// Handle generate summary
 			generateBtn?.addEventListener('click', async e => {
@@ -379,7 +518,7 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 					!generateBtn ||
 					!progressContainer ||
 					!progressText ||
-					!progressFill
+					!progressBar
 				) {
 					console.error('Missing required elements')
 					return
@@ -392,6 +531,22 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 
 				generateBtn.disabled = true
 				generateBtn.textContent = 'Generating...'
+
+				// Initialize progress
+				if (progressBar) {
+					progressBar.value = 0
+					if (progressPercentage) progressPercentage.textContent = '0%'
+				}
+
+				let currentProgress = 0
+				const progressSteps = [
+					{ value: 10, message: 'Checking model availability...' },
+					{ value: 25, message: 'Initializing summarizer...' },
+					{ value: 45, message: 'Processing content...' },
+					{ value: 70, message: 'Generating summary...' },
+					{ value: 90, message: 'Finalizing...' },
+				]
+				let stepIndex = 0
 
 				try {
 					// Get the markdown content from the data attribute or fallback to rendered content
@@ -437,24 +592,64 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 					const result = await summarizer.summarizeBlogPost(
 						contentToSummarize,
 						{
-							type: selectedType as
-								| 'tl;dr'
-								| 'key-points'
-								| 'teaser'
-								| 'headline',
+							type: selectedType as 'teaser' | 'key-points' | 'headline',
 							length: selectedLength as 'short' | 'medium' | 'long',
 						},
 						(status: string) => {
 							if (progressText) progressText.textContent = status
-							// Simple progress animation
-							const currentWidth = parseInt(progressFill?.style.width || '0')
-							const newWidth = Math.min(currentWidth + 20, 90)
-							if (progressFill) progressFill.style.width = `${newWidth}%`
+
+							// Animate progress more realistically based on the current step
+							if (stepIndex < progressSteps.length) {
+								const targetValue = progressSteps[stepIndex].value
+								const stepMessage = progressSteps[stepIndex].message
+
+								// Update message if it matches our predefined steps
+								if (
+									status.includes('Checking') ||
+									status.includes('availability')
+								) {
+									currentProgress = Math.min(currentProgress + 15, targetValue)
+									if (progressText) progressText.textContent = stepMessage
+								} else if (status.includes('Initializing')) {
+									stepIndex = Math.max(stepIndex, 1)
+									currentProgress = Math.min(
+										currentProgress + 20,
+										progressSteps[1].value,
+									)
+									if (progressText)
+										progressText.textContent = progressSteps[1].message
+								} else if (status.includes('Processing')) {
+									stepIndex = Math.max(stepIndex, 2)
+									currentProgress = Math.min(
+										currentProgress + 15,
+										progressSteps[2].value,
+									)
+									if (progressText)
+										progressText.textContent = progressSteps[2].message
+								} else if (status.includes('Generating')) {
+									stepIndex = Math.max(stepIndex, 3)
+									currentProgress = Math.min(
+										currentProgress + 20,
+										progressSteps[3].value,
+									)
+									if (progressText)
+										progressText.textContent = progressSteps[3].message
+								}
+
+								if (progressBar) {
+									progressBar.value = currentProgress
+									if (progressPercentage)
+										progressPercentage.textContent = `${Math.round(currentProgress)}%`
+								}
+							}
 						},
 					)
 
 					// Show results
-					if (progressFill) progressFill.style.width = '100%'
+					if (progressBar) {
+						progressBar.value = 100
+						if (progressPercentage) progressPercentage.textContent = '100%'
+					}
 					if (progressText) progressText.textContent = 'Summary generated!'
 
 					setTimeout(() => {
@@ -481,7 +676,10 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 				} finally {
 					generateBtn.disabled = false
 					generateBtn.textContent = 'Generate Summary'
-					if (progressFill) progressFill.style.width = '0%'
+					if (progressBar) {
+						progressBar.value = 0
+						if (progressPercentage) progressPercentage.textContent = '0%'
+					}
 				}
 			})
 		}

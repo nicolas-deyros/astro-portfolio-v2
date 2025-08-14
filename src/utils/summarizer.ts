@@ -1,7 +1,7 @@
 // Based on Google Chrome Labs Summarization API
 // https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/summarization-api-playground
 
-type SummarizerType = 'tl;dr' | 'key-points' | 'teaser' | 'headline'
+type SummarizerType = 'teaser' | 'key-points' | 'headline'
 type SummarizerFormat = 'markdown' | 'plain-text'
 type SummarizerLength = 'short' | 'medium' | 'long'
 
