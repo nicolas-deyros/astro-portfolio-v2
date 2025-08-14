@@ -21,6 +21,11 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 - **🎵 Audio Integration**: Read-aloud functionality with Web Audio API
 - **📊 Reading Progress**: Visual progress tracking for articles
 - **🏷️ Smart Tagging**: Organized content with categories and filtering
+- **🤖 Chrome AI Integration**: Real-time translation and content summarization
+  - **🌐 Translation**: Multi-language support with Chrome AI Translation API
+  - **📝 Summarization**: Automatic content summaries using Chrome AI Summarizer
+  - **⚡ Progressive Enhancement**: Works gracefully without AI support
+  - **🧪 Comprehensive Testing**: Full test suite for AI functionality
 
 ### 🔐 **Enterprise Admin System**
 
@@ -77,10 +82,20 @@ Comprehensive testing ensures reliability and performance:
 - **Icons**: [Iconify](https://iconify.design/) - Comprehensive icon library
 - **Images**: [Astro Assets](https://docs.astro.build/en/guides/assets/) - Optimized image handling
 
+### **AI & Enhanced Features**
+
+- **Chrome AI Integration**: [Chrome AI APIs](https://developer.chrome.com/docs/ai/) - Translation and summarization
+- **Translation**: Real-time content translation with language detection
+- **Summarization**: Automatic content summarization with configurable length
+- **Progressive Enhancement**: Graceful fallbacks for unsupported browsers
+- **Testing Infrastructure**: Comprehensive test suite with jsdom + Puppeteer
+
 ### **Testing & Quality Assurance**
 
 - **Testing Framework**: [Vitest](https://vitest.dev/) - Fast unit and integration testing
 - **Browser Automation**: [Puppeteer](https://pptr.dev/) - Headless Chrome for performance testing
+- **AI Testing**: Comprehensive Chrome AI test suite (unit, integration, performance, error handling)
+- **Environment Simulation**: jsdom for browser API mocking and testing
 - **Performance Testing**: Custom Core Web Vitals monitoring
 - **Content Analysis**: [Gray Matter](https://github.com/jonschlinkert/gray-matter) - Frontmatter parsing
 - **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
@@ -127,6 +142,9 @@ Comprehensive testing ensures reliability and performance:
 │   │   ├── List/
 │   │   │   ├── List.astro                # List component
 │   │   │   └── NavList.astro             # Navigation list
+│   │   ├── Translation/
+│   │   │   ├── BlogTranslator.astro      # Chrome AI translation
+│   │   │   └── BlogSummarizer.astro      # Chrome AI summarization
 │   │   ├── Footer.astro                  # Site footer
 │   │   ├── Head.astro                    # SEO head component
 │   │   ├── Pagination.astro              # Blog pagination

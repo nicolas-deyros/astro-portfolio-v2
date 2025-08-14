@@ -8,6 +8,9 @@ export default getViteConfig({
 		maxWorkers: 1,
 		pool: 'forks',
 
+		// Set up browser environment for Chrome AI tests
+		environment: 'jsdom',
+
 		// Optimize timeouts for faster feedback
 		testTimeout: 30000, // 30s instead of default 60s
 		hookTimeout: 60000, // Keep longer for server startup
