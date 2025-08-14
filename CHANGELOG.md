@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🎨 Unified Chrome AI Interface
+
+- **ChromeAI Section Component**: Created unified `src/components/ChromeAI/ChromeAISection.astro` with tabbed interface
+  - Replaces separate BlogSummarizer and BlogTranslator components with elegant tabbed UI
+  - Features gradient header with "Powered by Chrome AI" branding and Chrome 129+ compatibility badge
+  - Responsive design with dark mode support and improved accessibility
+- **Content Size Management**: Implemented smart content limits to prevent quota exceeded errors
+  - 4000-character limit for summarization with sentence-boundary truncation
+  - 3000-character limit for translation with intelligent content truncation
+  - User-friendly notifications when content requires truncation
+- **Enhanced Translation Quality**: Significantly improved translation output by filtering technical content
+  - Advanced content cleaning removes JSX/HTML elements, class names, and import statements
+  - Pattern protection preserves code blocks, Markdown links, and formatting
+  - Better skip logic prevents translation of technical/code content
+- **Improved Error Handling**: Added specific error messages and graceful degradation
+  - Custom quota exceeded error handling with helpful user guidance
+  - Better progress indicators and status messages
+  - Enhanced debugging with content length logging
+
 ### ✨ Enhanced Browser Compatibility
 
 - **Browser Detection Utility**: Added `src/lib/browserDetection.ts` for Chrome AI compatibility detection

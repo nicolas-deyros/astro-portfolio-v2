@@ -19,9 +19,8 @@ const { data, render } = post
 const { Content } = await render()
 
 import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
+import ChromeAISection from '@components/ChromeAI/ChromeAISection.astro'
 import Section from '@components/Section.astro'
-import BlogSummarizer from '@components/Summary/BlogSummarizer.astro'
-import BlogTranslator from '@components/Translation/BlogTranslator.astro'
 import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
 
@@ -85,7 +84,7 @@ const audioText = markdown
 		<div class="container mx-auto max-w-4xl px-4">
 			<header class="mb-8 border-b border-gray-200 pb-6 dark:border-gray-700">
 				<h1
-					class="mb-4 text-6xl leading-tight font-bold text-gray-900 md:text-4xl dark:text-white">
+					class="mb-4 text-2xl leading-tight font-bold text-gray-900 md:text-4xl dark:text-white">
 					{title}
 				</h1>
 
@@ -137,11 +136,8 @@ const audioText = markdown
 				/>
 			</div>
 
-			<!-- Summary Component -->
-			<BlogSummarizer className="mb-6" markdown={markdown} />
-
-			<!-- Translation Component -->
-			<BlogTranslator className="mb-6" />
+			<!-- Chrome AI Section (Summary & Translation) -->
+			<ChromeAISection className="mb-6" markdown={markdown} />
 
 			<div
 				id="blog-content"
