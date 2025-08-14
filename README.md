@@ -4,8 +4,20 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
+[![Tailwind CSS](#### **🎵 Hybrid Audio Player**
+
+- **Dual-Mode System**: Supports both text-to-speech and HTML5 audio file playback
+- **Auto-Detection**: Automatically chooses between modes based on content type
+- **Web Audio API Integration**: Advanced audio processing with Speech Synthesis API
+- **HTML5 Audio Support**: Native audio file playback (MP3, WAV, OGG) with full controls
+- **Smart Content Filtering**: Automatically excludes code blocks, images, and non-content elements
+- **Progress Tracking**: Real-time playback position with seek functionality for both modes
+- **Playback Controls**: Play, pause, stop with visual feedback and progress bar
+- **Volume Control**: Real-time volume adjustment for audio files
+- **Error Handling**: Robust error management with graceful fallbacks
+- **Performance Optimized**: Chunked text processing for long articles
+- **Cross-browser Compatibility**: Works across Chrome, Firefox, Safari, and Edgemg.shields.io/badge/Tailwind_CSS-38B2AC?Style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
 
 ## ✨ Key Features
 
@@ -18,7 +30,7 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 ### 📝 **Advanced Blog System**
 
 - **📄 MDX Support**: Rich content with embedded interactive components
-- **🎵 Audio Integration**: Read-aloud functionality with Web Audio API
+- **🎵 Audio Integration**: Read-aloud functionality with Hybrid Audio Player (Web Audio API + HTML5 Audio)
 - **📊 Reading Progress**: Visual progress tracking for articles
 - **🏷️ Smart Tagging**: Organized content with categories and filtering
 - **🤖 Chrome AI Integration**: Real-time translation and content summarization

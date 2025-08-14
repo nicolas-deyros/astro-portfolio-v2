@@ -1,0 +1,154 @@
+---
+export interface Props {
+	// For text-to-speech mode
+	text?: string
+	// For audio file mode
+	audioSrc?: string
+	// Common props
+	className?: string
+	enableVisualization?: boolean
+	autoLoad?: boolean
+	mode?: 'text-to-speech' | 'audio-file' | 'auto'
+	// Audio file specific props
+	preload?: 'none' | 'metadata' | 'auto'
+	crossOrigin?: 'anonymous' | 'use-credentials'
+	loop?: boolean
+	// Astro-specific hydration strategy
+	client?: 'load' | 'idle' | 'visible' | 'media' | 'only'
+}
+
+const {
+	text,
+	audioSrc,
+	className = '',
+	enableVisualization = false,
+	autoLoad = true,
+	mode = 'auto',
+	preload = 'metadata',
+	crossOrigin,
+	loop = false,
+	client = 'visible',
+} = Astro.props
+
+// Import the React component
+import HybridAudioPlayer from './HybridAudioPlayer'
+---
+
+<div class="hybrid-audio-player-wrapper">
+	{
+		client === 'load' && (
+			<HybridAudioPlayer
+				client:load
+				text={text}
+				audioSrc={audioSrc}
+				className={className}
+				enableVisualization={enableVisualization}
+				autoLoad={autoLoad}
+				mode={mode}
+				preload={preload}
+				crossOrigin={crossOrigin}
+				loop={loop}
+			/>
+		)
+	}
+
+	{
+		client === 'idle' && (
+			<HybridAudioPlayer
+				client:idle
+				text={text}
+				audioSrc={audioSrc}
+				className={className}
+				enableVisualization={enableVisualization}
+				autoLoad={autoLoad}
+				mode={mode}
+				preload={preload}
+				crossOrigin={crossOrigin}
+				loop={loop}
+			/>
+		)
+	}
+
+	{
+		client === 'visible' && (
+			<HybridAudioPlayer
+				client:visible
+				text={text}
+				audioSrc={audioSrc}
+				className={className}
+				enableVisualization={enableVisualization}
+				autoLoad={autoLoad}
+				mode={mode}
+				preload={preload}
+				crossOrigin={crossOrigin}
+				loop={loop}
+			/>
+		)
+	}
+
+	{
+		client === 'media' && (
+			<HybridAudioPlayer
+				client:media="(max-width: 768px)"
+				text={text}
+				audioSrc={audioSrc}
+				className={className}
+				enableVisualization={enableVisualization}
+				autoLoad={autoLoad}
+				mode={mode}
+				preload={preload}
+				crossOrigin={crossOrigin}
+				loop={loop}
+			/>
+		)
+	}
+
+	{
+		client === 'only' && (
+			<HybridAudioPlayer
+				client:only="react"
+				text={text}
+				audioSrc={audioSrc}
+				className={className}
+				enableVisualization={enableVisualization}
+				autoLoad={autoLoad}
+				mode={mode}
+				preload={preload}
+				crossOrigin={crossOrigin}
+				loop={loop}
+			/>
+		)
+	}
+</div>
+
+<style>
+	.hybrid-audio-player-wrapper {
+		/* Container styles */
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.hybrid-audio-player-wrapper :global(.hybrid-audio-container) {
+		/* Global styles for the hybrid audio player */
+		background: var(--color-background);
+		color: var(--color-text);
+		border-radius: 0.5rem;
+		box-shadow:
+			0 1px 3px 0 rgba(0, 0, 0, 0.1),
+			0 1px 2px 0 rgba(0, 0, 0, 0.06);
+	}
+
+	/* Dark mode improvements */
+	:global(.dark) .hybrid-audio-player-wrapper :global(.hybrid-audio-container) {
+		box-shadow:
+			0 1px 3px 0 rgba(0, 0, 0, 0.3),
+			0 1px 2px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 768px) {
+		.hybrid-audio-player-wrapper {
+			font-size: 0.875rem;
+		}
+	}
+</style>

@@ -18,7 +18,7 @@ const { post } = Astro.props
 const { data, render } = post
 const { Content } = await render()
 
-import EnhancedAudioPlayer from '@components/AudioPlayer/EnhancedAudioPlayer.astro'
+import HybridAudioPlayerWrapper from '@components/AudioPlayer/HybridAudioPlayerWrapper.astro'
 import ChromeAISection from '@components/ChromeAI/ChromeAISection.astro'
 import Section from '@components/Section.astro'
 import Layout from '@layouts/index.astro'
@@ -126,13 +126,15 @@ const audioText = markdown
 				</div>
 			</header>
 
-			<!-- Enhanced Audio Player with improved content filtering -->
+			<!-- Hybrid Audio Player with improved content filtering and HTML5 audio support -->
 			<div class="mb-6">
-				<EnhancedAudioPlayer
+				<HybridAudioPlayerWrapper
 					text={audioText}
 					enableVisualization={true}
 					client="visible"
-					class="w-full"
+					className="w-full"
+					mode="text-to-speech"
+					autoLoad={true}
 				/>
 			</div>
 

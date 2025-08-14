@@ -1,3 +1,31 @@
+# Chang## [Unreleased]
+
+### 🔊 Hybrid Audio Player Enhancement
+
+- **Hybrid Audio Player Component**: Created unified audio player supporting both text-to-speech and HTML5 audio file playback
+  - `src/components/AudioPlayer/HybridAudioPlayer.tsx` - React component with dual-mode functionality
+  - `src/components/AudioPlayer/HybridAudioPlayerWrapper.astro` - Astro wrapper with hydration strategies
+  - Auto-detection mode: automatically chooses between text-to-speech and audio-file based on provided props
+- **HTML5 Audio Integration**: Added native HTML5 `<audio>` element support alongside existing Web Speech API
+  - Full volume control for audio files with real-time slider
+  - Time-based seeking with precise position control
+  - Support for multiple audio formats (MP3, WAV, OGG)
+  - Preload options (none, metadata, auto) for performance optimization
+
+### 🔧 Audio Player Improvements
+
+- **Blog Post Migration**: Migrated blog posts to use HybridAudioPlayer for enhanced functionality
+  - Updated `/src/pages/blog/[slug].astro` to use `HybridAudioPlayerWrapper`
+  - ~~Updated `/src/pages/audio-test.astro` to use hybrid player in text-to-speech mode~~ (Removed)
+- **Error Handling Enhancement**: Improved Web Speech API error handling
+  - Suppressed "interrupted" error messages during normal stop operations
+  - Enhanced error filtering to show only actual problems, not expected interruptions
+  - Better async error handling with delayed flag reset
+- **Code Cleanup**: Removed deprecated audio player components
+  - Deleted `AudioPlayerUI.tsx` (replaced by HybridAudioPlayer)
+  - Deleted `EnhancedAudioPlayer.astro` (replaced by HybridAudioPlayerWrapper)
+  - Removed test pages: `audio-test.astro` and `hybrid-audio-test.astro`
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -6,6 +34,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### 🔊 Hybrid Audio Player Enhancement
+
+- **Hybrid Audio Player Component**: Created unified audio player supporting both text-to-speech and HTML5 audio file playback
+  - `src/components/AudioPlayer/HybridAudioPlayer.tsx` - React component with dual-mode functionality
+  - `src/components/AudioPlayer/HybridAudioPlayerWrapper.astro` - Astro wrapper with hydration strategies
+  - Auto-detection mode: automatically chooses between text-to-speech and audio-file based on provided props
+- **HTML5 Audio Integration**: Added native HTML5 `<audio>` element support alongside existing Web Speech API
+  - Full volume control for audio files with real-time slider
+  - Time-based seeking with precise position control
+  - Support for multiple audio formats (MP3, WAV, OGG)
+  - Preload options (none, metadata, auto) for performance optimization
+  - Loop and cross-origin support for advanced use cases
+- **Unified Interface**: Single component handles both audio modes with consistent UI/UX
+  - Dynamic mode switching based on content type
+  - Progress tracking for both text chunks and audio timeline
+  - Consistent play/pause/stop controls across modes
+  - Error handling specific to each playback mode
+- **Enhanced Accessibility**: Comprehensive accessibility features for both modes
+  - ARIA labels and live regions for screen readers
+  - Keyboard navigation support
+  - Visual indicators for current mode and playback state
+  - Empty track element for HTML5 audio compliance
 
 ### 🎨 Unified Chrome AI Interface
 
