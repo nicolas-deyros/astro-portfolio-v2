@@ -2,7 +2,31 @@
 
 ## [Unreleased]
 
-### � Critical Authentication & API Fixes
+### ✨ Spell Checking Integration
+
+- **Added CSpell**: Comprehensive spell checking for code and content files
+  - Integrated [CSpell](https://cspell.org/) as development dependency
+  - Created comprehensive configuration (`cspell.json`) with language-specific dictionaries
+  - Added custom project dictionary (`cspell-custom-dictionary.txt`) for technical terms
+  - Configured support for TypeScript, JavaScript, Astro, Markdown, and MDX files
+  - Intelligent ignore patterns for generated files, dependencies, and binary assets
+- **NPM Scripts Enhancement**: Added spell checking commands to package.json
+  - `npm run lint:spell` - Check all files for spelling errors
+  - `npm run lint:spell:fix` - Show spell check suggestions for corrections
+  - `npm run spell` - Comprehensive spell check of all project files
+  - `npm run spell:check` - Quick spell check focused on source files
+  - Updated `npm run lint:all` to include spell checking
+- **Pre-commit Integration**: CSpell now runs automatically with Husky
+  - Added to `lint-staged` configuration for automatic pre-commit spell checking
+  - Integrated with existing workflow (Prettier → ESLint → CSpell → TextLint)
+  - Prevents commits with spelling errors, ensuring code quality
+- **Multi-language Support**: Configured dictionaries for different file types
+  - TypeScript/JavaScript: Node.js, npm, and programming terminology
+  - Astro: HTML, CSS, fonts, and framework-specific terms
+  - Markdown/MDX: Documentation and content-specific dictionaries
+  - Custom: Project-specific terms, names, and technical vocabulary
+
+### 🔐 Critical Authentication & API Fixes
 
 - **Fixed Authentication System**: Resolved critical authentication issues in admin interface
   - Fixed database query syntax errors in `/src/pages/api/links.json.ts` (`db.eq` → `eq`)

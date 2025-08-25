@@ -1,0 +1,64 @@
+# Custom Dictionary for Astro Portfolio Project
+# Add project-specific words that should be considered valid
+
+# Project Names
+astro-portfolio
+nicolasdeyros
+deyros
+
+# Technology Terms
+astrojs
+vercel
+mdx
+tailwindcss
+partytown
+iconify
+formik
+resend
+
+# Business/Domain Terms
+gtag
+dataLayer
+href
+src
+className
+onclick
+onload
+onchange
+onsubmit
+querySelector
+addEventListener
+preventDefault
+localStorage
+sessionStorage
+innerHTML
+textContent
+dataset
+setAttribute
+getAttribute
+appendChild
+createElement
+getElementById
+getElementsByClassName
+querySelectorAll
+
+# Programming Terms
+typeof
+instanceof
+readonly
+keyof
+const
+async
+await
+eval
+endianness
+dirname
+filename
+substr
+substring
+toLowerCase
+toUpperCase
+toString
+parseInt
+parseFloat
+stringify

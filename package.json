@@ -13,7 +13,9 @@
 		"lint": "eslint . --ext .js,.ts,.astro,.jsx,.tsx --fix",
 		"lint:text": "textlint \"src/content/**/*.{md,mdx}\" \"README.md\" \"*.md\"",
 		"lint:text:fix": "textlint --fix \"src/content/**/*.{md,mdx}\" \"README.md\" \"*.md\"",
-		"lint:all": "npm run lint && npm run lint:text:fix && npm run lint:text",
+		"lint:spell": "cspell \"**/*.{ts,js,astro,tsx,jsx,md,mdx}\" --no-progress",
+		"lint:spell:fix": "cspell \"**/*.{ts,js,astro,tsx,jsx,md,mdx}\" --no-progress --show-suggestions",
+		"lint:all": "npm run lint && npm run lint:text:fix && npm run lint:text && npm run lint:spell",
 		"format": "prettier --write .",
 		"// === Testing - Core ===": "",
 		"test": "vitest",
@@ -37,6 +39,8 @@
 		"test:grammar": "vitest run test/grammar-checker.test.ts",
 		"test:date": "vitest run test/date-filtering.test.ts",
 		"// === Quality Checks ===": "",
+		"spell": "cspell \"**/*.{ts,js,astro,tsx,jsx,md,mdx}\" --no-progress",
+		"spell:check": "cspell \"src/**/*.{ts,js,astro,tsx,jsx}\" \"*.md\" --no-progress",
 		"check": "npm run lint:all && npm run test:critical",
 		"check:full": "npm run lint:all && npm run test:run",
 		"check:commit": "tsx scripts/test-grammar.ts",
@@ -89,6 +93,7 @@
 		"@typescript-eslint/eslint-plugin": "^8.39.0",
 		"@typescript-eslint/parser": "^8.37.0",
 		"commitlint-plugin-function-rules": "^4.0.2",
+		"cspell": "^9.2.0",
 		"eslint": "^9.31.0",
 		"eslint-plugin-astro": "^1.3.1",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
@@ -119,11 +124,13 @@
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx,astro}": [
 			"prettier --write",
-			"eslint --fix"
+			"eslint --fix",
+			"cspell --no-progress"
 		],
 		"*.{md,mdx}": [
 			"prettier --write",
-			"textlint --fix"
+			"textlint --fix",
+			"cspell --no-progress"
 		]
 	}
 }

@@ -1,5 +1,6 @@
 ---
 import { SEO } from 'astro-seo'
+
 interface Props {
 	title: string
 	description: string
@@ -12,20 +13,23 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 <head>
 	<!-- Theme initialization script - runs before page render to prevent flash -->
 
-	<!-- Google tag (gtag.js) - Only load in production -->
+	<!-- Google Analytics with Partytown - Production only -->
 	{
 		Astro.url.hostname !== 'localhost' && (
 			<>
 				<script
 					type="text/partytown"
-					async
 					src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
-				/>
+				></script>
 				<script type="text/partytown">
-					/* eslint-disable */ window.dataLayer = window.dataLayer || []
-					function gtag() {dataLayer.push(arguments)}
-					gtag('js', new Date()) gtag('config', 'G-SW4ZXZJ9WH') /* eslint-enable
-					*/
+					/* eslint-disable @typescript-eslint/explicit-function-return-type, prefer-rest-params */
+					window.dataLayer = window.dataLayer || [];
+					function gtag() {
+						dataLayer.push(arguments);
+					}
+					gtag('js', new Date());
+					gtag('config', 'G-SW4ZXZJ9WH');
+					/* eslint-enable @typescript-eslint/explicit-function-return-type, prefer-rest-params */
 				</script>
 			</>
 		)
