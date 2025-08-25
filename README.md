@@ -124,11 +124,14 @@ Comprehensive testing ensures reliability and performance:
 - **Performance Testing**: Custom Core Web Vitals monitoring
 - **Content Analysis**: [Gray Matter](https://github.com/jonschlinkert/gray-matter) - Frontmatter parsing
 - **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
+- **Spell Checking**: [CSpell](https://cspell.org/) - Comprehensive spell checking for code and content
+- **Text Linting**: [TextLint](https://textlint.github.io/) - Natural language linting for documentation
 
 ### **Development Workflow**
 
-- **Git Hooks**: [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged) - Automated pre-commit formatting and linting
+- **Git Hooks**: [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged) - Automated pre-commit formatting, linting, and spell checking
 - **Code Quality**: [ESLint](https://eslint.org/) with @typescript-eslint + [Prettier](https://prettier.io/) - Enhanced code standards
+- **Spell Checking**: [CSpell](https://cspell.org/) with custom dictionaries and pre-commit validation
 - **Import Organization**: [eslint-plugin-simple-import-sort](https://github.com/lydell/eslint-plugin-simple-import-sort) - Consistent import sorting
 - **Commit Standards**: [Commitlint](https://commitlint.js.org/) - Conventional commit message validation
 - **Package Manager**: npm with lockfile integrity
@@ -269,31 +272,36 @@ Comprehensive testing ensures reliability and performance:
 
 ## 📜 Available Scripts
 
-| Command                       | Description                                    |
-| ----------------------------- | ---------------------------------------------- |
-| `npm run dev`                 | Start development server at `localhost:4321`   |
-| `npm run build`               | Build production site to `./dist/`             |
-| `npm run preview`             | Preview production build locally               |
-| `npm run lint`                | Run ESLint for code quality                    |
-| `npm run lint:fix`            | Fix ESLint issues automatically                |
-| `npm run lint:text`           | Run textlint for grammar and writing quality   |
-| `npm run lint:text:fix`       | Fix textlint issues automatically              |
-| `npm run format`              | Format code with Prettier                      |
-| `npm run type-check`          | Run TypeScript type checking                   |
-| `npm run test`                | Run all test suites                            |
-| `npm run test:fast`           | Run fast test suite with optimized settings    |
-| `npm run test:clean`          | Run performance tests with clean setup         |
-| `npm run test:performance`    | Run Core Web Vitals performance tests          |
-| `npm run test:back-to-top`    | Run back-to-top button functionality tests     |
-| `npm run test:grammar`        | Run grammar and writing quality tests          |
-| `npm run test:admin`          | Run admin interface and responsive tests       |
-| `npm run test:date-filtering` | Run date filtering and timezone tests          |
-| `npm run test:ui`             | Run combined UI tests (admin + date filtering) |
-| `npm run test:watch`          | Run tests in watch mode                        |
-| `npm run check:grammar`       | Check text quality and grammar                 |
-| `npm run check:commit`        | Validate commit message format                 |
-| `npm run check:all`           | Run all quality checks (lint, text, tests)     |
-| `npm run astro ...`           | Run Astro CLI commands                         |
+| Command                       | Description                                      |
+| ----------------------------- | ------------------------------------------------ |
+| `npm run dev`                 | Start development server at `localhost:4321`     |
+| `npm run build`               | Build production site to `./dist/`               |
+| `npm run preview`             | Preview production build locally                 |
+| `npm run lint`                | Run ESLint for code quality                      |
+| `npm run lint:fix`            | Fix ESLint issues automatically                  |
+| `npm run lint:text`           | Run textlint for grammar and writing quality     |
+| `npm run lint:text:fix`       | Fix textlint issues automatically                |
+| `npm run lint:spell`          | Run CSpell for spell checking                    |
+| `npm run lint:spell:fix`      | Run CSpell with suggestions for corrections      |
+| `npm run lint:all`            | Run all linting tools (ESLint, TextLint, CSpell) |
+| `npm run spell`               | Comprehensive spell check of all files           |
+| `npm run spell:check`         | Quick spell check of source files                |
+| `npm run format`              | Format code with Prettier                        |
+| `npm run type-check`          | Run TypeScript type checking                     |
+| `npm run test`                | Run all test suites                              |
+| `npm run test:fast`           | Run fast test suite with optimized settings      |
+| `npm run test:clean`          | Run performance tests with clean setup           |
+| `npm run test:performance`    | Run Core Web Vitals performance tests            |
+| `npm run test:back-to-top`    | Run back-to-top button functionality tests       |
+| `npm run test:grammar`        | Run grammar and writing quality tests            |
+| `npm run test:admin`          | Run admin interface and responsive tests         |
+| `npm run test:date-filtering` | Run date filtering and timezone tests            |
+| `npm run test:ui`             | Run combined UI tests (admin + date filtering)   |
+| `npm run test:watch`          | Run tests in watch mode                          |
+| `npm run check:grammar`       | Check text quality and grammar                   |
+| `npm run check:commit`        | Validate commit message format                   |
+| `npm run check:all`           | Run all quality checks (lint, text, tests)       |
+| `npm run astro ...`           | Run Astro CLI commands                           |
 
 ## 🧪 Testing Infrastructure
 

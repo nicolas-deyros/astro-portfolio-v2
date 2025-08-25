@@ -1,0 +1,7 @@
+# CSpell configuration file reference
+# This file extends the main cspell.json configuration
+# Use this for IDE integrations and additional settings
+
+{
+  "import": ["./cspell.json"]
+}
