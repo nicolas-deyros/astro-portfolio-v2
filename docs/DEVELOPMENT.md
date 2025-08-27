@@ -133,6 +133,27 @@ npm run test:coverage
 
 ## 📁 Project Structure
 
+### Root Directory Organization
+
+```
+astro-portfolio-v2/
+├── src/                 # Source code
+├── test/               # Test suites (organized by type)
+├── config/             # Configuration files
+├── tools/              # Development scripts and utilities
+├── docs/               # Comprehensive documentation
+├── db/                 # Database schema and seeding
+├── public/             # Static assets
+├── .husky/             # Git hooks
+├── .github/            # GitHub workflows and templates
+├── package.json        # Dependencies and scripts
+├── astro.config.mjs    # Astro configuration
+├── tsconfig.json       # TypeScript configuration
+├── README.md           # Project overview
+├── CHANGELOG.md        # Version history
+└── SECURITY.md         # Security policy
+```
+
 ### Source Code Organization
 
 ```
@@ -155,6 +176,48 @@ src/
 │   └── ...           # Other application pages
 ├── styles/           # Global styles and utilities
 └── lib/              # Shared utilities and helpers
+```
+
+### Test Organization
+
+```
+test/
+├── unit/              # Unit tests
+│   ├── seo.test.ts           # SEO validation tests
+│   ├── mdx.test.ts           # Content validation tests
+│   └── grammar-checker.test.ts # Grammar checking tests
+├── e2e/               # End-to-end tests
+│   ├── links.test.ts         # Links functionality tests
+│   ├── accessibility.test.ts # Accessibility compliance tests
+│   └── links-tag-filtering.test.ts # Tag filtering integration tests
+├── integration/       # Integration tests
+├── performance/       # Performance tests
+├── components/        # Component-specific tests
+├── utils/             # Utility function tests
+└── error-handling/    # Error handling tests
+```
+
+### Configuration Organization
+
+```
+config/
+├── eslint.config.js         # ESLint configuration
+├── commitlint.config.js     # Commit message linting
+├── vitest.config.ts         # Test configuration
+├── cspell.json             # Spell checking configuration
+└── cspell-custom-dictionary.txt # Custom dictionary
+```
+
+### Development Tools
+
+```
+tools/
+├── grammar-checker.ts       # Grammar validation utilities
+├── test-grammar.ts         # Grammar testing scripts
+├── run-performance-tests.ts # Performance testing utilities
+├── test-clean.ts           # Test cleanup utilities
+├── test-fast.ts            # Fast test execution
+└── test-performance.ts     # Performance test runner
 ```
 
 ### Key Directories

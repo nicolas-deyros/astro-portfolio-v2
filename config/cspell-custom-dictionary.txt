@@ -15,6 +15,8 @@ partytown
 iconify
 formik
 resend
+SEO
+seo
 
 # Business/Domain Terms
 gtag
@@ -48,6 +50,24 @@ instanceof
 readonly
 keyof
 const
+idx
+SLOWMO
+ISSUBMITTING
+ISVALIDATING
+
+# Placeholder/Test Terms
+zvdy
+ptf
+pttab
+ZXZJ
+Kve
+UVJD
+SXGI
+Relm
+gcvdg
+uydjf
+Mpnc
+Uer
 async
 await
 eval

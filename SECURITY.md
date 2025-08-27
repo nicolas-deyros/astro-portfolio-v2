@@ -19,7 +19,7 @@ This portfolio implements a robust, multi-layered authentication system for admi
 ### 🕒 Enhanced Session Validation
 
 - **Server-Side Verification**: All admin actions verify the session on the server
-- **Real-Time Validation**: Sessions are validated every 2 minutes on the client side
+- **Real-Time Validation**: Sessions are validated every 2 minutes on the client-side
 - **Activity Tracking**: Last activity is updated on each authenticated request
 
 ### 🚪 Secure Logout
@@ -96,7 +96,7 @@ Returns current authentication status and updates session activity.
 
 - Graceful handling of expired sessions
 - Clear error messages for authentication failures
-- Automatic cleanup of invalid local storage data
+- Automatic cleanup of invalid localStorage data
 
 ### Device Tracking
 

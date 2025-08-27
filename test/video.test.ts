@@ -1,4 +1,4 @@
-import { describe, expect,it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('Video Component', () => {
 	it('should generate a YouTube iframe with the correct src', () => {

@@ -1,9 +1,9 @@
 import { spawn } from 'child_process'
-import { readdirSync,readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import matter from 'gray-matter'
 import { join } from 'path'
 import puppeteer from 'puppeteer'
-import { afterAll,beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 interface PerformanceMetrics {
 	url: string

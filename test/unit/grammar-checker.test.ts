@@ -1,10 +1,10 @@
-import { describe,expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 import {
 	checkCommitGrammar,
 	type GrammarResult,
 	runTextlintOnCommit,
-} from '../scripts/grammar-checker.ts'
+} from '../../tools/grammar-checker.ts'
 
 describe('Grammar Checker', () => {
 	describe('Commit Message Grammar', () => {
