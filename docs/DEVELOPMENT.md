@@ -79,6 +79,27 @@ npm run lint
 npm run format
 ```
 
+### Git Workflow & Quality Gates
+
+The project uses Husky hooks for automated quality checks:
+
+#### Pre-commit Hooks
+
+- **Lint-staged**: Automatically formats and lints staged files
+- **Critical tests**: Runs essential tests (SEO, grammar, MDX validation)
+
+#### Pre-push Hooks
+
+- **Full validation**: Comprehensive checks before pushing to remote
+- **Build verification**: Ensures production build works
+- **Type checking**: Validates TypeScript types with Astro
+
+```bash
+# Manual pre-push checks (same as automated)
+npm run pre-push        # Full comprehensive checks
+npm run pre-push:fast   # Faster checks for frequent pushes
+```
+
 ### Code Quality Checks
 
 ```bash
