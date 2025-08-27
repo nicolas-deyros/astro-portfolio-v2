@@ -5,6 +5,11 @@ const { current, startUrl, prevUrl, nextUrl, currentUrl, lastUrl } = Astro.props
 
 // Determine base URL from the current URL
 const baseUrl = currentUrl?.includes('/links') ? '/links' : '/blog'
+
+// Extract tag parameter from currentUrl if present
+const tagParam = currentUrl?.includes('?tag=')
+	? '?' + currentUrl.split('?')[1]
+	: ''
 ---
 
 <div
@@ -50,7 +55,7 @@ const baseUrl = currentUrl?.includes('/links') ? '/links' : '/blog'
 	{
 		current !== lastUrl && lastUrl ? (
 			<Link
-				href={`${baseUrl}/${lastUrl}`}
+				href={`${baseUrl}/${lastUrl}${tagParam}`}
 				icon="ic:round-skip-next"
 				title="Last Page"
 				text="Last"

@@ -41,11 +41,15 @@ A modern, high-performance portfolio built with Astro, featuring comprehensive t
 
 ### 🔗 **Curated Links System**
 
-- **📄 Pagination**: Server-rendered pagination with 12 links per page for optimal performance
-- **🏷️ Tag Filtering**: Client-side filtering within pages with responsive tag interface
-- **📡 RSS Feed**: Dedicated RSS feed (`/rss-links.xml`) with auto-discovery
-- **📱 Mobile-First**: Responsive design with separate mobile and desktop filtering UI
-- **🔍 Visual Feedback**: Active tag highlighting and "No results" messaging
+- **📄 Smart Pagination**: Server-rendered pagination with 12 links per page for optimal performance
+- **🏷️ Advanced Tag Filtering**: Server-side tag filtering that works across ALL links, not just current page
+  - **🔍 Complete Results**: When filtering by tag, all matching links appear together regardless of pagination
+  - **� Bookmarkable URLs**: Tag filters create shareable URLs (`/links/1?tag=javascript`)
+  - **📱 Responsive Interface**: Separate mobile and desktop filtering UI with visual feedback
+  - **🧭 Smart Navigation**: Tag parameters preserved across pagination for seamless browsing
+- **� RSS Feed**: Dedicated RSS feed (`/rss-links.xml`) with auto-discovery
+- **🎨 Visual Feedback**: Active tag highlighting, clear filter options, and "No results" messaging
+- **⚡ Performance**: Server-side filtering for faster response times and better SEO
 
 ### 🔐 **Enterprise Admin System**
 
