@@ -59,7 +59,7 @@ npm run format       # Format code with Prettier
 ## 🛠️ Tech Stack
 
 **Core**: Astro, TypeScript, Tailwind CSS  
-**Database**: Astro DB (SQLite/Turso)  
+**Database**: Astro DB (SQLite)  
 **Testing**: Vitest, Puppeteer, Playwright  
 **AI**: Chrome AI APIs (Translation, Summarization)  
 **Deployment**: Vercel
@@ -109,9 +109,3 @@ Complete documentation is available in the `docs/` folder:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- **Live Site**: [Portfolio URL](https://your-portfolio-url.com)
-- **Admin Panel**: [Portfolio URL/admin](https://your-portfolio-url.com/admin)
-- **RSS Feed**: [Portfolio URL/rss.xml](https://your-portfolio-url.com/rss.xml)

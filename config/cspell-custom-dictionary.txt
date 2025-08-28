@@ -18,6 +18,12 @@ resend
 SEO
 seo
 
+# Internationalization Characters
+áéíóú
+ÁÉÍÓ
+Русский
+العربية
+
 # Business/Domain Terms
 gtag
 dataLayer
@@ -84,36 +90,13 @@ parseFloat
 stringify
 idx
 
-# Database & Backup Terms
-turso
+# Security & Database Terms (keep common ones)
 sqlite
-gpg
-aes
-gpgs
-sha
-checksum
-checksums
-decryption
-encryption
-fingerprint
-fingerprinting
-rollback
-backups
-restoration
-overwrite
-overwrites
-overwriting
-manifests
-psql
-mysql
-postgresql
-admin
-admins
+auth
 csrf
 bcrypt
-auth
-workflow
-workflows
+admin
+admins
 configs
 config
 utils
