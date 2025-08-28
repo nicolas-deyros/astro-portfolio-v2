@@ -18,6 +18,25 @@ resend
 SEO
 seo
 
+# JWT Token Parts (for secrets documentation)
+eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
+EWDKJ
+Hfj
+YAWtih
+gPvcV
+RUoTLrv
+OeNUAYjbcD
+YEz
+DYFc
+tlom
+Enqav
+pqhTXhiNFWZCg
+Wtih
+áéíóú
+ÁÉÍÓ
+Русский
+العربية
+
 # Business/Domain Terms
 gtag
 dataLayer
