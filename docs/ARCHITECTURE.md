@@ -48,7 +48,7 @@ Astro 4.x
 ```
 Astro DB
 ├── SQLite (Development)    # Local development database
-├── Turso (Production)     # Distributed SQLite for production
+├── Production Database    # Cloud database for production
 ├── Type Safety           # Generated types from schema
 └── Migrations           # Database schema versioning
 ```
@@ -283,7 +283,7 @@ Development → Staging → Production
 ### Infrastructure
 
 - **Hosting**: Vercel for serverless deployment
-- **Database**: Turso for distributed SQLite
+- **Database**: SQLite for data storage
 - **CDN**: Automatic CDN distribution
 - **Monitoring**: Built-in performance and error monitoring
 
@@ -319,7 +319,7 @@ Pipeline: 1. Code Push → GitHub
 ### Horizontal Scaling
 
 - **Serverless Architecture**: Automatic scaling with Vercel
-- **Database Scaling**: Turso's distributed architecture
+- **Database Scaling**: Astro DB distributed architecture
 - **CDN Scaling**: Global content distribution
 - **Caching Strategy**: Multi-layer caching for performance
 
@@ -327,5 +327,5 @@ Pipeline: 1. Code Push → GitHub
 
 - **Automated Updates**: Dependabot for dependency updates
 - **Health Checks**: Automated system health monitoring
-- **Backup Strategy**: Regular database backups
-- **Disaster Recovery**: Documented recovery procedures
+- **Data Management**: Astro DB with SQLite backend
+- **Performance Monitoring**: Core Web Vitals tracking

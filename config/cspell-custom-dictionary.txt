@@ -18,20 +18,7 @@ resend
 SEO
 seo
 
-# JWT Token Parts (for secrets documentation)
-eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
-EWDKJ
-Hfj
-YAWtih
-gPvcV
-RUoTLrv
-OeNUAYjbcD
-YEz
-DYFc
-tlom
-Enqav
-pqhTXhiNFWZCg
-Wtih
+# Internationalization Characters
 áéíóú
 ÁÉÍÓ
 Русский
@@ -103,36 +90,13 @@ parseFloat
 stringify
 idx
 
-# Database & Backup Terms
-turso
+# Security & Database Terms (keep common ones)
 sqlite
-gpg
-aes
-gpgs
-sha
-checksum
-checksums
-decryption
-encryption
-fingerprint
-fingerprinting
-rollback
-backups
-restoration
-overwrite
-overwrites
-overwriting
-manifests
-psql
-mysql
-postgresql
-admin
-admins
+auth
 csrf
 bcrypt
-auth
-workflow
-workflows
+admin
+admins
 configs
 config
 utils
