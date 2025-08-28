@@ -50,6 +50,12 @@
 		"// === Utilities ===": "",
 		"clean": "tsx scripts/test-clean.ts",
 		"fast": "tsx scripts/test-fast.ts",
+		"// === Database Backup ===": "",
+		"backup:list": "bash tools/backup-manager.sh list",
+		"backup:verify": "bash tools/backup-manager.sh verify",
+		"backup:info": "bash tools/backup-manager.sh info",
+		"backup:restore": "bash tools/restore-backup.sh",
+		"backup:test": "bash tools/test-backup-system.sh",
 		"// === Database ===": "",
 		"db:seed": "npx astro db execute db/seed.ts --remote",
 		"db:studio": "astro db studio"
