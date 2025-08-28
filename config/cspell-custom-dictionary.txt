@@ -15,6 +15,8 @@ partytown
 iconify
 formik
 resend
+SEO
+seo
 
 # Business/Domain Terms
 gtag
@@ -48,6 +50,24 @@ instanceof
 readonly
 keyof
 const
+idx
+SLOWMO
+ISSUBMITTING
+ISVALIDATING
+
+# Placeholder/Test Terms
+zvdy
+ptf
+pttab
+ZXZJ
+Kve
+UVJD
+SXGI
+Relm
+gcvdg
+uydjf
+Mpnc
+Uer
 async
 await
 eval
@@ -62,3 +82,40 @@ toString
 parseInt
 parseFloat
 stringify
+idx
+
+# Database & Backup Terms
+turso
+sqlite
+gpg
+aes
+gpgs
+sha
+checksum
+checksums
+decryption
+encryption
+fingerprint
+fingerprinting
+rollback
+backups
+restoration
+overwrite
+overwrites
+overwriting
+manifests
+psql
+mysql
+postgresql
+admin
+admins
+csrf
+bcrypt
+auth
+workflow
+workflows
+configs
+config
+utils
+util
+schemas

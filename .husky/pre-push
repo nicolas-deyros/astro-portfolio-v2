@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push checks..."
+
+# Option 1: Fast pre-push (recommended for frequent pushes)
+# Uncomment this line and comment out the "Full pre-push" section below for faster pushes
+# npm run pre-push:fast
+
+# Option 2: Full pre-push (recommended for important pushes to main/master)
+echo "� Running comprehensive pre-push validation..."
+npm run pre-push
+if [ $? -ne 0 ]; then
+  echo "❌ Pre-push checks failed. Push aborted."
+  echo "💡 For faster pushes, you can use: npm run pre-push:fast"
+  exit 1
+fi
+
+# Optional: Performance tests (can be commented out for faster pushes)
+echo "⚡ Running performance tests..."
+npm run test:performance
+if [ $? -ne 0 ]; then
+  echo "⚠️ Performance tests failed, but continuing push..."
+  echo "   Consider checking performance regressions."
+fi
+
+echo "✅ All pre-push checks passed!"
+echo "🎉 Ready to push to remote repository."

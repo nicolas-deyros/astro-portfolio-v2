@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 import puppeteer from 'puppeteer'
-import { afterAll,beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // Use a unique port for this optimized test
 const TEST_PORT = 4323

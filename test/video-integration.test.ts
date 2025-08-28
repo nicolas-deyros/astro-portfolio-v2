@@ -1,7 +1,7 @@
-import { readdirSync,readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import matter from 'gray-matter'
 import { join } from 'path'
-import { describe, expect,it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('Video Component Integration', () => {
 	const blogDir = join(process.cwd(), 'src', 'content', 'blog')

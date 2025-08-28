@@ -1,43 +1,14 @@
+import {
+	cleanExpiredSessions,
+	createDeviceFingerprint,
+	generateSecureSessionId,
+	generateSecureToken,
+	validateSession,
+} from '@lib/session'
 import type { APIRoute } from 'astro'
-import { AdminSessions, db, eq, lt } from 'astro:db'
+import { AdminSessions, db, eq } from 'astro:db'
 
 export const prerender = false
-
-function generateToken(): string {
-	return crypto.randomUUID() + '-' + Date.now().toString(36)
-}
-
-function generateSessionId(): string {
-	return crypto.randomUUID()
-}
-
-// Get client info for device tracking
-function getClientInfo(request: Request): {
-	userAgent: string
-	ip: string
-	deviceFingerprint: string
-} {
-	const userAgent = request.headers.get('user-agent') || 'unknown'
-	const ip =
-		request.headers.get('x-forwarded-for') ||
-		request.headers.get('x-real-ip') ||
-		'unknown'
-
-	// Create a simple device fingerprint
-	const deviceFingerprint = btoa(userAgent + ip).slice(0, 16)
-
-	return { userAgent, ip, deviceFingerprint }
-}
-
-// Clean expired sessions periodically
-async function cleanExpiredSessions(): Promise<void> {
-	try {
-		const now = new Date()
-		await db.delete(AdminSessions).where(lt(AdminSessions.expiresAt, now))
-	} catch (error) {
-		console.error('Error cleaning expired sessions:', error)
-	}
-}
 
 export const POST: APIRoute = async ({ request, cookies }) => {
 	try {
@@ -66,11 +37,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				}
 
 				// Get client information
-				const clientInfo = getClientInfo(request)
+				const clientInfo = createDeviceFingerprint(request)
 
-				// Generate session
-				const sessionId = generateSessionId()
-				const token = generateToken()
+				// Generate session with cryptographically secure tokens
+				const sessionId = generateSecureSessionId()
+				const token = generateSecureToken()
 				const now = new Date()
 				const expiresAt = new Date(now.getTime() + 2 * 60 * 60 * 1000) // 2 hours
 
@@ -142,14 +113,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			}
 
 			case 'validate': {
-				const sessionId = cookies.get('admin_session')?.value
-				const token = cookies.get('admin_token')?.value
+				// Use centralized session validation
+				const sessionInfo = await validateSession(cookies)
 
-				if (!sessionId || !token) {
+				if (!sessionInfo) {
 					return new Response(
 						JSON.stringify({
 							success: false,
-							message: 'No session found',
+							message: 'No valid session found',
 						}),
 						{
 							status: 401,
@@ -158,70 +129,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					)
 				}
 
-				// Get client information for validation
-				const clientInfo = getClientInfo(request)
-
-				// Check session in database
-				const session = await db
-					.select()
-					.from(AdminSessions)
-					.where(eq(AdminSessions.id, sessionId))
-					.get()
-
-				if (!session) {
-					// Clear invalid cookies
-					cookies.delete('admin_session', { path: '/' })
-					cookies.delete('admin_token', { path: '/' })
-
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'Session not found',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
-				}
-
-				// Check if session is expired
-				if (new Date() > new Date(session.expiresAt)) {
-					// Clean up expired session
-					await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
-					cookies.delete('admin_session', { path: '/' })
-					cookies.delete('admin_token', { path: '/' })
-
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'Session expired',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
-				}
-
-				// Validate token
-				if (session.token !== token) {
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'Invalid token',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
-				}
-
-				// Validate device fingerprint for security
-				if (session.deviceFingerprint !== clientInfo.deviceFingerprint) {
-					// Potentially suspicious activity - invalidate session
-					await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
+				// Additional device fingerprint validation
+				const clientInfo = createDeviceFingerprint(request)
+				if (sessionInfo.deviceFingerprint !== clientInfo.deviceFingerprint) {
+					// Suspicious activity - invalidate session
+					await db
+						.delete(AdminSessions)
+						.where(eq(AdminSessions.id, sessionInfo.sessionId))
 					cookies.delete('admin_session', { path: '/' })
 					cookies.delete('admin_token', { path: '/' })
 
@@ -237,18 +151,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					)
 				}
 
-				// Update last activity
-				await db
-					.update(AdminSessions)
-					.set({ lastActivity: new Date() })
-					.where(eq(AdminSessions.id, sessionId))
-
 				return new Response(
 					JSON.stringify({
 						success: true,
 						message: 'Session valid',
-						sessionId,
-						expiresAt: session.expiresAt,
+						sessionId: sessionInfo.sessionId,
+						expiresAt: sessionInfo.expiresAt,
 					}),
 					{
 						status: 200,
@@ -289,47 +197,15 @@ export const GET: APIRoute = async ({ cookies }) => {
 		// Clean expired sessions
 		await cleanExpiredSessions()
 
-		const sessionId = cookies.get('admin_session')?.value
-		const token = cookies.get('admin_token')?.value
+		// Use centralized session validation
+		const sessionInfo = await validateSession(cookies)
 
-		if (!sessionId || !token) {
-			return new Response(
-				JSON.stringify({
-					success: false,
-					authenticated: false,
-					message: 'No session found',
-				}),
-				{
-					status: 200,
-					headers: { 'Content-Type': 'application/json' },
-				},
-			)
-		}
-
-		// Check session in database
-		const session = await db
-			.select()
-			.from(AdminSessions)
-			.where(eq(AdminSessions.id, sessionId))
-			.get()
-
-		if (
-			!session ||
-			new Date() > new Date(session.expiresAt) ||
-			session.token !== token
-		) {
-			// Clean up invalid session
-			if (session) {
-				await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
-			}
-			cookies.delete('admin_session', { path: '/' })
-			cookies.delete('admin_token', { path: '/' })
-
+		if (!sessionInfo) {
 			return new Response(
 				JSON.stringify({
 					success: true,
 					authenticated: false,
-					message: 'Session invalid or expired',
+					message: 'No valid session found',
 				}),
 				{
 					status: 200,
@@ -337,19 +213,13 @@ export const GET: APIRoute = async ({ cookies }) => {
 				},
 			)
 		}
-
-		// Update last activity
-		await db
-			.update(AdminSessions)
-			.set({ lastActivity: new Date() })
-			.where(eq(AdminSessions.id, sessionId))
 
 		return new Response(
 			JSON.stringify({
 				success: true,
 				authenticated: true,
-				sessionId,
-				expiresAt: session.expiresAt,
+				sessionId: sessionInfo.sessionId,
+				expiresAt: sessionInfo.expiresAt,
 			}),
 			{
 				status: 200,

@@ -1,59 +1,27 @@
 ---
 import Layout from '@layouts/index.astro'
+import { requireAuthentication } from '@lib/session'
+
+// 🔒 SERVER-SIDE AUTHENTICATION CHECK
+// This prevents any admin content from being sent to unauthenticated users
+const isAuthenticated = await requireAuthentication(
+	Astro.cookies,
+	Astro.request,
+)
+
+if (!isAuthenticated) {
+	// Immediately redirect to login - no content sent to client
+	return Astro.redirect('/admin/login', 302)
+}
 ---
 
 <Layout title="Admin Panel">
 	<div class="min-h-screen bg-white dark:bg-gray-900">
-		<!-- Login Section -->
-		<div
-			id="login-section"
-			class="flex min-h-screen items-center justify-center">
-			<div
-				class="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+		<!-- 🔒 This content is only served to authenticated users thanks to server-side checks -->
+		<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<!-- Header -->
+			<div class="mb-8 flex items-center justify-between">
 				<div>
-					<h1
-						class="text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-						Admin Login
-					</h1>
-					<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-						Sign in to your admin account
-					</p>
-				</div>
-				<form id="login-form" class="mt-8 space-y-6">
-					<div>
-						<label for="secretKey" class="sr-only">Secret Key</label>
-						<input
-							type="password"
-							id="secretKey"
-							name="secretKey"
-							required
-							class="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-							placeholder="Secret Key"
-						/>
-					</div>
-					<div>
-						<button
-							type="submit"
-							class="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
-							Sign in
-						</button>
-					</div>
-					<div
-						id="login-error"
-						class="hidden rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-						<div class="text-sm text-red-700 dark:text-red-400">
-							Invalid secret key. Please try again.
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-
-		<!-- Admin Dashboard Section -->
-		<div id="admin-content" class="hidden">
-			<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				<!-- Header -->
-				<div class="mb-8">
 					<h1 class="text-3xl font-bold text-gray-900 dark:text-white">
 						Admin Dashboard
 					</h1>
@@ -62,87 +30,94 @@ import Layout from '@layouts/index.astro'
 					</p>
 				</div>
 
-				<!-- Dashboard CTAs -->
-				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-					<!-- Links Management CTA -->
-					<div
-						class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-						<div class="flex items-center">
-							<div class="flex-shrink-0">
-								<svg
-									class="h-8 w-8 text-blue-600 dark:text-blue-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-									</path>
-								</svg>
-							</div>
-							<div class="ml-5 w-0 flex-1">
-								<dl>
-									<dt
-										class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-										Links Management
-									</dt>
-									<dd class="text-lg font-medium text-gray-900 dark:text-white">
-										Manage your links
-									</dd>
-								</dl>
-							</div>
+				<!-- Logout Button -->
+				<button
+					id="logout-btn"
+					class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
+					Logout
+				</button>
+			</div>
+
+			<!-- Dashboard CTAs -->
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+				<!-- Links Management CTA -->
+				<div
+					class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+					<div class="flex items-center">
+						<div class="flex-shrink-0">
+							<svg
+								class="h-8 w-8 text-blue-600 dark:text-blue-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+								</path>
+							</svg>
 						</div>
-						<div class="mt-5">
-							<div class="rounded-md shadow">
-								<a
-									href="/admin/links"
-									class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
-									Manage Links
-								</a>
-							</div>
+						<div class="ml-5 w-0 flex-1">
+							<dl>
+								<dt
+									class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
+									Links Management
+								</dt>
+								<dd class="text-lg font-medium text-gray-900 dark:text-white">
+									Add, edit, and organize links
+								</dd>
+							</dl>
 						</div>
 					</div>
-
-					<!-- CRM Management CTA -->
-					<div
-						class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-						<div class="flex items-center">
-							<div class="flex-shrink-0">
-								<svg
-									class="h-8 w-8 text-green-600 dark:text-green-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-									</path>
-								</svg>
-							</div>
-							<div class="ml-5 w-0 flex-1">
-								<dl>
-									<dt
-										class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-										CRM Management
-									</dt>
-									<dd class="text-lg font-medium text-gray-900 dark:text-white">
-										View form submissions
-									</dd>
-								</dl>
-							</div>
+					<div class="mt-5">
+						<div class="rounded-md shadow">
+							<a
+								href="/admin/links"
+								class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
+								Manage Links
+							</a>
 						</div>
-						<div class="mt-5">
-							<div class="rounded-md shadow">
-								<a
-									href="/admin/crm"
-									class="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
-									View CRM Data
-								</a>
-							</div>
+					</div>
+				</div>
+
+				<!-- CRM Management CTA -->
+				<div
+					class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+					<div class="flex items-center">
+						<div class="flex-shrink-0">
+							<svg
+								class="h-8 w-8 text-green-600 dark:text-green-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+								</path>
+							</svg>
+						</div>
+						<div class="ml-5 w-0 flex-1">
+							<dl>
+								<dt
+									class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
+									CRM Management
+								</dt>
+								<dd class="text-lg font-medium text-gray-900 dark:text-white">
+									View form submissions
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="mt-5">
+						<div class="rounded-md shadow">
+							<a
+								href="/admin/crm"
+								class="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
+								View CRM Data
+							</a>
 						</div>
 					</div>
 				</div>
@@ -150,222 +125,13 @@ import Layout from '@layouts/index.astro'
 		</div>
 	</div>
 
-	<!-- Client-side functionality -->
+	<!-- Secure client-side functionality - only for logout and periodic validation -->
 	<script>
-		let inactivityTimer: number | null = null
-		const INACTIVITY_TIMEOUT = 5 * 60 * 1000 // 5 minutes in milliseconds
-
 		document.addEventListener('astro:page-load', () => {
-			const loginSection = document.getElementById('login-section')
-			const adminContent = document.getElementById('admin-content')
-			const loginForm = document.getElementById('login-form')
-			const loginError = document.getElementById('login-error')
+			const logoutBtn = document.getElementById('logout-btn')
 
-			function showAdminContent(): void {
-				if (loginSection && adminContent) {
-					loginSection.classList.add('hidden')
-					adminContent.classList.remove('hidden')
-					// Start inactivity timer when admin content is shown
-					startInactivityTimer()
-				}
-			}
-
-			function showLoginSection(): void {
-				if (loginSection && adminContent) {
-					loginSection.classList.remove('hidden')
-					adminContent.classList.add('hidden')
-					localStorage.removeItem('admin_authenticated')
-					localStorage.removeItem('auth_token')
-					// Clear inactivity timer when logged out
-					clearInactivityTimer()
-				}
-			}
-
-			// Auto-logout functionality
-			function startInactivityTimer(): void {
-				clearInactivityTimer() // Clear any existing timer
-
-				inactivityTimer = window.setTimeout(() => {
-					showSessionExpiredModal()
-				}, INACTIVITY_TIMEOUT)
-			}
-
-			function showSessionExpiredModal(): void {
-				const modalHtml = `
-					<div id="session-expired-modal" class="fixed inset-0 z-50 overflow-y-auto">
-						<div class="flex min-h-screen items-center justify-center p-4">
-							<div class="fixed inset-0 bg-black bg-opacity-50"></div>
-							<div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800">
-								<div class="flex items-center mb-4">
-									<div class="flex-shrink-0">
-										<svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.88-.833-2.65 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-										</svg>
-									</div>
-									<div class="ml-3">
-										<h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
-											Session Expired
-										</h3>
-									</div>
-								</div>
-								<div class="mb-6">
-									<p class="text-sm text-slate-600 dark:text-slate-400">
-										Your session has expired due to inactivity. You will be logged out for security reasons.
-									</p>
-								</div>
-								<div class="flex justify-end">
-									<button
-										onclick="closeSessionExpiredModal()"
-										class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-slate-800">
-										OK
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				`
-
-				// Add modal to DOM
-				document.body.insertAdjacentHTML('beforeend', modalHtml)
-			}
-
-			// Make closeSessionExpiredModal globally available
-			function closeSessionExpiredModal(): void {
-				const modal = document.getElementById('session-expired-modal')
-				modal?.remove()
-				showLoginSection()
-			}
-
-			function clearInactivityTimer(): void {
-				if (inactivityTimer) {
-					clearTimeout(inactivityTimer)
-					inactivityTimer = null
-				}
-			}
-
-			function resetInactivityTimer(): void {
-				if (localStorage.getItem('admin_authenticated') === 'true') {
-					startInactivityTimer()
-				}
-			}
-
-			// Listen for user activity to reset the timer
-			const activityEvents = [
-				'mousedown',
-				'mousemove',
-				'keypress',
-				'scroll',
-				'touchstart',
-				'click',
-			]
-			activityEvents.forEach(event => {
-				document.addEventListener(event, resetInactivityTimer, true)
-			})
-
-			// Check authentication status on page load
-			checkAuthenticationStatus()
-
-			// Handle login
-			loginForm?.addEventListener('submit', async e => {
-				e.preventDefault()
-				loginError?.classList.add('hidden')
-
-				const secretKeyInput = document.getElementById(
-					'secretKey',
-				) as HTMLInputElement
-
-				try {
-					const response = await fetch('/api/auth.json', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({
-							action: 'login',
-							secretKey: secretKeyInput?.value,
-						}),
-					})
-
-					const data = await response.json()
-
-					if (response.ok && data.success) {
-						localStorage.setItem('admin_authenticated', 'true')
-						localStorage.setItem('session_id', data.sessionId)
-						localStorage.setItem('session_expires', data.expiresAt)
-						showAdminContent()
-					} else {
-						loginError?.classList.remove('hidden')
-						const errorDiv = loginError?.querySelector('.text-sm')
-						if (errorDiv) {
-							errorDiv.textContent =
-								data.message || 'Invalid credentials. Please try again.'
-						}
-						secretKeyInput.value = ''
-					}
-				} catch (error) {
-					console.error('Login error:', error)
-					loginError?.classList.remove('hidden')
-				}
-			})
-
-			// Robust authentication checking
-			async function checkAuthenticationStatus(): Promise<void> {
-				try {
-					const response = await fetch('/api/auth.json', {
-						method: 'GET',
-						credentials: 'include', // Include cookies
-					})
-
-					const data = await response.json()
-
-					if (response.ok && data.success && data.authenticated) {
-						// Update local storage with session info
-						localStorage.setItem('admin_authenticated', 'true')
-						localStorage.setItem('session_id', data.sessionId)
-						localStorage.setItem('session_expires', data.expiresAt)
-						showAdminContent()
-					} else {
-						// Clear local storage and show login
-						localStorage.removeItem('admin_authenticated')
-						localStorage.removeItem('session_id')
-						localStorage.removeItem('session_expires')
-						showLoginSection()
-					}
-				} catch (error) {
-					console.error('Auth validation error:', error)
-					showLoginSection()
-				}
-			}
-
-			// Enhanced session validation for API calls
-			async function validateSession(): Promise<boolean> {
-				try {
-					const response = await fetch('/api/auth.json', {
-						method: 'GET',
-						credentials: 'include',
-					})
-
-					if (response.ok) {
-						const { authenticated } = await response.json()
-						if (!authenticated) {
-							showLoginSection()
-							return false
-						}
-						return true
-					} else {
-						showLoginSection()
-						return false
-					}
-				} catch (error) {
-					console.error('Session validation error:', error)
-					showLoginSection()
-					return false
-				}
-			}
-
-			// Periodic session validation (every 2 minutes)
-			setInterval(validateSession, 2 * 60 * 1000)
-
-			// Enhanced logout function
-			async function performLogout(): Promise<void> {
+			// Handle logout
+			logoutBtn?.addEventListener('click', async () => {
 				try {
 					await fetch('/api/auth.json', {
 						method: 'POST',
@@ -376,19 +142,36 @@ import Layout from '@layouts/index.astro'
 				} catch (error) {
 					console.error('Logout error:', error)
 				} finally {
-					// Always clear local storage
-					localStorage.removeItem('admin_authenticated')
-					localStorage.removeItem('session_id')
-					localStorage.removeItem('session_expires')
-					showLoginSection()
+					// Always redirect to login page
+					window.location.href = '/admin/login'
 				}
-			}
+			})
 
-			// Make functions globally available
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			;(window as any).closeSessionExpiredModal = closeSessionExpiredModal
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			;(window as any).performLogout = performLogout
+			// Periodic session validation (every 2 minutes)
+			// This provides better UX by detecting session expiration
+			setInterval(
+				async () => {
+					try {
+						const response = await fetch('/api/auth.json', {
+							method: 'GET',
+							credentials: 'include',
+						})
+
+						if (response.ok) {
+							const { authenticated } = await response.json()
+							if (!authenticated) {
+								window.location.href = '/admin/login'
+							}
+						} else {
+							window.location.href = '/admin/login'
+						}
+					} catch (error) {
+						console.error('Session validation error:', error)
+						window.location.href = '/admin/login'
+					}
+				},
+				2 * 60 * 1000,
+			)
 		})
 	</script>
 </Layout>

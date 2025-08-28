@@ -1,48 +1,27 @@
-import type { APIRoute } from 'astro'
-import { AdminSessions, and, db, eq, gt, Links } from 'astro:db'
+import { validateSession } from '@lib/session'
+import type { APIRoute, AstroCookies } from 'astro'
+import { db, Links } from 'astro:db'
 
-// Verify authentication by checking session cookie
-async function verifyAuth(request: Request): Promise<boolean> {
-	const cookies = request.headers.get('cookie')
-	if (!cookies) return false
-
-	const tokenCookie = cookies
-		.split(';')
-		.find(c => c.trim().startsWith('admin_token='))
-	if (!tokenCookie) return false
-
-	const sessionToken = tokenCookie.split('=')[1]
-	if (!sessionToken) return false
-
-	try {
-		const session = await db
-			.select()
-			.from(AdminSessions)
-			.where(
-				// Check if session exists, is not expired, and within 2 hours
-				and(
-					eq(AdminSessions.token, sessionToken),
-					gt(AdminSessions.expiresAt, new Date()),
-				),
-			)
-			.get()
-
-		if (!session) return false
-
-		// Update last activity
-		await db
-			.update(AdminSessions)
-			.set({ lastActivity: new Date() })
-			.where(eq(AdminSessions.token, sessionToken))
-
-		return true
-	} catch (error) {
-		console.error('Auth verification error:', error)
-		return false
-	}
+// Centralized authentication check using the new session utility
+async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
+	const sessionInfo = await validateSession(cookies)
+	return sessionInfo !== null
 }
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ cookies }) => {
+	// 🔒 CRITICAL: Protect GET endpoint - no public access to admin data
+	if (!(await verifyAuth(cookies))) {
+		return new Response(
+			JSON.stringify({
+				success: false,
+				message: 'Unauthorized access denied',
+			}),
+			{
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			},
+		)
+	}
 	try {
 		const links = await db.select().from(Links)
 		return new Response(JSON.stringify(links), {
@@ -62,9 +41,9 @@ export const GET: APIRoute = async () => {
 	}
 }
 
-export const POST: APIRoute = async ({ request }) => {
-	// Verify authentication
-	const isAuthenticated = await verifyAuth(request)
+export const POST: APIRoute = async ({ request, cookies }) => {
+	// 🔒 Server-side authentication check
+	const isAuthenticated = await verifyAuth(cookies)
 	if (!isAuthenticated) {
 		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 			status: 401,
@@ -116,9 +95,9 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 }
 
-export const PUT: APIRoute = async ({ request }) => {
-	// Verify authentication
-	const isAuthenticated = await verifyAuth(request)
+export const PUT: APIRoute = async ({ request, cookies }) => {
+	// 🔒 Server-side authentication check
+	const isAuthenticated = await verifyAuth(cookies)
 	if (!isAuthenticated) {
 		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 			status: 401,
@@ -170,9 +149,9 @@ export const PUT: APIRoute = async ({ request }) => {
 	}
 }
 
-export const DELETE: APIRoute = async ({ request }) => {
-	// Verify authentication
-	const isAuthenticated = await verifyAuth(request)
+export const DELETE: APIRoute = async ({ request, cookies }) => {
+	// 🔒 Server-side authentication check
+	const isAuthenticated = await verifyAuth(cookies)
 	if (!isAuthenticated) {
 		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 			status: 401,

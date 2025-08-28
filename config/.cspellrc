@@ -3,5 +3,5 @@
 # Use this for IDE integrations and additional settings
 
 {
-  "import": ["./cspell.json"]
+  "import": ["./config/cspell.json"]
 }
