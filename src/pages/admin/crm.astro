@@ -1,6 +1,19 @@
 ---
 import Layout from '@layouts/index.astro'
+import { requireAuthentication } from '@lib/session'
 import { db, FormSubmissions } from 'astro:db'
+
+// 🔒 SERVER-SIDE AUTHENTICATION CHECK
+// This prevents any admin content from being sent to unauthenticated users
+const isAuthenticated = await requireAuthentication(
+	Astro.cookies,
+	Astro.request,
+)
+
+if (!isAuthenticated) {
+	// Immediately redirect to login - no content sent to client
+	return Astro.redirect('/admin/login', 302)
+}
 
 interface FormSubmissionData {
 	id: number
@@ -58,37 +71,7 @@ try {
 ---
 
 <Layout title="Admin | CRM Management">
-	{/* Auth Check Script - Runs immediately to prevent content flash */}
-	<script is:inline>
-		// Hide page initially
-		document.documentElement.style.visibility = 'hidden'
-
-		// Check authentication using the new cookie-based system
-		async function checkAuth() {
-			try {
-				const response = await fetch('/api/auth.json', {
-					method: 'GET',
-					credentials: 'include',
-				})
-				const data = await response.json()
-
-				if (response.ok && data.success && data.authenticated) {
-					// Authenticated - show page
-					document.documentElement.style.visibility = 'visible'
-				} else {
-					// Not authenticated - redirect immediately
-					window.location.href = '/admin'
-				}
-			} catch (error) {
-				console.error('Auth check failed:', error)
-				window.location.href = '/admin'
-			}
-		}
-
-		// Run auth check
-		checkAuth()
-	</script>
-
+	<!-- 🔒 This content is only served to authenticated users thanks to server-side checks -->
 	<div class="min-h-screen bg-white dark:bg-gray-900">
 		{/* Main Content */}
 		<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
