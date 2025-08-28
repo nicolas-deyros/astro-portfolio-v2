@@ -25,32 +25,29 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Install dependencies
+        run: |
+          # Install SQLite3 for database operations
+          sudo apt-get update
+          sudo apt-get install -y sqlite3
+
       - name: Install Turso CLI
         run: |
-          # Security: Verify checksum and use specific version
-          TURSO_VERSION="0.93.0"  # Pin to specific version
-          curl -sSfL "https://github.com/tursodatabase/turso-cli/releases/download/v${TURSO_VERSION}/turso-linux-amd64.tar.gz" -o turso.tar.gz
-
-          # TODO: Get actual checksum from Turso releases page and replace this
-          # echo "ACTUAL_SHA256_CHECKSUM  turso.tar.gz" | sha256sum -c - || exit 1
-
-          tar -xzf turso.tar.gz
-          chmod +x turso
-          sudo mv turso /usr/local/bin/
-          rm turso.tar.gz
-
+          # Install using the official installer
+          curl -sSfL https://get.tur.so/install.sh | bash
+          
+          # Add to PATH for this session
+          echo "$HOME/.turso" >> $GITHUB_PATH
+          export PATH="$HOME/.turso:$PATH"
+          
           # Verify CLI installation
           turso --version
 
       - name: Authenticate with Turso
         run: |
-          # Security: Use environment variable instead of command line
-          echo "$TURSO_AUTH_TOKEN" | turso auth token --stdin
-
-          # Verify authentication
+          # Verify authentication using environment variable
           turso db list >/dev/null || { echo "Authentication failed"; exit 1; }
         env:
-          # GitHub Actions secret references (VS Code may show warnings - this is correct syntax)
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
 
       - name: Create backup
@@ -73,10 +70,14 @@ jobs:
 
           # Create backup with error handling
           echo "Creating backup for database: $TURSO_DATABASE_NAME"
-          if ! turso db dump "$TURSO_DATABASE_NAME" > "temp_backup_${DATE}.sql"; then
-            echo "ERROR: Database dump failed"
+          if ! turso db export "$TURSO_DATABASE_NAME" --output-file "temp_backup_${DATE}.db"; then
+            echo "ERROR: Database export failed"
             exit 1
           fi
+
+          # Convert SQLite to SQL dump for better compatibility
+          sqlite3 "temp_backup_${DATE}.db" .dump > "temp_backup_${DATE}.sql"
+          rm -f "temp_backup_${DATE}.db"
 
           # Verify backup is not empty
           if [ ! -s "temp_backup_${DATE}.sql" ]; then
@@ -118,6 +119,7 @@ jobs:
 
         env:
           # GitHub Actions secret references (VS Code warnings are false positives)
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           TURSO_DATABASE_NAME: ${{ secrets.TURSO_DATABASE_NAME }}
           BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
 
