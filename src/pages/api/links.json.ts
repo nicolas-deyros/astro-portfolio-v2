@@ -1,6 +1,6 @@
 import { validateSession } from '@lib/session'
 import type { APIRoute, AstroCookies } from 'astro'
-import { db, Links } from 'astro:db'
+import { db, eq,Links } from 'astro:db'
 
 // Centralized authentication check using the new session utility
 async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
@@ -108,9 +108,18 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 	}
 
 	try {
-		const { id, title, url, tags, date } = await request.json()
+		const body = await request.json()
+		const { id, title, url, tags, date } = body
+
+		console.log('PUT request received:', { id, title, url, tags, date })
 
 		if (!id || !title || !url || !date) {
+			console.error('Missing required fields:', {
+				id: !!id,
+				title: !!title,
+				url: !!url,
+				date: !!date,
+			})
 			return new Response(
 				JSON.stringify({ error: 'ID, title, URL, and date are required' }),
 				{
@@ -122,7 +131,10 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 			)
 		}
 
-		await db
+		// Convert id to number if it's a string
+		const linkId = typeof id === 'string' ? parseInt(id) : id
+
+		const result = await db
 			.update(Links)
 			.set({
 				title,
@@ -130,22 +142,33 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 				tags: tags || '',
 				date,
 			})
-			.where(eq(Links.id, id))
+			.where(eq(Links.id, linkId))
 
-		return new Response(JSON.stringify({ success: true }), {
-			status: 200,
-			headers: {
-				'Content-Type': 'application/json',
+		console.log('Update result:', result)
+
+		return new Response(
+			JSON.stringify({ success: true, message: 'Link updated successfully' }),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 	} catch (error) {
 		console.error('Error updating link:', error)
-		return new Response(JSON.stringify({ error: 'Failed to update link' }), {
-			status: 500,
-			headers: {
-				'Content-Type': 'application/json',
+		return new Response(
+			JSON.stringify({
+				error: 'Failed to update link',
+				details: error instanceof Error ? error.message : 'Unknown error',
+			}),
+			{
+				status: 500,
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 	}
 }
 
@@ -163,9 +186,12 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 
 	try {
 		const url = new URL(request.url)
-		const id = url.searchParams.get('id')
+		const idParam = url.searchParams.get('id')
 
-		if (!id) {
+		console.log('DELETE request received for ID:', idParam)
+
+		if (!idParam) {
+			console.error('Missing ID parameter in DELETE request')
 			return new Response(JSON.stringify({ error: 'ID is required' }), {
 				status: 400,
 				headers: {
@@ -174,21 +200,47 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 			})
 		}
 
-		await db.delete(Links).where(eq(Links.id, parseInt(id)))
+		const linkId = parseInt(idParam)
+		if (isNaN(linkId)) {
+			console.error('Invalid ID format:', idParam)
+			return new Response(JSON.stringify({ error: 'Invalid ID format' }), {
+				status: 400,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+		}
 
-		return new Response(JSON.stringify({ success: true }), {
-			status: 200,
-			headers: {
-				'Content-Type': 'application/json',
+		const result = await db.delete(Links).where(eq(Links.id, linkId))
+
+		console.log('Delete result:', result)
+
+		return new Response(
+			JSON.stringify({
+				success: true,
+				message: 'Link deleted successfully',
+				deletedId: linkId,
+			}),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 	} catch (error) {
 		console.error('Error deleting link:', error)
-		return new Response(JSON.stringify({ error: 'Failed to delete link' }), {
-			status: 500,
-			headers: {
-				'Content-Type': 'application/json',
+		return new Response(
+			JSON.stringify({
+				error: 'Failed to delete link',
+				details: error instanceof Error ? error.message : 'Unknown error',
+			}),
+			{
+				status: 500,
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 	}
 }
