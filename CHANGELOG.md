@@ -2,7 +2,33 @@
 
 ## [Unreleased]
 
-### 🚀 Links Page Tag Filtering Enhancement
+### � Content Security Policy (CSP) Implementation
+
+- **Enabled Experimental CSP Support**: Activated Astro's experimental Content Security Policy feature
+  - **Security Enhancement**: Added CSP configuration to improve application security
+  - **Configuration**: Updated `astro.config.mjs` with `experimental.csp: true`
+  - **Protection**: Helps prevent XSS attacks and other code injection vulnerabilities
+
+### ⚡ Performance & Testing Improvements
+
+- **Optimized Testing Commands**: Added faster test options for improved development workflow
+  - **Fast Test Suite**: New `test:fast` command runs only critical SEO tests
+  - **Dev Pre-push**: New `pre-push:dev` runs minimal validation (fast test + spell check)
+  - **Updated Pre-push Hook**: Changed to use `pre-push:fast` instead of full validation
+  - **Faster Iterations**: Significantly reduced time for pre-push checks during development
+
+### 📦 Dependency Updates
+
+- **Astro Core**: Updated from 5.13.2 to 5.15.3
+- **Astro Integrations**: Updated multiple Astro packages to latest versions
+  - `@astrojs/db`: 0.17.1 → 0.18.2
+  - `@astrojs/mdx`: 4.3.4 → 4.3.9
+  - `@astrojs/react`: 4.3.0 → 4.4.1
+  - `@astrojs/rss`: 4.0.12 → 4.0.13
+  - `@astrojs/sitemap`: 3.5.0 → 3.6.0
+  - `@astrojs/vercel`: 8.2.6 → 9.0.0
+
+### �🚀 Links Page Tag Filtering Enhancement
 
 - **Fixed Tag Filtering Across Pagination**: Resolved critical issue where tag filtering only worked within individual pages
   - **Server-Side Filtering**: Tag filtering now processes ALL links before pagination instead of client-side filtering
