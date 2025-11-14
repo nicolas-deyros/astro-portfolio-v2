@@ -2,7 +2,22 @@
 
 ## [Unreleased]
 
-### � Content Security Policy (CSP) Implementation
+### 🎯 Navigation Enhancement
+
+- **Added Links to Main Menu**: Public links page now accessible from main navigation
+  - **Menu Update**: Added "Links" menu item between "Blog" and "Contact"
+  - **Icon**: Using `mdi:link-variant` icon for consistency
+  - **User Experience**: Improved discoverability of curated links collection
+  - **Navigation Path**: Direct access to `/links/` from header menu
+
+### 📦 Dependency Updates - November 2025
+
+- **Astro Core**: Updated from 5.15.3 to 5.15.7
+- **Astro Integrations**: Updated to latest patch versions
+  - `@astrojs/mdx`: 4.3.9 → 4.3.10
+  - `@astrojs/react`: 4.4.1 → 4.4.2
+
+### 🔒 Content Security Policy (CSP) Implementation
 
 - **Enabled Experimental CSP Support**: Activated Astro's experimental Content Security Policy feature
   - **Security Enhancement**: Added CSP configuration to improve application security

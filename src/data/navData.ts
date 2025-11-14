@@ -10,6 +10,11 @@ const navData = [
 		icon: 'jam:blogger',
 	},
 	{
+		text: 'Links',
+		path: '/links/',
+		icon: 'mdi:link-variant',
+	},
+	{
 		text: 'Contact',
 		path: '/contact',
 		icon: 'ic:baseline-alternate-email',
