@@ -1,19 +1,6 @@
 ---
 import Layout from '@layouts/index.astro'
-import { requireAuthentication } from '@lib/session'
 import { count, db, like, Links as LinksTable, or, sql } from 'astro:db'
-
-// 🔒 SERVER-SIDE AUTHENTICATION CHECK
-// This prevents any admin content from being sent to unauthenticated users
-const isAuthenticated = await requireAuthentication(
-	Astro.cookies,
-	Astro.request,
-)
-
-if (!isAuthenticated) {
-	// Immediately redirect to login - no content sent to client
-	return Astro.redirect('/admin/login', 302)
-}
 
 const { url } = Astro.request
 const searchParams = new URL(url).searchParams
@@ -970,7 +957,10 @@ try {
 									'Content-Type': 'application/json',
 								},
 								credentials: 'include',
-								body: JSON.stringify({ id: editingLinkId, ...data }),
+								body: JSON.stringify({
+									id: editingLinkId,
+									...data,
+								}),
 							})
 
 							if (response.ok) {
@@ -1155,7 +1145,10 @@ try {
 				}
 
 				// Scroll to errors
-				errorContainer?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+				errorContainer?.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+				})
 			}
 
 			function showFormSuccess(message: string): void {
