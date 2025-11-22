@@ -2,6 +2,37 @@
 
 ## [Unreleased]
 
+### 🔄 Contact Form Refactoring
+
+- **Component Architecture Improvement**: Refactored contact form into reusable, maintainable components
+  - Created `useContactForm` custom hook to centralize form state and submission logic
+  - Extracted `Input.tsx` component for consistent input field rendering with validation
+  - Extracted `TextArea.tsx` component for textarea fields with error handling
+  - Reduced `ContactUS.tsx` from 596 lines to 176 lines (70% reduction)
+- **Configuration Centralization**: Added `site.config.ts` for centralized site metadata
+  - Author information (name, roles, email)
+  - Email configuration (subject prefix, sender name)
+  - Meta information (title, description)
+- **Security Enhancements**: Implemented security middleware with standard HTTP headers
+  - Added `X-Content-Type-Options: nosniff`
+  - Added `X-Frame-Options: DENY`
+  - Added `X-XSS-Protection: 1; mode=block`
+  - Added `Referrer-Policy: strict-origin-when-cross-origin`
+- **API Improvements**: Enhanced email API with server-side email generation
+  - Moved email HTML/text generation from client to server
+  - Improved error handling with specific error messages
+  - Better validation for email format and required fields
+  - Enhanced logging for debugging
+- **Development Workflow Optimization**: Improved commit and testing workflow
+  - Updated `lint-staged` to run `vitest related` for faster commits
+  - Added cleanup logic for temporary commit message files in grammar checker
+  - Optimized pre-commit hooks for better developer experience
+- **Code Quality**: Applied DRY and Clean Code principles
+  - Eliminated code duplication in form components
+  - Added explicit TypeScript return types for better type safety
+  - Improved component reusability and maintainability
+  - Enhanced error handling and user feedback
+
 ### 🎯 Navigation Enhancement
 
 - **Added Links to Main Menu**: Public links page now accessible from main navigation

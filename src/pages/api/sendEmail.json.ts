@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro'
 import { db, FormSubmissions } from 'astro:db'
 import { Resend } from 'resend'
 
+import { siteConfig } from '@/config/site.config'
+
 // Add this line to enable server-side rendering for this route
 export const prerender = false
 
@@ -42,22 +44,18 @@ export const POST: APIRoute = async ({ request }) => {
 			)
 		}
 
-		const { recipientEmail, senderName, html, subject, text, message, name } =
-			body
+		const { email, message, name } = body
 
 		// Get email addresses from environment variables
-		const fromEmail = import.meta.env.FROM_EMAIL || 'contact@ndeyros.dev'
-		const adminEmail = import.meta.env.ADMIN_EMAIL || 'contact@ndeyros.dev'
-
-		console.log('Email config:', { fromEmail, adminEmail, recipientEmail }) // Debug log
+		const fromEmail = import.meta.env.FROM_EMAIL || siteConfig.author.email
+		const adminEmail = import.meta.env.ADMIN_EMAIL || siteConfig.author.email
 
 		// Validate required fields
-		if (!recipientEmail || !html || !subject || !text) {
+		if (!email || !name) {
 			return new Response(
 				JSON.stringify({
 					success: false,
-					message:
-						'Missing required fields: recipientEmail, html, subject, text',
+					message: 'Missing required fields: email, name',
 				}),
 				{
 					status: 400,
@@ -68,7 +66,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 		// Validate email format
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-		if (!emailRegex.test(recipientEmail)) {
+		if (!emailRegex.test(email)) {
 			return new Response(
 				JSON.stringify({
 					success: false,
@@ -96,20 +94,66 @@ export const POST: APIRoute = async ({ request }) => {
 			)
 		}
 
+		// Generate Email Content (Server-Side)
+		const emailSubject = `${siteConfig.email.subjectPrefix} ${name}`
+		const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${emailSubject}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { color: #2563eb; margin-bottom: 20px; }
+                        .details { background-color: #f3f4f6; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                        .footer { margin-top: 30px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1 class="header">Hello ${name}!</h1>
+                        <p>Thank you for reaching out through my portfolio contact form.</p>
+                        <p>I've received your message and will get back to you as soon as possible.</p>
+                        
+                        <div class="details">
+                            <h3>Your submission details:</h3>
+                            <p><strong>Name:</strong> ${name}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>Best regards,<br><strong>${siteConfig.author.name}</strong></p>
+                            <p><em>${siteConfig.author.roles[0]}</em></p>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `
+		const emailText = `
+Hello ${name}!
+
+Thank you for reaching out through my portfolio contact form.
+I've received your message and will get back to you as soon as possible.
+
+Your submission details:
+Name: ${name}
+Email: ${email}
+Submitted: ${new Date().toLocaleString()}
+
+Best regards,
+${siteConfig.author.name}
+${siteConfig.author.roles[0]}
+        `.trim()
+
 		// Send email to user (confirmation)
-		const userEmailData: {
-			from: string
-			to: string
-			subject: string
-			html: string
-			text: string
-			replyTo?: string
-		} = {
+		const userEmailData = {
 			from: fromEmail,
-			to: recipientEmail,
-			subject,
-			html,
-			text,
+			to: email,
+			subject: emailSubject,
+			html: emailHtml,
+			text: emailText,
 		}
 
 		const emailResult = await resend.emails.send(userEmailData)
@@ -117,8 +161,8 @@ export const POST: APIRoute = async ({ request }) => {
 		// Also send notification to admin
 		const adminNotificationHtml = `
 			<h2>New Contact Form Submission</h2>
-			<p><strong>From:</strong> ${name || senderName}</p>
-			<p><strong>Email:</strong> ${recipientEmail}</p>
+			<p><strong>From:</strong> ${name}</p>
+			<p><strong>Email:</strong> ${email}</p>
 			<p><strong>Message:</strong></p>
 			<div style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
 				${message ? message.replace(/\n/g, '<br>') : 'No message provided'}
@@ -129,53 +173,27 @@ export const POST: APIRoute = async ({ request }) => {
 		const adminEmailData = {
 			from: fromEmail,
 			to: adminEmail,
-			subject: `New Contact Form: ${name || senderName}`,
+			subject: `New Contact Form: ${name}`,
 			html: adminNotificationHtml,
-			text: `New contact form submission from ${name || senderName} (${recipientEmail}): ${message || 'No message'}`,
-			replyTo: recipientEmail,
+			text: `New contact form submission from ${name} (${email}): ${message || 'No message'}`,
+			replyTo: email,
 		}
 
 		// Send admin notification (don't fail if this fails)
-		if (adminEmail && adminEmail !== recipientEmail) {
+		if (adminEmail && adminEmail !== email) {
 			try {
-				console.log('Sending admin notification to:', adminEmail) // Debug log
-				const adminEmailResult = await resend.emails.send(adminEmailData)
-				console.log('Admin email result:', adminEmailResult) // Debug log
+				await resend.emails.send(adminEmailData)
 			} catch (adminEmailError) {
 				console.error('Failed to send admin notification:', adminEmailError)
 			}
-		} else {
-			console.log(
-				'Skipping admin notification - same as recipient or not configured',
-			)
 		}
 
 		if (emailResult.error) {
 			console.error('Resend error:', emailResult.error)
-
-			// Check for specific Resend error types
-			let errorMessage = 'Failed to send email: ' + emailResult.error.message
-
-			// Handle common Resend restrictions
-			if (emailResult.error.message.includes('not allowed to send')) {
-				errorMessage =
-					'Email delivery is restricted. The recipient email may not be verified for testing, or domain verification is required.'
-			} else if (emailResult.error.message.includes('domain')) {
-				errorMessage =
-					'Domain verification required. Please verify your sending domain in Resend dashboard.'
-			} else if (
-				emailResult.error.message.includes('quota') ||
-				emailResult.error.message.includes('limit')
-			) {
-				errorMessage =
-					'Email sending limit reached. Please check your Resend account limits.'
-			}
-
 			return new Response(
 				JSON.stringify({
 					success: false,
-					message: errorMessage,
-					resendError: emailResult.error, // Include original error for debugging
+					message: 'Failed to send email',
 				}),
 				{
 					status: 500,
@@ -192,8 +210,8 @@ export const POST: APIRoute = async ({ request }) => {
 				resendMessageId: string
 				message?: string
 			} = {
-				fullName: name || senderName || 'Unknown',
-				email: recipientEmail,
+				fullName: name,
+				email: email,
 				resendMessageId: emailResult.data?.id || '',
 			}
 			if (message) {
@@ -208,7 +226,6 @@ export const POST: APIRoute = async ({ request }) => {
 					success: true,
 					message: 'Email sent successfully (database save failed)',
 					emailId: emailResult.data?.id,
-					resendMessageId: emailResult.data?.id || null,
 				}),
 				{
 					status: 200,

@@ -29,6 +29,7 @@
 		"test:integration": "vitest run test/e2e/links.test.ts test/e2e/accessibility.test.ts test/admin-interface.test.ts --config ./config/vitest.config.ts",
 		"test:performance": "vitest run test/performance.test.ts --config ./config/vitest.config.ts",
 		"test:back-to-top": "vitest run back-to-top --config ./config/vitest.config.ts",
+		"test:related": "vitest related --run --config ./config/vitest.config.ts",
 		"// === Testing - Chrome AI ===": "",
 		"ai:unit": "vitest run test/utils/summarizer.test.ts test/utils/translator.test.ts --config ./config/vitest.config.ts",
 		"ai:integration": "vitest run test/integration/chrome-ai-components.test.ts --config ./config/vitest.config.ts",
@@ -130,7 +131,8 @@
 		"*.{js,jsx,ts,tsx,astro}": [
 			"prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
 			"eslint --fix --config ./config/eslint.config.js",
-			"cspell --no-progress --config ./config/cspell.json"
+			"cspell --no-progress --config ./config/cspell.json",
+			"vitest related --run --config ./config/vitest.config.ts"
 		],
 		"*.{md,mdx}": [
 			"prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",

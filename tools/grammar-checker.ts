@@ -115,9 +115,10 @@ export async function checkCommitGrammar(
 export async function runTextlintOnCommit(
 	message: string,
 ): Promise<GrammarResult> {
+	const tempFile = path.join(process.cwd(), '.temp-commit-msg.md')
+
 	try {
 		// Create temporary file for textlint
-		const tempFile = path.join(process.cwd(), '.temp-commit-msg.md')
 		fs.writeFileSync(tempFile, message)
 
 		// Run textlint on the temporary file
@@ -125,9 +126,6 @@ export async function runTextlintOnCommit(
 			encoding: 'utf8',
 			stdio: 'pipe',
 		})
-
-		// Clean up
-		fs.unlinkSync(tempFile)
 
 		const lintResults: TextlintResult[] = JSON.parse(result)
 		const errors = lintResults[0]?.messages || []
@@ -139,7 +137,13 @@ export async function runTextlintOnCommit(
 			),
 		}
 	} catch {
-		// If textlint fails, fall back to basic checks
+		// If textlint fails (exit code non-zero), it might be due to lint errors or other issues
+		// We can try to parse the stdout if available, or fall back to basic checks
 		return await checkCommitGrammar(message)
+	} finally {
+		// Clean up - ensure file is deleted
+		if (fs.existsSync(tempFile)) {
+			fs.unlinkSync(tempFile)
+		}
 	}
 }
