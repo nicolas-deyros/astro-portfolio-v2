@@ -1,7 +1,12 @@
 {
 	"mcpServers": {
-		"Astro docs": {
-			"httpUrl": "https://mcp.docs.astro.build/mcp"
+		"astro-mcp": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@astrojs/mcp-server"
+			],
+			"description": "Astro framework operations"
 		},
 		"react-mcp": {
 			"command": "npx",
@@ -24,15 +29,6 @@
 			"args": [
 				"-y",
 				"css-mcp"
-			]
-		},
-		"context7": {
-			"command": "bunx",
-			"args": [
-				"-y",
-				"@upstash/context7-mcp",
-				"--api-key",
-				"YOUR_API_KEY"
 			]
 		},
 		"chrome-devtools": {

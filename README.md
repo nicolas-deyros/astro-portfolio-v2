@@ -75,13 +75,62 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 - **[Performance](./docs/PERFORMANCE_TESTING.md)** - Performance optimization
 - **[Security](./SECURITY.md)** - Security measures and best practices
 
+## 🏗️ Component Architecture
+
+### Form Components
+
+The contact form has been refactored into reusable, maintainable components following DRY principles:
+
+**Custom Hooks:**
+
+- `useContactForm` - Centralizes form state, validation, and submission logic using Formik
+  - Manages submit status (idle, submitting, success, error)
+  - Handles form validation with Yup schema
+  - Provides clean API for form integration
+
+**Reusable Components:**
+
+- `Input.tsx` - Standardized input field with validation and error animations
+- `TextArea.tsx` - Standardized textarea with validation and error animations
+- Both components feature:
+  - Consistent error handling and display
+  - Smooth animations for validation feedback
+  - Accessibility-first design
+  - TypeScript type safety
+
+**Benefits:**
+
+- 70% reduction in ContactUS.tsx code (596 → 176 lines)
+- Improved maintainability and testability
+- Consistent UX across all form fields
+- Easy to extend with new form fields
+
+### Configuration
+
+**Centralized Site Config:**
+
+- `site.config.ts` - Single source of truth for site metadata
+  - Author information
+  - Email configuration
+  - Meta tags and SEO data
+
+**Security Middleware:**
+
+- Standard HTTP security headers
+- X-Content-Type-Options, X-Frame-Options, X-XSS-Protection
+- Referrer-Policy for privacy
+
 ## 🏗️ Project Structure
 
 ```
 src/
 ├── components/      # Reusable UI components
+│   └── Form/        # Form components (Input, TextArea, ContactUS)
+├── config/          # Centralized configuration
 ├── content/         # Blog posts and data collections
+├── hooks/           # Custom React hooks (useContactForm)
 ├── layouts/         # Page layouts
+├── middleware.ts    # Security middleware
 ├── pages/           # Route pages and API endpoints
 └── styles/          # Global styles and utilities
 
