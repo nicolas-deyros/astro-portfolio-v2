@@ -138,15 +138,6 @@ docs/               # Comprehensive documentation (see docs/README.md)
 test/               # Test suites and utilities
 ```
 
-## 📚 Documentation
-
-Complete documentation is available in the `docs/` folder:
-
-- **[Documentation Index](docs/README.md)** - Complete guide to all documentation
-- **[Development Guide](docs/DEVELOPMENT.md)** - Developer setup and workflow
-- **[Features](docs/FEATURES.md)** - Comprehensive feature documentation
-- **[Architecture](docs/ARCHITECTURE.md)** - Technical system design
-
 ## 🤝 Contributing
 
 1. Fork the repository

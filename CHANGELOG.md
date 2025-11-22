@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+### 🔒 Admin Authentication Centralization
+
+- **Middleware-Level Authentication**: Centralized admin authentication logic in middleware for improved security and maintainability
+  - **Security Enhancement**: Authentication now happens at middleware level before any page content is processed
+  - **DRY Principle**: Eliminated duplicated authentication logic from 3 admin pages (index, CRM, links)
+  - **Code Reduction**: Net reduction of 24 lines of code through consolidation
+  - **Auto-Protection**: All current and future `/admin/*` routes automatically protected (except `/admin/login`)
+  - **Consistent Behavior**: Single authentication implementation ensures uniform security across all admin pages
+- **Enhanced Middleware**: Updated `src/middleware.ts` with authentication checks
+  - Imports `requireAuthentication` from session management library
+  - Validates all `/admin/*` routes before rendering
+  - Explicitly excludes `/admin/login` to prevent redirect loops
+  - Maintains existing security headers (X-Content-Type-Options, X-Frame-Options, etc.)
+- **Simplified Admin Pages**: Removed redundant authentication code from admin components
+  - `src/pages/admin/index.astro` - Removed 13 lines of auth logic
+  - `src/pages/admin/crm.astro` - Removed 13 lines of auth logic
+  - `src/pages/admin/links.astro` - Removed 13 lines of auth logic
+- **Improved Maintainability**: Future admin pages automatically inherit authentication protection
+  - No need to duplicate authentication checks in new admin pages
+  - Centralized security logic easier to audit and update
+  - Reduced risk of authentication bypass through forgotten checks
+
 ### 🔄 Contact Form Refactoring
 
 - **Component Architecture Improvement**: Refactored contact form into reusable, maintainable components

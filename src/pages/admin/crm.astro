@@ -1,19 +1,6 @@
 ---
 import Layout from '@layouts/index.astro'
-import { requireAuthentication } from '@lib/session'
 import { db, FormSubmissions } from 'astro:db'
-
-// 🔒 SERVER-SIDE AUTHENTICATION CHECK
-// This prevents any admin content from being sent to unauthenticated users
-const isAuthenticated = await requireAuthentication(
-	Astro.cookies,
-	Astro.request,
-)
-
-if (!isAuthenticated) {
-	// Immediately redirect to login - no content sent to client
-	return Astro.redirect('/admin/login', 302)
-}
 
 interface FormSubmissionData {
 	id: number
