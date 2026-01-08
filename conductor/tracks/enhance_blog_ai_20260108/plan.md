@@ -2,12 +2,12 @@
 
 This plan follows the TDD workflow defined in `conductor/workflow.md`.
 
-## Phase 1: Summarizer Utility Stabilization
+## Phase 1: Summarizer Utility Stabilization [checkpoint: 2d77148]
 
 - [x] Task: Red Phase - Write failing tests for Summarizer edge cases (model unavailable, timeout)
 - [x] Task: Green Phase - Implement robust error handling and availability logic in `src/utils/summarizer.ts`
 - [x] Task: Refactor - Optimize Summarizer logic and cleanup test mocks
-- [~] Task: Conductor - User Manual Verification 'Summarizer Utility Stabilization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Summarizer Utility Stabilization' (Protocol in workflow.md)
 
 ## Phase 2: Translator Utility Stabilization
 
