@@ -34,3 +34,6 @@ pnpm-debug.log*
 .next/
 .output/
 .temp/
+# Gemini & MCP Configuration
+.mcp.json
+

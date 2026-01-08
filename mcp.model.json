@@ -1,0 +1,17 @@
+{
+	"mcpServers": {
+		"astro-mcp": {
+			"command": "npx",
+			"args": ["-y", "@astrojs/mcp-server"],
+			"description": "Astro framework operations"
+		},
+		"github": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-github"],
+			"env": {
+				"GITHUB_PERSONAL_ACCESS_TOKEN": "PLACEHOLDER_REPLACE_WITH_YOUR_TOKEN"
+			},
+			"description": "GitHub integration for repository management, issues, and pull requests"
+		}
+	}
+}

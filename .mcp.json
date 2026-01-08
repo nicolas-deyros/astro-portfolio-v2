@@ -1,9 +1,0 @@
-{
-	"mcpServers": {
-		"astro-mcp": {
-			"command": "npx",
-			"args": ["-y", "@astrojs/mcp-server"],
-			"description": "Astro framework operations"
-		}
-	}
-}
