@@ -2,41 +2,8 @@
 	"mcpServers": {
 		"astro-mcp": {
 			"command": "npx",
-			"args": [
-				"-y",
-				"@astrojs/mcp-server"
-			],
+			"args": ["-y", "@astrojs/mcp-server"],
 			"description": "Astro framework operations"
-		},
-		"react-mcp": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@modelcontextprotocol/server-react"
-			],
-			"description": "React component analysis"
-		},
-		"playwright-mcp": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@playwright/mcp-server"
-			],
-			"description": "Browser testing and automation"
-		},
-		"css": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"css-mcp"
-			]
-		},
-		"chrome-devtools": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"chrome-devtools-mcp@latest"
-			]
 		}
 	}
 }

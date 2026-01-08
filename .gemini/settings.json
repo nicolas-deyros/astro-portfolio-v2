@@ -3,19 +3,10 @@
 		"Astro docs": {
 			"httpUrl": "https://mcp.docs.astro.build/mcp"
 		},
-		"react-mcp": {
-			"command": "npx",
-			"args": [
-				"-y",
-				"@modelcontextprotocol/server-react"
-			],
-			"description": "React component analysis"
-		},
 		"playwright-mcp": {
 			"command": "npx",
 			"args": [
-				"-y",
-				"@playwright/mcp-server"
+				"@playwright/mcp@latest"
 			],
 			"description": "Browser testing and automation"
 		},
@@ -27,13 +18,22 @@
 			]
 		},
 		"context7": {
-			"command": "bunx",
+			"command": "npx",
 			"args": [
 				"-y",
 				"@upstash/context7-mcp",
 				"--api-key",
-				"YOUR_API_KEY"
+				"ctx7sk-8618f32d-a4bf-40da-8da7-bd4cc6966fef"
 			]
+		},
+		"TestSprite": {
+			"command": "npx",
+			"args": [
+				"@testsprite/testsprite-mcp@latest"
+			],
+			"env": {
+				"API_KEY": "sk-user-ZV5jbxfSBJa9_wa1RO9ceVGSTPAX_TcGrEByyHYv97tlmQ7UxYNHRVtCpFyz4xz8XWziNxQEzbMxzXrx9z99Y8VCOiKDDNK1Rx9DRpABdE1VWLzCoGPfDOfcz-3zpMQY6q8"
+			}
 		},
 		"chrome-devtools": {
 			"command": "npx",
