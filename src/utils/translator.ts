@@ -33,6 +33,12 @@ declare global {
 			): Promise<'readily' | 'after-download' | 'unavailable'>
 			create(options: TranslatorOptions): Promise<ChromeAITranslator>
 		}
+		translation?: {
+			canTranslate(options: TranslatorOptions): Promise<'readily' | 'after-download' | 'unavailable'>
+			createTranslator(options: TranslatorOptions): Promise<ChromeAITranslator>
+			canDetect(): Promise<'readily' | 'after-download' | 'unavailable'>
+			createDetector(): Promise<ChromeAILanguageDetector>
+		}
 	}
 }
 
@@ -42,22 +48,39 @@ export interface TranslationResult {
 	error?: string
 	sourceLanguage?: string
 	targetLanguage: string
+	wordCount: number
 }
 
 export class BlogTranslator {
 	private supportedLanguages = ['es', 'pt', 'en', 'fr', 'de', 'it']
+	private translator: ChromeAITranslator | null = null
 
 	async isAPIAvailable(): Promise<boolean> {
-		return !!(window.LanguageDetector && window.Translator)
+		return !!(window.LanguageDetector && window.Translator) || !!window.translation
+	}
+
+	async isSupported(): Promise<boolean> {
+		return this.isAPIAvailable()
+	}
+
+	isValidLanguageCode(code: string): boolean {
+		return this.supportedLanguages.includes(code.toLowerCase())
+	}
+
+	destroy(): void {
+		this.translator = null
 	}
 
 	async detectLanguage(text: string): Promise<string> {
-		if (!window.LanguageDetector) {
+		if (!window.LanguageDetector && !window.translation) {
 			throw new Error('Language Detection API not available')
 		}
 
 		try {
-			const detector = await window.LanguageDetector.create()
+			const detector = window.LanguageDetector 
+				? await window.LanguageDetector.create()
+				: await window.translation!.createDetector()
+			
 			const results = await detector.detect(text.substring(0, 1000)) // Use first 1000 chars for detection
 			return results[0]?.detectedLanguage || 'en'
 		} catch (error) {
@@ -70,15 +93,25 @@ export class BlogTranslator {
 		sourceLanguage: string,
 		targetLanguage: string,
 	): Promise<string> {
-		if (!window.Translator) {
+		if (!window.Translator && !window.translation) {
 			throw new Error('Translation API not available')
 		}
 
 		try {
-			return await window.Translator.availability({
-				sourceLanguage,
-				targetLanguage,
-			})
+			if (window.Translator) {
+				return await window.Translator.availability({
+					sourceLanguage,
+					targetLanguage,
+				})
+			} else {
+				// The translation.canTranslate method name varies
+				const translation = window.translation as any
+				const checkFn = translation.canTranslate || translation.availability
+				return await checkFn.call(translation, {
+					sourceLanguage,
+					targetLanguage,
+				})
+			}
 		} catch (error) {
 			console.error('Failed to check translation availability:', error)
 			return 'unavailable'
@@ -159,10 +192,15 @@ export class BlogTranslator {
 			}
 
 			// Create translator
-			const translator = await window.Translator.create({
-				sourceLanguage: detectedLanguage,
-				targetLanguage,
-			})
+			const translator = window.Translator
+				? await window.Translator.create({
+						sourceLanguage: detectedLanguage,
+						targetLanguage,
+				  })
+				: await window.translation!.createTranslator({
+						sourceLanguage: detectedLanguage,
+						targetLanguage,
+				  })
 
 			// Parse and translate content
 			const translatedContent = await this.translateMDXContent(
@@ -175,24 +213,10 @@ export class BlogTranslator {
 				translatedContent,
 				sourceLanguage: detectedLanguage,
 				targetLanguage,
+				wordCount: translatedContent.trim().split(/\s+/).length,
 			}
 		} catch (error) {
 			console.error('Translation failed:', error)
-
-			// Handle specific error cases
-			if (error instanceof Error) {
-				if (
-					error.message.includes('user gesture') ||
-					error.message.includes('NotAllowedError')
-				) {
-					return {
-						success: false,
-						error:
-							'Translation models are being downloaded. Please wait a moment and try again.',
-						targetLanguage,
-					}
-				}
-			}
 
 			return {
 				success: false,
@@ -201,6 +225,7 @@ export class BlogTranslator {
 						? error.message
 						: 'An unknown error occurred during translation.',
 				targetLanguage,
+				wordCount: 0,
 			}
 		}
 	}

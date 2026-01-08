@@ -69,6 +69,10 @@ export class BlogSummarizer {
 		}
 	}
 
+	async isAPIAvailable(): Promise<boolean> {
+		return this.isSupported()
+	}
+
 	async waitForModelDownload(maxWaitTime = 30000): Promise<boolean> {
 		const startTime = Date.now()
 
@@ -121,7 +125,7 @@ export class BlogSummarizer {
 
 	async summarizeBlogPost(
 		markdown: string,
-		options: SummaryOptions,
+		options: SummaryOptions & { maxWaitTime?: number },
 		onProgress?: (status: string) => void,
 	): Promise<SummaryResult> {
 		if (!(await this.isSupported())) {
@@ -137,7 +141,7 @@ export class BlogSummarizer {
 				'Model is downloading in the background. This may take a few moments...',
 			)
 
-			const modelReady = await this.waitForModelDownload()
+			const modelReady = await this.waitForModelDownload(options.maxWaitTime)
 			if (!modelReady) {
 				throw new Error(
 					'Model download timed out. Please try again in a few minutes.',
