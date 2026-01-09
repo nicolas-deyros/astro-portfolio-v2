@@ -9,6 +9,13 @@
 5. **User Experience First:** Every decision should prioritize user experience
 6. **Non-Interactive & CI-Aware:** Prefer non-interactive commands. Use `CI=true` for watch-mode tools (tests, linters) to ensure single execution.
 
+## Branching Strategy
+
+- **Main Branch Protection:** Direct commits to `master` (or `main`) are strictly forbidden.
+- **Feature Branches:** All work must be performed on a dedicated branch created from the latest `master`.
+  - Naming Convention: `type/description` (e.g., `feat/new-auth-flow`, `fix/login-bug`, `docs/update-readme`).
+- **Pull Requests:** All changes must be merged via Pull Request (PR) after passing CI checks and code review.
+
 ## Task Workflow
 
 All tasks follow a strict lifecycle:
