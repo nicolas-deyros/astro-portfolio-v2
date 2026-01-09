@@ -18,9 +18,9 @@ This plan follows the TDD workflow defined in `conductor/workflow.md`.
 
 ## Phase 3: Integration and Component Testing
 
-- [ ] Task: Red Phase - Write failing integration tests for `BlogSummarizer.astro` and `BlogTranslator.astro` status display
-- [ ] Task: Green Phase - Update UI components to handle all AI states gracefully
-- [ ] Task: Conductor - User Manual Verification 'Integration and Component Testing' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing integration tests for `BlogSummarizer.astro` and `BlogTranslator.astro` status display
+- [x] Task: Green Phase - Update UI components to handle all AI states gracefully
+- [~] Task: Conductor - User Manual Verification 'Integration and Component Testing' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification and Coverage
 

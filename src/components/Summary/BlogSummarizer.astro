@@ -738,10 +738,17 @@ Alternative: Use Chrome Canary or Dev channel for better AI support.`
 					progressContainer.classList.add('hidden')
 					errorContainer?.classList.remove('hidden')
 					if (errorMessage) {
-						errorMessage.textContent =
-							error instanceof Error
-								? error.message
-								: 'An unexpected error occurred'
+						if (error instanceof Error) {
+							// Handle specific error types or just show the message
+							if (error.message.includes('timeout')) {
+								errorMessage.textContent =
+									'Model download timed out. Please check your internet connection and try again.'
+							} else {
+								errorMessage.textContent = error.message
+							}
+						} else {
+							errorMessage.textContent = 'An unexpected error occurred'
+						}
 					}
 				} finally {
 					generateBtn.disabled = false

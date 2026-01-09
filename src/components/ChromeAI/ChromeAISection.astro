@@ -841,24 +841,30 @@ const { className = '', markdown = '' } = Astro.props
 				const { BlogTranslator } = await import('../../utils/translator.js')
 				const translator = new BlogTranslator()
 
-				// Simulate progress
-				let currentProgress = 0
-				const progressInterval = setInterval(() => {
-					currentProgress = Math.min(currentProgress + 10, 80)
-					if (translationProgressBar) {
-						translationProgressBar.style.width = `${currentProgress}%`
-					}
-					if (translationProgressPercentage) {
-						translationProgressPercentage.textContent = `${currentProgress}%`
-					}
-				}, 300)
-
 				const result = await translator.translateBlogPost(
 					contentToTranslate,
 					selectedLanguage,
-				)
+					'', // Auto-detect source
+					(status: string) => {
+						if (translationProgressText)
+							translationProgressText.textContent = status
 
-				clearInterval(progressInterval)
+						// Animate progress more realistically
+						if (status.includes('API')) currentProgress = 10
+						else if (status.includes('Detecting')) currentProgress = 25
+						else if (status.includes('Checking')) currentProgress = 40
+						else if (status.includes('Preparing')) currentProgress = 60
+						else if (status.includes('Translating')) currentProgress = 80
+						else if (status.includes('complete')) currentProgress = 100
+
+						if (translationProgressBar) {
+							translationProgressBar.style.width = `${currentProgress}%`
+						}
+						if (translationProgressPercentage) {
+							translationProgressPercentage.textContent = `${currentProgress}%`
+						}
+					},
+				)
 
 				// Complete progress
 				if (translationProgressBar) translationProgressBar.style.width = '100%'
@@ -892,6 +898,9 @@ const { className = '', markdown = '' } = Astro.props
 						) {
 							translationErrorMessage.textContent =
 								'Content is too large for AI translation. The article has been automatically truncated, but still exceeds limits. Please try again or contact support.'
+						} else if (error.message.includes('timeout')) {
+							translationErrorMessage.textContent =
+								'Model download timed out. Please check your internet connection and try again.'
 						} else {
 							translationErrorMessage.textContent = error.message
 						}
