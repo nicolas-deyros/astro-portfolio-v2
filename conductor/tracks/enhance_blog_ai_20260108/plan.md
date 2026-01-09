@@ -16,11 +16,11 @@ This plan follows the TDD workflow defined in `conductor/workflow.md`.
 - [x] Task: Refactor - Optimize Translator logic and cleanup test mocks
 - [x] Task: Conductor - User Manual Verification 'Translator Utility Stabilization' (Protocol in workflow.md)
 
-## Phase 3: Integration and Component Testing
+## Phase 3: Integration and Component Testing [checkpoint: 38e311f]
 
 - [x] Task: Red Phase - Write failing integration tests for `BlogSummarizer.astro` and `BlogTranslator.astro` status display
 - [x] Task: Green Phase - Update UI components to handle all AI states gracefully
-- [~] Task: Conductor - User Manual Verification 'Integration and Component Testing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Integration and Component Testing' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification and Coverage
 
