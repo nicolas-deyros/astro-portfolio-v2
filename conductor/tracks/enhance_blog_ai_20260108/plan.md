@@ -25,6 +25,6 @@ This plan follows the TDD workflow defined in `conductor/workflow.md`.
 ## Phase 4: Final Verification and Coverage
 
 - [x] Task: Verify 80%+ coverage for all AI-related files
-- [~] Task: Run full `npm run ai:all` suite to ensure no regressions
+- [x] Task: Run full `npm run ai:all` suite to ensure no regressions
 - [ ] Task: Conductor - User Manual Verification 'Final Verification and Coverage' (Protocol in workflow.md)
 - [ ] Task: Conductor - User Manual Verification 'Final Verification and Coverage' (Protocol in workflow.md)
