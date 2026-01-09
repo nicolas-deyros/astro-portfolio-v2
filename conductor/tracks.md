@@ -7,3 +7,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## [x] Track: Enhance Blog AI Integration and Testing Robustness
 
 _Link: [./conductor/tracks/enhance_blog_ai_20260108/](./conductor/tracks/enhance_blog_ai_20260108/)_
+
+## [ ] Track: Workflow Automation & Governance 2.0
+
+_Link: [./conductor/tracks/workflow_automation_20260109/](./conductor/tracks/workflow_automation_20260109/)_

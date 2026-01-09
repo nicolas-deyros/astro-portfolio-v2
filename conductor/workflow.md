@@ -7,396 +7,133 @@
 3. **Test-Driven Development:** Write unit tests before implementing functionality
 4. **High Code Coverage:** Aim for >80% code coverage for all modules
 5. **User Experience First:** Every decision should prioritize user experience
-6. **Non-Interactive & CI-Aware:** Prefer non-interactive commands. Use `CI=true` for watch-mode tools (tests, linters) to ensure single execution.
+6. **Automation First:** Use provided npm scripts for workflow tasks (`session:init`, `git:start`, `docs:sync`).
 
 ## Branching & Merge Strategy
 
 - **Main Branch Protection:** Direct commits to `master` (or `main`) are strictly forbidden.
-- **Feature Branches:** All work must be performed on a dedicated branch created from the latest `master`.
-  - Naming Convention: `type/description` (e.g., `feat/new-auth-flow`, `fix/login-bug`, `docs/update-readme`).
-- **Pull Requests:** All changes must be merged via Pull Request (PR) after passing CI checks and code review.
+- **Feature Branches:** All work must be performed on a dedicated branch created via `npm run git:start`.
+  - Naming Convention: `type/description` (e.g., `feat/new-auth-flow`, `fix/login-bug`).
+- **Pull Requests:**
+  - **Draft PRs:** Created immediately upon branch creation to verify CI connectivity.
+  - **Ready PRs:** Marked ready only after all tests pass and documentation is synced.
+  - **Merging:** Must be done via GitHub CLI (`gh pr merge --auto`) or the web interface after checks pass.
 
 ## Agent Protocols
 
-### Initialization Protocol (Start of Task)
+### 1. Session Initialization Protocol (Start of Day/Session)
 
-Before starting any task, the agent **MUST** perform the following steps to ensure a clean state:
+Before doing anything else, ensure your environment is clean and up-to-date.
 
-1.  **Sync Master:** Switch to `master` and pull the latest changes (`git checkout master && git pull origin master`).
-2.  **Create Feature Branch:** Create a new branch for the task (`git checkout -b type/task-description`).
-3.  **Check Dependencies:** Run `npm run deps:check` to identify outdated packages.
-    - If updates are available, run `npm run deps:upgrade`.
-    - **CRITICAL:** Use `npx @astrojs/upgrade` for Astro-related packages to ensure compatibility.
-4.  **Validate Environment:** Ensure `.env` exists and matches the required schema (if applicable).
+1.  **Run Initialization Script:**
 
-### Delivery Protocol (End of Task)
-
-When the task is complete and verified:
-
-1.  **Automated Ship:** Use the automation script to create the PR, merge, and cleanup.
     ```bash
-    npm run git:ship
-    ```
-    _Note: This command runs full checks, pushes changes, creates a PR (auto-filling title/desc), and sets auto-merge._
-2.  **Manual Fallback:** If automation fails, follow the manual "Post-Merge Cleanup Protocol" below.
-
-### Post-Merge Cleanup Protocol
-
-After a Pull Request is successfully merged:
-
-1.  **Pull Latest Master:** Switch to your local master and update it.
-    ```bash
-    git checkout master
-    git pull origin master
-    ```
-2.  **Delete Local Branch:** Remove the feature branch from your local machine.
-    ```bash
-    git branch -d feature/your-branch-name
-    ```
-3.  **Delete Remote Branch:** Ensure the remote branch is deleted (GitHub usually offers a button for this, or use the command).
-    ```bash
-    git push origin --delete feature/your-branch-name
+    npm run session:init
     ```
 
-## Task Workflow
+    _This script will:_
+    - Sync your local `master` with `origin/master`.
+    - Check for dependency updates (`npm outdated`).
+    - Auto-update dependencies if safe (`npm run deps:upgrade`).
+    - Generate a status report in `.gemini/session-report.md`.
 
-All tasks follow a strict lifecycle:
+2.  **Review Report:** Check the report for any failures or significant updates.
 
-### Standard Task Workflow
+### 2. Task Start Protocol (Start of Task)
 
-1. **Select Task:** Choose the next available task from `plan.md` in sequential order
+When starting a new task from `plan.md`:
 
-2. **Mark In Progress:** Before beginning work, edit `plan.md` and change the task from `[ ]` to `[~]`
+1.  **Select Task:** Mark it as `[~]` in `plan.md`.
+2.  **Start Feature Branch & Draft PR:**
+    ```bash
+    npm run git:start <branch-name> "<description>"
+    ```
 
-3. **Write Failing Tests (Red Phase):**
-   - Create a new test file for the feature or bugfix.
-   - Write one or more unit tests that clearly define the expected behavior and acceptance criteria for the task.
-   - **CRITICAL:** Run the tests and confirm that they fail as expected. This is the "Red" phase of TDD. Do not proceed until you have failing tests.
+    - Example: `npm run git:start feat/user-profile "Add user profile page with avatar upload"`
+    - _This script will:_
+      - Create and checkout the branch.
+      - Push an empty commit.
+      - Create a **Draft Pull Request** on GitHub to track progress.
 
-4. **Implement to Pass Tests (Green Phase):**
-   - Write the minimum amount of application code necessary to make the failing tests pass.
-   - Run the test suite again and confirm that all tests now pass. This is the "Green" phase.
+### 3. Development Protocol (TDD Loop)
 
-5. **Refactor (Optional but Recommended):**
-   - With the safety of passing tests, refactor the implementation code and the test code to improve clarity, remove duplication, and enhance performance without changing the external behavior.
-   - Rerun tests to ensure they still pass after refactoring.
+1.  **Red Phase:** Write failing tests.
+2.  **Green Phase:** Implement code to pass tests.
+3.  **Refactor:** Improve code quality.
+4.  **Verify:** Run `npm run check` (Lint + Critical Tests).
 
-6. **Verify Coverage:** Run coverage reports using the project's chosen tools. For example, in a Python project, this might look like:
+### 4. Documentation Gate (Before Completion)
 
-   ```bash
-   pytest --cov=app --cov-report=html
-   ```
+Before marking a task as `[x]` or merging:
 
-   Target: >80% coverage for new code. The specific tools and commands will vary by language and framework.
+1.  **Run Documentation Sync:**
+    ```bash
+    npm run docs:sync
+    ```
 
-7. **Document Deviations:** If implementation differs from tech stack:
-   - **STOP** implementation
-   - Update `tech-stack.md` with new design
-   - Add dated note explaining the change
-   - Resume implementation
+    - _This script will:_
+      - Analyze changed files.
+      - Warn about documentation files (`docs/*`) that might need updates.
+      - Output a proposed `CHANGELOG.md` entry.
+2.  **Update Docs:** Manually update the flagged documentation files and `CHANGELOG.md`.
 
-8. **Commit Code Changes:**
-   - Stage all code changes related to the task.
-   - Propose a clear, concise commit message e.g, `feat(ui): Create basic HTML structure for calculator`.
-   - Perform the commit.
+### 5. Delivery Protocol (End of Task)
 
-9. **Attach Task Summary with Git Notes:**
-   - **Step 9.1: Get Commit Hash:** Obtain the hash of the _just-completed commit_ (`git log -1 --format="%H"`).
-   - **Step 9.2: Draft Note Content:** Create a detailed summary for the completed task. This should include the task name, a summary of changes, a list of all created/modified files, and the core "why" for the change.
-   - **Step 9.3: Attach Note:** Use the `git notes` command to attach the summary to the commit.
-     ```bash
-     # The note content from the previous step is passed via the -m flag.
-     git notes add -m "<note content>" <commit_hash>
-     ```
+When the task is complete, verified, and documented:
 
-10. **Get and Record Task Commit SHA:**
-    - **Step 10.1: Update Plan:** Read `plan.md`, find the line for the completed task, update its status from `[~]` to `[x]`, and append the first 7 characters of the _just-completed commit's_ commit hash.
-    - **Step 10.2: Write Plan:** Write the updated content back to `plan.md`.
+1.  **Final Check:**
+    ```bash
+    npm run check:full
+    ```
+2.  **Mark PR Ready:**
+    ```bash
+    gh pr ready
+    ```
+3.  **Enable Auto-Merge:**
 
-11. **Commit Plan Update:**
-    - **Action:** Stage the modified `plan.md` file.
-    - **Action:** Commit this change with a descriptive message (e.g., `conductor(plan): Mark task 'Create user model' as complete`).
+    ```bash
+    gh pr merge --auto --squash
+    ```
 
-### Phase Completion Verification and Checkpointing Protocol
+    _This tells GitHub to automatically merge the PR once all CI checks (GitHub Actions, Vercel deployments, etc.) have passed._
 
-**Trigger:** This protocol is executed immediately after a task is completed that also concludes a phase in `plan.md`.
-
-1.  **Announce Protocol Start:** Inform the user that the phase is complete and the verification and checkpointing protocol has begun.
-
-2.  **Ensure Test Coverage for Phase Changes:**
-    - **Step 2.1: Determine Phase Scope:** To identify the files changed in this phase, you must first find the starting point. Read `plan.md` to find the Git commit SHA of the _previous_ phase's checkpoint. If no previous checkpoint exists, the scope is all changes since the first commit.
-    - **Step 2.2: List Changed Files:** Execute `git diff --name-only <previous_checkpoint_sha> HEAD` to get a precise list of all files modified during this phase.
-    - **Step 2.3: Verify and Create Tests:** For each file in the list:
-      - **CRITICAL:** First, check its extension. Exclude non-code files (e.g., `.json`, `.md`, `.yaml`).
-      - For each remaining code file, verify a corresponding test file exists.
-      - If a test file is missing, you **must** create one. Before writing the test, **first, analyze other test files in the repository to determine the correct naming convention and testing style.** The new tests **must** validate the functionality described in this phase's tasks (`plan.md`).
-
-3.  **Execute Automated Tests with Proactive Debugging:**
-    - Before execution, you **must** announce the exact shell command you will use to run the tests.
-    - **Example Announcement:** "I will now run the automated test suite to verify the phase. **Command:** `CI=true npm test`"
-    - Execute the announced command.
-    - If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
-
-4.  **Propose a Detailed, Actionable Manual Verification Plan:**
-    - **CRITICAL:** To generate the plan, first analyze `product.md`, `product-guidelines.md`, and `plan.md` to determine the user-facing goals of the completed phase.
-    - You **must** generate a step-by-step plan that walks the user through the verification process, including any necessary commands and specific, expected outcomes.
-    - The plan you present to the user **must** follow this format:
-
-      **For a Frontend Change:**
-
-      ```
-      The automated tests have passed. For manual verification, please follow these steps:
-
-      **Manual Verification Steps:**
-      1.  **Start the development server with the command:** `npm run dev`
-      2.  **Open your browser to:** `http://localhost:3000`
-      3.  **Confirm that you see:** The new user profile page, with the user's name and email displayed correctly.
-      ```
-
-      **For a Backend Change:**
-
-      ```
-      The automated tests have passed. For manual verification, please follow these steps:
-
-      **Manual Verification Steps:**
-      1.  **Ensure the server is running.**
-      2.  **Execute the following command in your terminal:** `curl -X POST http://localhost:8080/api/v1/users -d '{"name": "test"}'`
-      3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
-      ```
-
-5.  **Await Explicit User Feedback:**
-    - After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
-    - **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
-
-6.  **Create Checkpoint Commit:**
-    - Stage all changes. If no changes occurred in this step, proceed with an empty commit.
-    - Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
-
-7.  **Attach Auditable Verification Report using Git Notes:**
-    - **Step 8.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    - **Step 8.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
-
-8.  **Get and Record Phase Checkpoint SHA:**
-    - **Step 7.1: Get Commit Hash:** Obtain the hash of the _just-created checkpoint commit_ (`git log -1 --format="%H"`).
-    - **Step 7.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
-    - **Step 7.3: Write Plan:** Write the updated content back to `plan.md`.
-
-9.  **Commit Plan Update:**
-    - **Action:** Stage the modified `plan.md` file.
-    - **Action:** Commit this change with a descriptive message following the format `conductor(plan): Mark phase '<PHASE NAME>' as complete`.
-
-10. **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a Git note.
-
-### Quality Gates
-
-Before marking any task complete, verify:
-
-- [ ] All tests pass
-- [ ] Code coverage meets requirements (>80%)
-- [ ] Code follows project's code style guidelines (as defined in `code_styleguides/`)
-- [ ] All public functions/methods are documented (e.g., docstrings, JSDoc, GoDoc)
-- [ ] Type safety is enforced (e.g., type hints, TypeScript types, Go types)
-- [ ] No linting or static analysis errors (using the project's configured tools)
-- [ ] Works correctly on mobile (if applicable)
-- [ ] Documentation updated if needed
-- [ ] No security vulnerabilities introduced
+4.  **Post-Merge Cleanup:**
+    - Once merged, switch to master and sync: `npm run session:init`
+    - Delete the local branch: `git branch -d feature/your-branch`
 
 ## Development Commands
 
-**AI AGENT INSTRUCTION: This section should be adapted to the project's specific language, framework, and build tools.**
+### Setup & Maintenance
 
-### Setup
+- `npm run session:init`: **Daily Driver.** Syncs Git, updates deps, checks health.
+- `npm run git:start <branch> [desc]`: Starts a new feature with a Draft PR.
+- `npm run docs:sync`: Checks for doc drift and suggests changelogs.
 
-```bash
-# Example: Commands to set up the development environment (e.g., install dependencies, configure database)
-# e.g., for a Node.js project: npm install
-# e.g., for a Go project: go mod tidy
-```
+### Testing
 
-### Daily Development
+- `npm run test`: Run all tests.
+- `npm run check`: Quick CI check (Lint + Critical Tests).
+- `npm run check:full`: Full CI suite (Lint + All Tests).
 
-```bash
-# Example: Commands for common daily tasks (e.g., start dev server, run tests, lint, format)
-# e.g., for a Node.js project: npm run dev, npm test, npm run lint
-# e.g., for a Go project: go run main.go, go test ./..., go fmt ./...
-```
+### Building
 
-### Before Committing
-
-```bash
-# Example: Commands to run all pre-commit checks (e.g., format, lint, type check, run tests)
-# e.g., for a Node.js project: npm run check
-# e.g., for a Go project: make check (if a Makefile exists)
-```
-
-## Testing Requirements
-
-### Unit Testing
-
-- Every module must have corresponding tests.
-- Use appropriate test setup/teardown mechanisms (e.g., fixtures, beforeEach/afterEach).
-- Mock external dependencies.
-- Test both success and failure cases.
-
-### Integration Testing
-
-- Test complete user flows
-- Verify database transactions
-- Test authentication and authorization
-- Check form submissions
-
-### Mobile Testing
-
-- Test on actual iPhone when possible
-- Use Safari developer tools
-- Test touch interactions
-- Verify responsive layouts
-- Check performance on 3G/4G
+- `npm run build`: Production build.
+- `npm run dev`: Dev server.
 
 ## Code Review Process
 
 ### Self-Review Checklist
 
-Before requesting review:
-
-1. **Functionality**
-   - Feature works as specified
-   - Edge cases handled
-   - Error messages are user-friendly
-
-2. **Code Quality**
-   - Follows style guide
-   - DRY principle applied
-   - Clear variable/function names
-   - Appropriate comments
-
-3. **Testing**
-   - Unit tests comprehensive
-   - Integration tests pass
-   - Coverage adequate (>80%)
-
-4. **Security**
-   - No hardcoded secrets
-   - Input validation present
-   - SQL injection prevented
-   - XSS protection in place
-
-5. **Performance**
-   - Database queries optimized
-   - Images optimized
-   - Caching implemented where needed
-
-6. **Mobile Experience**
-   - Touch targets adequate (44x44px)
-   - Text readable without zooming
-   - Performance acceptable on mobile
-   - Interactions feel native
-
-## Commit Guidelines
-
-### Message Format
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-### Types
-
-- `feat`: New feature
-- `fix`: bugfix
-- `docs`: Documentation only
-- `style`: Formatting, missing semicolons, etc.
-- `refactor`: Code change that neither fixes a bug nor adds a feature
-- `test`: Adding missing tests
-- `chore`: Maintenance tasks
-
-### Examples
-
-```bash
-git commit -m "feat(auth): Add remember me functionality"
-git commit -m "fix(posts): Correct excerpt generation for short posts"
-git commit -m "test(comments): Add tests for emoji reaction limits"
-git commit -m "style(mobile): Improve button touch targets"
-```
-
-## Definition of Done
-
-A task is complete when:
-
-1. All code implemented to specification
-2. Unit tests written and passing
-3. Code coverage meets project requirements
-4. Documentation complete (if applicable)
-5. Code passes all configured linting and static analysis checks
-6. Works beautifully on mobile (if applicable)
-7. Implementation notes added to `plan.md`
-8. Changes committed with proper message
-9. Git note with task summary attached to the commit
+1.  **Functionality:** Does it meet the requirements?
+2.  **Tests:** Are there tests? Do they pass?
+3.  **Docs:** Did I run `npm run docs:sync`?
+4.  **Security:** No secrets leaked? Inputs sanitized?
 
 ## Emergency Procedures
 
 ### Critical Bug in Production
 
-1. Create hotfix branch from main
-2. Write failing test for bug
-3. Implement minimal fix
-4. Test thoroughly including mobile
-5. Deploy immediately
-6. Document in plan.md
-
-### Data Loss
-
-1. Stop all write operations
-2. Restore from latest backup
-3. Verify data integrity
-4. Document incident
-5. Update backup procedures
-
-### Security Breach
-
-1. Rotate all secrets immediately
-2. Review access logs
-3. Patch vulnerability
-4. Notify affected users (if any)
-5. Document and update security procedures
-
-## Deployment Workflow
-
-### Pre-Deployment Checklist
-
-- [ ] All tests passing
-- [ ] Coverage >80%
-- [ ] No linting errors
-- [ ] Mobile testing complete
-- [ ] Environment variables configured
-- [ ] Database migrations ready
-- [ ] Backup created
-
-### Deployment Steps
-
-1. Merge feature branch to main
-2. Tag release with version
-3. Push to deployment service
-4. Run database migrations
-5. Verify deployment
-6. Test critical paths
-7. Monitor for errors
-
-### Post-Deployment
-
-1. Monitor analytics
-2. Check error logs
-3. Gather user feedback
-4. Plan next iteration
-
-## Continuous Improvement
-
-- Review workflow weekly
-- Update based on pain points
-- Document lessons learned
-- Optimize for user happiness
-- Keep things simple and maintainable
+1.  `npm run session:init` (to get latest state).
+2.  `npm run git:start hotfix/description "Emergency Fix"`.
+3.  Fix, Test, `npm run check`.
+4.  `gh pr ready` && `gh pr merge --auto --squash`.
