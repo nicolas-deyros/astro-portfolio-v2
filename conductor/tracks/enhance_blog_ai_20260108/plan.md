@@ -9,12 +9,12 @@ This plan follows the TDD workflow defined in `conductor/workflow.md`.
 - [x] Task: Refactor - Optimize Summarizer logic and cleanup test mocks
 - [x] Task: Conductor - User Manual Verification 'Summarizer Utility Stabilization' (Protocol in workflow.md)
 
-## Phase 2: Translator Utility Stabilization
+## Phase 2: Translator Utility Stabilization [checkpoint: eedf91e]
 
 - [x] Task: Red Phase - Write failing tests for Translator edge cases (unsupported language pairs, initialization failure)
 - [x] Task: Green Phase - Implement robust error handling and availability logic in `src/utils/translator.ts`
 - [x] Task: Refactor - Optimize Translator logic and cleanup test mocks
-- [~] Task: Conductor - User Manual Verification 'Translator Utility Stabilization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Translator Utility Stabilization' (Protocol in workflow.md)
 
 ## Phase 3: Integration and Component Testing
 
