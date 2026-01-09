@@ -16,6 +16,30 @@
   - Naming Convention: `type/description` (e.g., `feat/new-auth-flow`, `fix/login-bug`, `docs/update-readme`).
 - **Pull Requests:** All changes must be merged via Pull Request (PR) after passing CI checks and code review.
 
+## Agent Protocols
+
+### Initialization Protocol (Start of Task)
+
+Before starting any task, the agent **MUST** perform the following steps to ensure a clean state:
+
+1.  **Sync Master:** Switch to `master` and pull the latest changes (`git checkout master && git pull origin master`).
+2.  **Create Feature Branch:** Create a new branch for the task (`git checkout -b type/task-description`).
+3.  **Check Dependencies:** Run `npm run deps:check` to identify outdated packages.
+    - If updates are available, run `npm run deps:upgrade`.
+    - **CRITICAL:** Use `npx @astrojs/upgrade` for Astro-related packages to ensure compatibility.
+4.  **Validate Environment:** Ensure `.env` exists and matches the required schema (if applicable).
+
+### Delivery Protocol (End of Task)
+
+When the task is complete and verified:
+
+1.  **Automated Ship:** Use the automation script to create the PR, merge, and cleanup.
+    ```bash
+    npm run git:ship
+    ```
+    _Note: This command runs full checks, pushes changes, creates a PR (auto-filling title/desc), and sets auto-merge._
+2.  **Manual Fallback:** If automation fails, follow the manual "Post-Merge Cleanup Protocol" below.
+
 ### Post-Merge Cleanup Protocol
 
 After a Pull Request is successfully merged:

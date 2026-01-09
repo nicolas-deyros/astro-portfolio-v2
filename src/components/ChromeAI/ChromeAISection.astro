@@ -687,7 +687,7 @@ const { className = '', markdown = '' } = Astro.props
 				let currentProgress = 0
 				const result = await summarizer.summarizeBlogPost(
 					contentToSummarize,
-					{ type: selectedType, length: selectedLength },
+					{ type: selectedType, length: selectedLength, maxWaitTime: 60000 },
 					(status: string) => {
 						if (summaryProgressText) summaryProgressText.textContent = status
 
@@ -841,6 +841,7 @@ const { className = '', markdown = '' } = Astro.props
 				const { BlogTranslator } = await import('../../utils/translator.js')
 				const translator = new BlogTranslator()
 
+				let currentProgress = 0
 				const result = await translator.translateBlogPost(
 					contentToTranslate,
 					selectedLanguage,

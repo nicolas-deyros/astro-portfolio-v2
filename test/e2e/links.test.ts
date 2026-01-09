@@ -41,7 +41,8 @@ describe('Links API Endpoint Validation', () => {
 	const serverUrl = 'http://localhost:4321'
 
 	beforeAll(async () => {
-		server = spawn('npx', ['astro', 'dev', '--port', '4321'])
+		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+		server = spawn(cmd, ['astro', 'dev', '--port', '4321'])
 		await waitForServer(`${serverUrl}/api/links.json`)
 		const response = await fetch(`${serverUrl}/api/links.json`)
 		linksData = await response.json()
