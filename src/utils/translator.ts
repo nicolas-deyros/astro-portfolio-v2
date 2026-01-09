@@ -34,7 +34,9 @@ declare global {
 			create(options: TranslatorOptions): Promise<ChromeAITranslator>
 		}
 		translation?: {
-			canTranslate(options: TranslatorOptions): Promise<'readily' | 'after-download' | 'unavailable'>
+			canTranslate(
+				options: TranslatorOptions,
+			): Promise<'readily' | 'after-download' | 'unavailable'>
 			createTranslator(options: TranslatorOptions): Promise<ChromeAITranslator>
 			canDetect(): Promise<'readily' | 'after-download' | 'unavailable'>
 			createDetector(): Promise<ChromeAILanguageDetector>
@@ -51,16 +53,34 @@ export interface TranslationResult {
 	wordCount: number
 }
 
+export interface DetectionResult {
+	language: string
+	confidence: number
+}
+
 export class BlogTranslator {
 	private supportedLanguages = ['es', 'pt', 'en', 'fr', 'de', 'it']
 	private translator: ChromeAITranslator | null = null
 
 	async isAPIAvailable(): Promise<boolean> {
-		return !!(window.LanguageDetector && window.Translator) || !!window.translation
+		return (
+			!!(window.LanguageDetector && window.Translator) || !!window.translation
+		)
 	}
 
 	async isSupported(): Promise<boolean> {
 		return this.isAPIAvailable()
+	}
+
+	async canTranslate(
+		sourceLanguage: string,
+		targetLanguage: string,
+	): Promise<boolean> {
+		const availability = await this.checkTranslationAvailability(
+			sourceLanguage,
+			targetLanguage,
+		)
+		return availability === 'readily' || availability === 'after-download'
 	}
 
 	isValidLanguageCode(code: string): boolean {
@@ -71,21 +91,28 @@ export class BlogTranslator {
 		this.translator = null
 	}
 
-	async detectLanguage(text: string): Promise<string> {
+	async detectLanguage(text: string): Promise<DetectionResult> {
 		if (!window.LanguageDetector && !window.translation) {
 			throw new Error('Language Detection API not available')
 		}
 
 		try {
-			const detector = window.LanguageDetector 
-				? await window.LanguageDetector.create()
-				: await window.translation!.createDetector()
-			
-			const results = await detector.detect(text.substring(0, 1000)) // Use first 1000 chars for detection
-			return results[0]?.detectedLanguage || 'en'
+			let results: LanguageDetectionResult[] = []
+			if (window.LanguageDetector) {
+				const detector = await window.LanguageDetector.create()
+				results = await detector.detect(text.substring(0, 1000))
+			} else if (window.translation) {
+				const detector = await window.translation.createDetector()
+				results = await detector.detect(text.substring(0, 1000))
+			}
+
+			return {
+				language: results[0]?.detectedLanguage || 'en',
+				confidence: results[0]?.confidence || 1.0,
+			}
 		} catch (error) {
 			console.warn('Language detection failed, defaulting to English:', error)
-			return 'en'
+			return { language: 'en', confidence: 0.0 }
 		}
 	}
 
@@ -103,15 +130,24 @@ export class BlogTranslator {
 					sourceLanguage,
 					targetLanguage,
 				})
-			} else {
-				// The translation.canTranslate method name varies
-				const translation = window.translation as any
-				const checkFn = translation.canTranslate || translation.availability
-				return await checkFn.call(translation, {
-					sourceLanguage,
-					targetLanguage,
-				})
+			} else if (window.translation) {
+				// Safely check for different method names in the experimental API
+				const translation = window.translation
+				if ('canTranslate' in translation) {
+					return await translation.canTranslate({
+						sourceLanguage,
+						targetLanguage,
+					})
+				} else if (
+					'availability' in (translation as unknown as Record<string, any>)
+				) {
+					return await (translation as unknown as any).availability({
+						sourceLanguage,
+						targetLanguage,
+					})
+				}
 			}
+			return 'unavailable'
 		} catch (error) {
 			console.error('Failed to check translation availability:', error)
 			return 'unavailable'
@@ -148,106 +184,154 @@ export class BlogTranslator {
 
 	async translateBlogPost(
 		content: string,
+
 		targetLanguage: string,
+
 		sourceLanguage?: string,
+
+		onProgress?: (status: string) => void,
 	): Promise<TranslationResult> {
 		try {
+			onProgress?.('Checking translation capability...')
+
 			// Check API availability
+
 			if (!(await this.isAPIAvailable())) {
-				return {
-					success: false,
-					error:
-						'Chrome AI Translation API is not available. Please use a Chromium-based browser.',
-					targetLanguage,
-				}
+				throw new Error('Translation API is not available')
 			}
 
-			// Detect source language if not provided
-			const detectedLanguage =
-				sourceLanguage || (await this.detectLanguage(content))
+			onProgress?.('Detecting source language...')
 
-			// Check if translation is available
+			// Detect source language if not provided
+
+			const detection = sourceLanguage
+				? { language: sourceLanguage, confidence: 1.0 }
+				: await this.detectLanguage(content)
+
+			const detectedLanguage = detection.language
+
+			onProgress?.('Checking translation capability...')
+
+			// Use the existing check instead of calling availability again
+
+			// but we need to ensure we have the string value for later logic
+
 			const availability = await this.checkTranslationAvailability(
 				detectedLanguage,
+
 				targetLanguage,
 			)
 
-			if (availability === 'unavailable') {
-				return {
-					success: false,
-					error: `Translation from ${this.getLanguageName(detectedLanguage)} to ${this.getLanguageName(targetLanguage)} is not supported.`,
-					sourceLanguage: detectedLanguage,
-					targetLanguage,
-				}
+			if (availability !== 'readily' && availability !== 'after-download') {
+				throw new Error(
+					`Translation from ${detectedLanguage} to ${targetLanguage} is not supported`,
+				)
 			}
 
 			// Handle downloading state
+
 			if (availability === 'after-download') {
-				return {
-					success: false,
-					error: `Translation models need to be downloaded first. Please try again in a moment after the models finish downloading.`,
-					sourceLanguage: detectedLanguage,
+				onProgress?.('Downloading translation models...')
+
+				// waitForModelDownload already calls checkTranslationAvailability in a loop
+
+				const downloadResult = await this.waitForModelDownload(
+					detectedLanguage,
 					targetLanguage,
+				)
+
+				if (downloadResult !== 'readily') {
+					throw new Error(
+						'Translation models need to be downloaded first. Please try again in a moment.',
+					)
 				}
 			}
 
+			onProgress?.('Preparing content for translation...')
+
 			// Create translator
-			const translator = window.Translator
-				? await window.Translator.create({
-						sourceLanguage: detectedLanguage,
-						targetLanguage,
-				  })
-				: await window.translation!.createTranslator({
-						sourceLanguage: detectedLanguage,
-						targetLanguage,
-				  })
+
+			let translator: ChromeAITranslator
+
+			if (window.Translator) {
+				translator = await window.Translator.create({
+					sourceLanguage: detectedLanguage,
+
+					targetLanguage,
+				})
+			} else if (window.translation) {
+				translator = await window.translation.createTranslator({
+					sourceLanguage: detectedLanguage,
+
+					targetLanguage,
+				})
+			} else {
+				throw new Error('Translation API not available')
+			}
+
+			onProgress?.('Translating content...')
 
 			// Parse and translate content
+
 			const translatedContent = await this.translateMDXContent(
 				translator,
+
 				content,
 			)
 
+			onProgress?.('Translation complete!')
+
 			return {
 				success: true,
+
 				translatedContent,
+
 				sourceLanguage: detectedLanguage,
+
 				targetLanguage,
-				wordCount: translatedContent.trim().split(/\s+/).length,
+
+				wordCount: translatedContent.trim()
+					? translatedContent.trim().split(/\s+/).length
+					: 0,
 			}
 		} catch (error) {
 			console.error('Translation failed:', error)
 
-			return {
-				success: false,
-				error:
-					error instanceof Error
-						? error.message
-						: 'An unknown error occurred during translation.',
-				targetLanguage,
-				wordCount: 0,
-			}
+			throw error // Re-throw to be caught by the caller
 		}
 	}
 
 	private async translateMDXContent(
 		translator: ChromeAITranslator,
+
 		content: string,
 	): Promise<string> {
 		// Split content into paragraphs for better translation
+
+		// Use a simpler approach for single-paragraph/single-line content
+
+		if (!content.includes('\n\n')) {
+			return await this.translatePreservingMarkdown(translator, content)
+		}
+
 		const paragraphs = content.split('\n\n')
+
 		const translatedParagraphs: string[] = []
 
 		for (const paragraph of paragraphs) {
 			if (this.shouldSkipTranslation(paragraph)) {
 				// Keep code blocks, frontmatter, and special markdown as-is
+
 				translatedParagraphs.push(paragraph)
 			} else {
 				// Translate content while preserving inline markdown
+
 				const translatedParagraph = await this.translatePreservingMarkdown(
 					translator,
+
 					paragraph,
 				)
+
 				translatedParagraphs.push(translatedParagraph)
 			}
 		}
@@ -363,17 +447,12 @@ export class BlogTranslator {
 
 		// Translate the text with placeholders
 		let translatedText: string
-		try {
-			// Only translate if there's actual text content after removing placeholders
-			const textToTranslate = cleanedText.replace(/[A-Z_]+\d+/g, '').trim()
-			if (textToTranslate.length < 3) {
-				translatedText = protectedText // Don't translate if mostly placeholders
-			} else {
-				translatedText = await translator.translate(protectedText)
-			}
-		} catch (error) {
-			console.warn('Translation failed for segment, keeping original:', error)
-			translatedText = protectedText
+		// Only translate if there's actual text content after removing placeholders
+		const textToTranslate = cleanedText.replace(/[A-Z_]+\d+/g, '').trim()
+		if (textToTranslate.length < 3) {
+			translatedText = protectedText // Don't translate if mostly placeholders
+		} else {
+			translatedText = await translator.translate(protectedText)
 		}
 
 		// Restore protected content
