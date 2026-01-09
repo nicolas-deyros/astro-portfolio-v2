@@ -13,7 +13,8 @@ const testPattern = args[0] || 'back-to-top'
 console.log(`🧪 Running tests matching: ${testPattern}`)
 
 // Run vitest with specific pattern
-const vitest = spawn('npx', ['vitest', 'run', `--grep=${testPattern}`], {
+const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+const vitest = spawn(cmd, ['vitest', 'run', `--grep=${testPattern}`], {
 	stdio: 'inherit',
 	shell: true,
 })

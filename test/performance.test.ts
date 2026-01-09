@@ -115,12 +115,12 @@ describe('Core Web Vitals & Performance Testing', () => {
 		}
 
 		// Start Astro dev server with explicit port
-		astroServer = spawn('npx', ['astro', 'dev', '--port', '4321'], {
-			stdio: ['ignore', 'pipe', 'pipe'],
-			shell: true,
-			env: { ...process.env, NODE_ENV: 'development' },
-		})
-
+		        const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+		        astroServer = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
+		            stdio: ['ignore', 'pipe', 'pipe'],
+		            shell: true,
+		            env: { ...process.env, NODE_ENV: 'development' },
+		        })
 		// Handle server output
 		if (astroServer.stdout) {
 			astroServer.stdout.on('data', data => {
