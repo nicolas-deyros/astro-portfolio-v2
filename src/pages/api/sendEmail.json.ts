@@ -94,8 +94,21 @@ export const POST: APIRoute = async ({ request }) => {
 			)
 		}
 
+		// Helper to escape HTML characters
+		const escapeHtml = (unsafe: string) => {
+			return unsafe
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#039;')
+		}
+
+		const safeName = escapeHtml(name)
+		const safeMessage = message ? escapeHtml(message) : ''
+
 		// Generate Email Content (Server-Side)
-		const emailSubject = `${siteConfig.email.subjectPrefix} ${name}`
+		const emailSubject = `${siteConfig.email.subjectPrefix} ${safeName}`
 		const emailHtml = `
             <!DOCTYPE html>
             <html>
@@ -112,13 +125,13 @@ export const POST: APIRoute = async ({ request }) => {
                 </head>
                 <body>
                     <div class="container">
-                        <h1 class="header">Hello ${name}!</h1>
+                        <h1 class="header">Hello ${safeName}!</h1>
                         <p>Thank you for reaching out through my portfolio contact form.</p>
                         <p>I've received your message and will get back to you as soon as possible.</p>
                         
                         <div class="details">
                             <h3>Your submission details:</h3>
-                            <p><strong>Name:</strong> ${name}</p>
+                            <p><strong>Name:</strong> ${safeName}</p>
                             <p><strong>Email:</strong> ${email}</p>
                             <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
                         </div>
@@ -161,11 +174,11 @@ ${siteConfig.author.roles[0]}
 		// Also send notification to admin
 		const adminNotificationHtml = `
 			<h2>New Contact Form Submission</h2>
-			<p><strong>From:</strong> ${name}</p>
+			<p><strong>From:</strong> ${safeName}</p>
 			<p><strong>Email:</strong> ${email}</p>
 			<p><strong>Message:</strong></p>
 			<div style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
-				${message ? message.replace(/\n/g, '<br>') : 'No message provided'}
+				${safeMessage ? safeMessage.replace(/\n/g, '<br>') : 'No message provided'}
 			</div>
 			<p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
 		`
@@ -173,7 +186,7 @@ ${siteConfig.author.roles[0]}
 		const adminEmailData = {
 			from: fromEmail,
 			to: adminEmail,
-			subject: `New Contact Form: ${name}`,
+			subject: `New Contact Form: ${safeName}`,
 			html: adminNotificationHtml,
 			text: `New contact form submission from ${name} (${email}): ${message || 'No message'}`,
 			replyTo: email,

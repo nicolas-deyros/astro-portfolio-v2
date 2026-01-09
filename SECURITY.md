@@ -1,5 +1,26 @@
 # Security Documentation
 
+## Vulnerability Remediation (January 2026)
+
+The following security vulnerabilities were identified and patched as part of a comprehensive security audit.
+
+### 1. Broken Access Control in Server Actions
+
+**Severity:** Critical
+**Fix:** Implemented database-backed token validation in `src/actions/links.ts`. The system now verifies that the Bearer token corresponds to an active, non-expired session in the `AdminSessions` table before allowing any CRUD operations on links.
+
+### 2. Stored Cross-Site Scripting (XSS) in Admin CRM
+
+**Severity:** Critical
+**Fix:** Added client-side HTML sanitization in `src/pages/admin/crm.astro`. User-supplied data (names, messages) is now escaped using a custom `escapeHtml` function before being injected into the DOM, preventing the execution of malicious scripts.
+
+### 3. HTML Injection in Email Notifications
+
+**Severity:** High
+**Fix:** Implemented server-side HTML escaping in `src/pages/api/sendEmail.json.ts`. User inputs are sanitized before being interpolated into the email body, preventing attackers from injecting arbitrary HTML or scripts into administrator notifications.
+
+---
+
 ## Enhanced Admin Authentication System
 
 This portfolio implements a robust, multi-layered authentication system for admin functionality with the following security features:

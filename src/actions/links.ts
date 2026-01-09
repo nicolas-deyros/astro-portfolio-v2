@@ -1,5 +1,14 @@
 import { defineAction } from 'astro:actions'
-import { count, db, eq, like, Links as LinksTable, or, sql } from 'astro:db'
+import {
+	AdminSessions,
+	count,
+	db,
+	eq,
+	like,
+	Links as LinksTable,
+	or,
+	sql,
+} from 'astro:db'
 import { z } from 'astro:schema'
 
 // Authentication helper
@@ -9,11 +18,33 @@ async function verifyAuth(request: Request): Promise<boolean> {
 		throw new Error('Unauthorized: Missing or invalid token')
 	}
 
-	// You can add token validation logic here
 	const token = authHeader.slice(7)
 	if (!token) {
 		throw new Error('Unauthorized: Invalid token')
 	}
+
+	// Validate token against database
+	const session = await db
+		.select()
+		.from(AdminSessions)
+		.where(eq(AdminSessions.token, token))
+		.get()
+
+	if (!session) {
+		throw new Error('Unauthorized: Invalid session')
+	}
+
+	if (new Date() > new Date(session.expiresAt)) {
+		// Clean up expired session
+		await db.delete(AdminSessions).where(eq(AdminSessions.id, session.id))
+		throw new Error('Unauthorized: Session expired')
+	}
+
+	// Update last activity
+	await db
+		.update(AdminSessions)
+		.set({ lastActivity: new Date() })
+		.where(eq(AdminSessions.id, session.id))
 
 	return true
 }
