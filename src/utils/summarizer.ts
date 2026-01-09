@@ -69,6 +69,10 @@ export class BlogSummarizer {
 		}
 	}
 
+	async isAPIAvailable(): Promise<boolean> {
+		return this.isSupported()
+	}
+
 	async waitForModelDownload(maxWaitTime = 30000): Promise<boolean> {
 		const startTime = Date.now()
 
@@ -94,7 +98,9 @@ export class BlogSummarizer {
 
 	async initialize(options: SummaryOptions): Promise<boolean> {
 		try {
-			if (!(await this.isSupported())) {
+			// If we are calling this from summarizeBlogPost, we already checked support
+			// but for a standalone call, we check window.Summarizer
+			if (!window.Summarizer) {
 				throw new Error('Summarizer API not supported')
 			}
 
@@ -121,23 +127,28 @@ export class BlogSummarizer {
 
 	async summarizeBlogPost(
 		markdown: string,
-		options: SummaryOptions,
+		options: SummaryOptions & { maxWaitTime?: number },
 		onProgress?: (status: string) => void,
 	): Promise<SummaryResult> {
-		if (!(await this.isSupported())) {
+		onProgress?.('Checking model availability...')
+
+		// Check if Summarizer API is supported and get availability in one go
+		if (!window.Summarizer) {
 			throw new Error('Summarizer API is not supported in this browser')
 		}
 
-		onProgress?.('Checking model availability...')
+		const availability = await window.Summarizer.availability()
+		if (availability === 'no') {
+			throw new Error('Summarizer API is not supported in this browser')
+		}
 
 		// Check if model needs to be downloaded
-		const availability = await window.Summarizer.availability()
 		if (availability === 'downloadable') {
 			onProgress?.(
 				'Model is downloading in the background. This may take a few moments...',
 			)
 
-			const modelReady = await this.waitForModelDownload()
+			const modelReady = await this.waitForModelDownload(options.maxWaitTime)
 			if (!modelReady) {
 				throw new Error(
 					'Model download timed out. Please try again in a few minutes.',

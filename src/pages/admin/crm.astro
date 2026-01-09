@@ -308,6 +308,20 @@ try {
 			): void {
 				if (!id || !name || !email) return
 
+				// Helper to escape HTML to prevent XSS
+				const escapeHtml = (unsafe: string | null) => {
+					if (!unsafe) return ''
+					return unsafe
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#039;')
+				}
+
+				const safeName = escapeHtml(name)
+				const safeMessage = escapeHtml(message || 'No message provided')
+
 				const modalHtml = `
 					<div id="submission-modal" class="fixed inset-0 z-50 overflow-y-auto">
 						<div class="flex min-h-screen items-center justify-center p-4">
@@ -332,12 +346,12 @@ try {
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-										<p class="mt-1 text-sm text-gray-900 dark:text-white">${name}</p>
+										<p class="mt-1 text-sm text-gray-900 dark:text-white">${safeName}</p>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
 										<div class="mt-1 rounded-md border border-gray-300 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-700">
-											<p class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${message || 'No message provided'}</p>
+											<p class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${safeMessage}</p>
 										</div>
 									</div>
 								</div>

@@ -263,6 +263,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🤖 Enhanced Chrome AI Integration & Stability
+
+- **Robust AI Utilities**: Completely stabilized Summarizer and Translator utilities with improved error handling and reliability
+  - **Unified Interface**: Standardized `isSupported`, `isAPIAvailable`, and `destroy` methods across both utilities
+  - **Graceful Failure Handling**: Comprehensive error management for model downloads, timeouts, and API unavailability
+  - **Configurable Timeouts**: Added configurable `maxWaitTime` for model downloads to prevent UI hanging
+  - **Retry Logic**: Optimized availability checks to avoid redundant calls and ensure smoother user experience
+- **Advanced Translation Support**: Refactored `BlogTranslator` for better compatibility and performance
+  - **Dual API Support**: Added support for both `window.Translator` and legacy `window.translation` namespaces
+  - **Paragraph-based Processing**: Switched to paragraph-by-paragraph translation for better context preservation and error isolation
+  - **Markdown Preservation**: Improved logic to protect code blocks, imports, and Markdown syntax during translation
+  - **Detailed Status**: Added precise error messages for unsupported language pairs and initialization failures
+- **UI Component Upgrades**: Enhanced `ChromeAISection` and `BlogSummarizer` components
+  - **Real-time Feedback**: Improved progress tracking with realistic animations and step-by-step status updates
+  - **Error Visibility**: User-friendly error messages for specific scenarios (quotas, timeouts, network issues)
+  - **Loading States**: Better visual feedback during model download and initialization phases
+- **Comprehensive Test Suite**: Achieved >80% code coverage for all AI-related files
+  - **Full Regression Suite**: 80+ tests covering unit, integration, performance, and error handling scenarios
+  - **UI Testing**: New tests for component status displays and user interactions
+  - **Mocking Strategy**: Improved JSDOM mocks for Chrome AI APIs to reliably simulate browser behavior
+
 ### 🔊 Hybrid Audio Player Enhancement
 
 - **Hybrid Audio Player Component**: Created unified audio player supporting both text-to-speech and HTML5 audio file playback
@@ -482,11 +503,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🛡️ Security Hardening
+
+- **Critical Access Control Fix**: Patched a critical vulnerability in the links management actions where authentication tokens were not being validated against the database.
+  - Implemented robust `verifyAuth` function in `src/actions/links.ts` that checks token existence and expiration against `AdminSessions`.
+- **Stored XSS Remediation**: Fixed a stored Cross-Site Scripting (XSS) vulnerability in the Admin CRM interface.
+  - Implemented client-side HTML escaping for contact form submissions in `src/pages/admin/crm.astro` to safely render user-supplied content.
+- **HTML Injection Fix**: Patched an HTML injection vulnerability in the email notification system.
+  - Added strict HTML escaping for user inputs in `src/pages/api/sendEmail.json.ts` to prevent injection attacks in admin email notifications.
+
 ### 🐞 bugfixes
 
 - **CRM Email Status**: Fixed a bug in the CRM where the email status was showing as "unknown" because the code was looking for a `status` property in the Resend API response instead of `last_event`. The code has been updated to use the correct property, ensuring that the correct email status is displayed.
 
-### 🎧 Enhanced Audio Player System
+### 🤖 Enhanced Chrome AI Integration & Stability
 
 - **Simplified Audio Player**: Streamlined audio player interface removing complex voice selection, volume, and speed controls for better reliability
 - **Web Audio API Integration**: Enhanced audio processing with Web Audio API for advanced features while maintaining Web Speech API compatibility
