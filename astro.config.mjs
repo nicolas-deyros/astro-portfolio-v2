@@ -18,6 +18,9 @@ export default defineConfig({
 
 	vite: {
 		plugins: [tailwindcss()],
+		optimizeDeps: {
+			exclude: ['@astrojs/db', 'libsql'],
+		},
 		ssr: {
 			noExternal: ['@astrojs/db', 'libsql'],
 		},
