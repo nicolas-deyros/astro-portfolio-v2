@@ -22,7 +22,7 @@ This plan follows the TDD workflow defined in `conductor/workflow.md`.
 - [x] Task: Green Phase - Update UI components to handle all AI states gracefully
 - [x] Task: Conductor - User Manual Verification 'Integration and Component Testing' (Protocol in workflow.md)
 
-## Phase 4: Final Verification and Coverage
+## Phase 4: Final Verification and Coverage [checkpoint: aaabff6]
 
 - [x] Task: Verify 80%+ coverage for all AI-related files
 - [x] Task: Run full `npm run ai:all` suite to ensure no regressions
