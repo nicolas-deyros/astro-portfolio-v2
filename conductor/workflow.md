@@ -9,6 +9,31 @@
 5. **User Experience First:** Every decision should prioritize user experience
 6. **Non-Interactive & CI-Aware:** Prefer non-interactive commands. Use `CI=true` for watch-mode tools (tests, linters) to ensure single execution.
 
+## Branching & Merge Strategy
+
+- **Main Branch Protection:** Direct commits to `master` (or `main`) are strictly forbidden.
+- **Feature Branches:** All work must be performed on a dedicated branch created from the latest `master`.
+  - Naming Convention: `type/description` (e.g., `feat/new-auth-flow`, `fix/login-bug`, `docs/update-readme`).
+- **Pull Requests:** All changes must be merged via Pull Request (PR) after passing CI checks and code review.
+
+### Post-Merge Cleanup Protocol
+
+After a Pull Request is successfully merged:
+
+1.  **Pull Latest Master:** Switch to your local master and update it.
+    ```bash
+    git checkout master
+    git pull origin master
+    ```
+2.  **Delete Local Branch:** Remove the feature branch from your local machine.
+    ```bash
+    git branch -d feature/your-branch-name
+    ```
+3.  **Delete Remote Branch:** Ensure the remote branch is deleted (GitHub usually offers a button for this, or use the command).
+    ```bash
+    git push origin --delete feature/your-branch-name
+    ```
+
 ## Task Workflow
 
 All tasks follow a strict lifecycle:
