@@ -7,7 +7,7 @@ echo "🚀 Running pre-push checks..."
 # This includes:
 # 1. Type checking (astro check)
 # 2. Critical unit tests (grammar, mdx, seo)
-npm run pre-push
+npm run test:critical
 
 if [ $? -ne 0 ]; then
   echo "❌ Pre-push checks failed. Push aborted."
