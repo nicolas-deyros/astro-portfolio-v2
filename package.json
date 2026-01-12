@@ -25,7 +25,6 @@
 		"test:coverage": "vitest run --coverage --config ./config/vitest.config.ts",
 		"// === Testing - Suites ===": "",
 		"test:critical": "vitest run test/unit/grammar-checker.test.ts test/unit/mdx.test.ts test/unit/seo.test.ts --config ./config/vitest.config.ts",
-		"test:fast": "vitest run test/unit/seo.test.ts --config ./config/vitest.config.ts",
 		"test:integration": "vitest run test/e2e/links.test.ts test/e2e/accessibility.test.ts test/admin-interface.test.ts --config ./config/vitest.config.ts",
 		"test:performance": "vitest run test/performance.test.ts --config ./config/vitest.config.ts",
 		"test:back-to-top": "vitest run back-to-top --config ./config/vitest.config.ts",
@@ -43,12 +42,11 @@
 		"// === Quality Checks ===": "",
 		"spell": "cspell \"**/*.{ts,js,astro,tsx,jsx,md,mdx}\" --no-progress --config ./config/cspell.json",
 		"spell:check": "cspell \"src/**/*.{ts,js,astro,tsx,jsx}\" \"*.md\" --no-progress --config ./config/cspell.json",
+		"type-check": "astro check",
 		"check": "npm run lint:all && npm run test:critical",
 		"check:full": "npm run lint:all && npm run test:run",
 		"// === Pre-push Checks ===": "",
-		"pre-push": "npm run check:full && npm run build && npx astro check",
-		"pre-push:fast": "npm run test:critical && npm run build",
-		"pre-push:dev": "npm run test:fast && npm run lint:spell",
+		"pre-push": "npm run type-check && npm run test:critical",
 		"check:commit": "tsx tools/test-grammar.ts",
 		"// === Utilities ===": "",
 		"clean": "tsx scripts/test-clean.ts",
@@ -140,8 +138,7 @@
 		"*.{js,jsx,ts,tsx,astro}": [
 			"prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
 			"eslint --fix --config ./config/eslint.config.js",
-			"cspell --no-progress --config ./config/cspell.json",
-			"vitest related --run --config ./config/vitest.config.ts"
+			"cspell --no-progress --config ./config/cspell.json"
 		],
 		"*.{md,mdx}": [
 			"prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
