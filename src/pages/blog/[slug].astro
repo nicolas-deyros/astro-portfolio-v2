@@ -19,7 +19,6 @@ const { data, render } = post
 const { Content } = await render()
 
 import HybridAudioPlayerWrapper from '@components/AudioPlayer/HybridAudioPlayerWrapper.astro'
-import ChromeAISection from '@components/ChromeAI/ChromeAISection.astro'
 import Section from '@components/Section.astro'
 import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
@@ -137,9 +136,6 @@ const audioText = markdown
 					autoLoad={true}
 				/>
 			</div>
-
-			<!-- Chrome AI Section (Summary & Translation) -->
-			<ChromeAISection className="mb-6" markdown={markdown} />
 
 			<div
 				id="blog-content"

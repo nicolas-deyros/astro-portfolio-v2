@@ -4,265 +4,77 @@
 
 This project integrates Chrome's experimental AI APIs (Translation and Summarizer) to enhance blog content accessibility and user experience. The implementation includes robust testing infrastructure, browser compatibility detection, and fallback strategies.
 
-## Browser Compatibility
+## Recent Fixes (January 2026)
 
-### Requirements
+The system has been refactored into a **Hybrid AI Architecture** to resolve critical stability issues with experimental Chrome APIs:
 
-- **Chrome 129+**: Required for Chrome AI features
-- **Experimental Features**: Chrome flags must be enabled (see Setup section)
-- **Progressive Enhancement**: Components gracefully degrade for unsupported browsers
+- **Hybrid Logic**: The system now attempts local processing (Chrome AI) first. If it fails (due to missing flags, unsupported pairs, or service errors), it automatically falls back to a server-side Gemini API.
+- **Server-Side API**: A new endpoint `POST /api/ai/process` handles fallback requests using `gemini-1.5-flash`.
+- **Database Caching**: Generated summaries and translations are cached in the `AICache` table (indexed by content hash) to minimize API usage and improve performance.
+- **Rate Limiting**: The server-side API includes basic rate limiting to prevent quota abuse.
 
-### Browser Detection
+### Setup Requirements
 
-The implementation includes automatic browser detection via `src/lib/browserDetection.ts`:
-
-- **Supported**: Chrome 129+, Edge 129+ (future)
-- **Hidden**: Components are automatically hidden for incompatible browsers
-- **Non-blocking**: Compatible browsers show components even if AI APIs aren't immediately available
-
-```typescript
-import { detectBrowser, supportsAI } from '../../lib/browserDetection'
-
-// Detect browser capability
-const browserInfo = detectBrowser()
-if (browserInfo.isChrome && browserInfo.version >= 129) {
-	// Show AI components
-}
-
-// Check runtime AI availability
-if (supportsAI()) {
-	// AI APIs are ready to use
-}
-```
+1.  **GEMINI_API_KEY**: You must provide a valid Gemini API key from [Google AI Studio](https://aistudio.google.com).
+2.  **Environment Variable**: Add `GEMINI_API_KEY=your_key_here` to your `.env` file (local) and production environment variables (Vercel/Vite).
 
 ## Architecture
 
+### Hybrid Workflow
+
+1.  **Request**: User clicks "Summarize" or "Translate".
+2.  **Local Attempt**: `BlogSummarizer` or `BlogTranslator` tries to use browser-native APIs.
+3.  **Cloud Fallback**: If local fails, a `fetch` request is made to `/api/ai/process`.
+4.  **Cache Check**: Server checks if the result exists in Astro DB.
+5.  **AI Generation**: If not cached, Gemini 1.5 Flash generates the result.
+6.  **Store & Return**: Result is saved to the cache and returned to the UI.
+
 ### Components
 
-#### `BlogTranslator.astro`
+#### `LanguageSelector.astro`
 
-- **Purpose**: Provides real-time translation of blog content using Chrome AI Translation API
-- **Location**: `src/components/Translation/BlogTranslator.astro`
+- **Purpose**: Unified dropdown for selecting target/output languages.
+- **Supports**: English, Spanish, Japanese, Portuguese, French, German, Italian, Chinese, Korean, Russian, Arabic.
+
+#### `ChromeAISection.astro`
+
+- **Purpose**: Unified tabbed interface for both Translation and Summarization.
 - **Features**:
-  - Language detection and validation
-  - Progressive enhancement (works without JavaScript)
-  - Browser compatibility detection
-  - Error handling with fallback messages
-  - Translation caching for performance
-
-#### `BlogSummarizer.astro`
-
-- **Purpose**: Generates content summaries using Chrome AI Summarizer API
-- **Features**:
-  - Automatic content summarization
-  - Configurable summary length
-  - Browser compatibility detection
-  - Blog post compatibility
-  - Accessibility considerations
+  - Initialization guards to prevent multiple instances.
+  - Clean Markdown extraction and truncation (4000 chars for summary, 3000 for translation) to respect API quotas.
+  - Real-time progress bars and status text.
 
 ### API Integration
 
-#### Chrome AI Translation API
+#### Translation Service (`src/utils/translator.ts`)
 
-```typescript
-// Check availability
-if ('ai' in window && 'translator' in window.ai) {
-	const translator = await window.ai.translator.create({
-		sourceLanguage: 'en',
-		targetLanguage: 'fr',
-	})
+Handles language detection and MDX-aware translation (preserving Markdown structure using placeholders).
 
-	const result = await translator.translate(text)
-}
-```
+#### Summarization Service (`src/utils/summarizer.ts`)
 
-#### Chrome AI Summarizer API
-
-```typescript
-// Check availability
-if ('ai' in window && 'summarizer' in window.ai) {
-	const summarizer = await window.ai.summarizer.create({
-		type: 'tl;dr',
-		format: 'markdown',
-		length: 'medium',
-	})
-
-	const summary = await summarizer.summarize(content)
-}
-```
+Handles Markdown cleaning and multi-modal summarization (Teaser, Key Points, Headline).
 
 ## Testing Strategy
 
 ### Test Structure
 
-```
-test/
-├── utils/
-│   ├── summarizer.test.ts     # Unit tests for BlogSummarizer
-│   └── translator.test.ts     # Unit tests for BlogTranslator
-├── integration/
-│   └── chrome-ai-components.test.ts  # Component integration tests
-├── performance/
-│   └── chrome-ai-performance.test.ts # Performance benchmarks
-└── error-handling/
-    └── chrome-ai-errors.test.ts      # Error scenarios and fallbacks
-```
-
-### Test Categories
-
-#### Unit Tests (`test/utils/`)
-
-- **API Availability**: Check Chrome AI feature detection
-- **Component Initialization**: Verify proper component setup
-- **Core Functionality**: Test translation and summarization logic
-- **Input Validation**: Ensure proper handling of various content types
-
-#### Integration Tests (`test/integration/`)
-
-- **Component Interaction**: Test components within blog context
-- **User Experience**: Verify complete user workflows
-- **Browser Compatibility**: Test across different environments
-- **Progressive Enhancement**: Ensure graceful degradation
-
-#### Performance Tests (`test/performance/`)
-
-- **API Response Times**: Measure translation/summarization speed
-- **Memory Usage**: Monitor resource consumption
-- **Concurrent Operations**: Test multiple simultaneous requests
-- **Caching Efficiency**: Validate caching mechanisms
-
-#### Error Handling Tests (`test/error-handling/`)
-
-- **API Unavailability**: Test fallback when Chrome AI is not available
-- **Network Failures**: Handle API communication errors
-- **Invalid Content**: Test with malformed or empty content
-- **Rate Limiting**: Handle API quota and rate limits
+- `test/utils/summarizer.test.ts`: Unit tests for summarization logic and config.
+- `test/utils/translator.test.ts`: Unit tests for translation and availability checks.
 
 ### Test Commands
 
 ```bash
-# Chrome AI specific tests
-npm run ai:unit          # Unit tests only
-npm run ai:integration   # Integration tests
-npm run ai:performance   # Performance benchmarks
-npm run ai:errors        # Error handling scenarios
-npm run ai:all           # Complete Chrome AI test suite
-
-# General testing
-npm run test:coverage    # Coverage reports
-npm run test:watch       # Development mode
+npm run ai:all # Run all Chrome AI related tests
 ```
-
-### Testing Browser Compatibility
-
-```bash
-# Test browser detection utility
-npm test test/utils/browserDetection.test.ts
-
-# Test component behavior with browser detection
-npm test test/integration/chrome-ai-components.test.ts
-
-# Test error handling for unsupported browsers
-npm test test/error-handling/chrome-ai-errors.test.ts
-```
-
-### Browser Detection Tests
-
-- **User Agent Parsing**: Verify Chrome version detection accuracy
-- **API Availability**: Test runtime AI API detection
-- **Fallback Behavior**: Ensure graceful degradation for unsupported browsers
-- **Edge Cases**: Handle malformed user agents and edge conditions
 
 ## Implementation Guidelines
 
-### Progressive Enhancement
+### Performance
 
-- **Feature Detection**: Always check API availability before use
-- **Graceful Fallbacks**: Provide meaningful alternatives when AI is unavailable
-- **No JavaScript Dependency**: Core functionality works without AI features
-
-### Performance Considerations
-
-- **Lazy Loading**: Initialize AI components only when needed
-- **Caching Strategy**: Cache translations and summaries for repeated content
-- **Timeout Handling**: Set appropriate timeouts for AI operations
-- **Resource Management**: Properly dispose of AI sessions
+- **Content Truncation**: Articles are truncated at sentence boundaries before processing to stay within the ~4000 character limit of Gemini Nano.
+- **Lazy Loading**: Service classes are imported dynamically only when the user clicks a generation button.
 
 ### Accessibility
 
-- **Screen Reader Support**: Ensure AI-generated content is properly announced
-- **Language Attributes**: Set correct `lang` attributes for translated content
-- **User Control**: Allow users to disable AI features
-- **Clear Indicators**: Show when content is AI-generated
-
-## Browser Support
-
-### Chrome AI Requirements
-
-- **Chrome Version**: 127+ (experimental features enabled)
-- **Feature Flags**: Required Chrome flags for AI APIs
-- **Fallback Strategy**: Works in all browsers with graceful degradation
-
-### Testing Environment
-
-- **jsdom**: Simulates browser environment for unit tests
-- **Puppeteer**: Real browser testing for integration tests
-- **Mock APIs**: Custom mocks for Chrome AI when not available
-
-## Security Considerations
-
-### Content Safety
-
-- **Input Sanitization**: Clean content before AI processing
-- **Output Validation**: Verify AI-generated content safety
-- **Rate Limiting**: Implement client-side rate limiting
-- **Error Logging**: Secure logging without exposing sensitive data
-
-### Privacy
-
-- **Local Processing**: Chrome AI runs locally, no data sent to external servers
-- **User Consent**: Clear communication about AI feature usage
-- **Data Retention**: No persistent storage of AI operations
-
-## Deployment
-
-### Production Considerations
-
-- **Feature Detection**: Robust detection prevents errors in unsupported browsers
-- **Performance Monitoring**: Track AI operation success rates and performance
-- **Error Reporting**: Monitor fallback usage and error patterns
-- **User Analytics**: Track AI feature adoption and usage patterns
-
-### Configuration
-
-```typescript
-// AI Configuration
-const AI_CONFIG = {
-	translation: {
-		enabled: true,
-		timeout: 10000,
-		fallbackMessage: 'Translation not available',
-	},
-	summarization: {
-		enabled: true,
-		maxLength: 'medium',
-		timeout: 15000,
-	},
-}
-```
-
-## Future Enhancements
-
-### Planned Features
-
-- **Multi-language Support**: Expand translation language options
-- **Custom Summarization**: User-configurable summary types and lengths
-- **AI Content Generation**: Expand beyond translation and summarization
-- **Performance Optimization**: Advanced caching and prefetching strategies
-
-### Monitoring
-
-- **Usage Analytics**: Track AI feature adoption
-- **Performance Metrics**: Monitor API response times and success rates
-- **Error Tracking**: Comprehensive error reporting and analysis
-- **User Feedback**: Collect feedback on AI-generated content quality
+- **Semantic HTML**: Uses `<progress>`, `<select>`, and `aria-selected` for tab navigation.
+- **User Feedback**: Errors are caught and displayed in user-friendly alert boxes rather than just console logs.

@@ -1,0 +1,8 @@
+{
+  "track_id": "hotfix_gemini_api_version_20260113",
+  "type": "hotfix",
+  "status": "completed",
+  "created_at": "2026-01-13T16:10:00Z",
+  "updated_at": "2026-01-13T16:30:00Z",
+  "description": "Hotfix: Force Gemini SDK to use stable API version (v1) to resolve model 404s."
+}
