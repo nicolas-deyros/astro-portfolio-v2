@@ -1,0 +1,8 @@
+{
+  "track_id": "hotfix_gemini_api_20260112",
+  "type": "hotfix",
+  "status": "completed",
+  "created_at": "2026-01-12T19:40:00Z",
+  "updated_at": "2026-01-12T20:15:00Z",
+  "description": "Hotfix: Fix Summarizer language param and Gemini API model version."
+}
