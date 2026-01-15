@@ -6,6 +6,7 @@
 		"// === Development ===": "",
 		"dev": "astro dev --open",
 		"dev:clean": "astro dev --port 4321",
+		"dev:test": "astro dev --port 4321",
 		"build": "astro build --remote",
 		"preview": "astro preview",
 		"astro": "astro",

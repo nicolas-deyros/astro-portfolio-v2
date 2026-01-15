@@ -16,7 +16,7 @@ function runCommand(command: string): string {
 			command.includes('npm outdated') &&
 			(error as { status: number }).status === 1
 		) {
-			return (error as { stdout: string }).stdout
+			return (error as unknown as { stdout: string }).stdout
 		}
 		throw error
 	}

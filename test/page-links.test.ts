@@ -212,9 +212,8 @@ describe('Page Links Validation', () => {
 						}
 
 						// Check for common URL patterns
-						expect(url).toMatch(
+						expect(url, `Invalid URL format in ${source}: ${url}`).toMatch(
 							/^https?:\/\/.+\..+/,
-							`Invalid URL format in ${source}: ${url}`,
 						)
 					}
 				})

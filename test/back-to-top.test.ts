@@ -220,7 +220,7 @@ describe('Back to Top Button', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check if it's initially hidden with more reliable detection
-		const isHidden = await page.$eval('#back-to-top', el => {
+		const isHidden = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return el.classList.contains('opacity-0') || style.opacity === '0'
 		})
@@ -255,7 +255,7 @@ describe('Back to Top Button', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check if it's hidden by JavaScript with more comprehensive check
-		const isDisplayNone = await page.$eval('#back-to-top', el => {
+		const isDisplayNone = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return (
 				style.display === 'none' ||
@@ -305,7 +305,7 @@ describe('Back to Top Button', () => {
 		let isVisible = false
 		for (let attempt = 0; attempt < 5; attempt++) {
 			try {
-				isVisible = await page.$eval('#back-to-top', el => {
+				isVisible = await page.$eval('#back-to-top', (el: Element) => {
 					const computed = window.getComputedStyle(el)
 					return (
 						el.classList.contains('opacity-100') ||

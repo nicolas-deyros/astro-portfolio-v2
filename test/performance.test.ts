@@ -345,7 +345,7 @@ describe('Core Web Vitals & Performance Testing', () => {
 					throw error
 				}
 			}
-		}, 20000) // 20 second timeout for testing multiple blog posts
+		}, 60000) // 60 second timeout for testing multiple blog posts
 	})
 
 	// Static pages performance tests

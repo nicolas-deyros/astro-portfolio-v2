@@ -166,7 +166,7 @@ describe('Back to Top Button - Isolated', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check initial state
-		const isHidden = await page.$eval('#back-to-top', el => {
+		const isHidden = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return el.classList.contains('opacity-0') || style.opacity === '0'
 		})
@@ -199,7 +199,7 @@ describe('Back to Top Button - Isolated', () => {
 		await new Promise(resolve => setTimeout(resolve, 1000))
 
 		// Check visibility
-		const isVisible = await page.$eval('#back-to-top', el => {
+		const isVisible = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return (
 				!el.classList.contains('opacity-0') &&

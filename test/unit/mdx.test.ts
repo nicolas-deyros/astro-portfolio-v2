@@ -40,14 +40,15 @@ describe('Blog MDX Files Frontmatter Validation', () => {
 				const filePath = join(blogDir, file)
 				const fileContent = readFileSync(filePath, 'utf-8')
 				const parsed = matter(fileContent)
-				frontmatter = parsed.data
+				frontmatter = parsed.data as Frontmatter
 			})
 
 			it('should have all required frontmatter fields', () => {
 				requiredFields.forEach(field => {
 					expect(frontmatter).toHaveProperty(field)
-					expect(frontmatter[field]).toBeDefined()
-					expect(frontmatter[field]).not.toBe('')
+					const value = frontmatter[field as keyof Frontmatter]
+					expect(value).toBeDefined()
+					expect(value).not.toBe('')
 				})
 			})
 

@@ -22,7 +22,7 @@
 	</svg>
 </button>
 
-<script>
+<script lang="ts">
 	// Back to top functionality - only for blog pages
 	function initBackToTop(): void {
 		// Small delay to avoid conflicts with other components
@@ -53,10 +53,12 @@
 							window.pageYOffset || document.documentElement.scrollTop
 						const documentHeight =
 							document.documentElement.scrollHeight - window.innerHeight
-						const scrollPercentage = Math.min(
-							(scrollTop / documentHeight) * 100,
-							100,
-						)
+
+						// Avoid division by zero or negative heights
+						const scrollPercentage =
+							documentHeight > 0
+								? Math.min((scrollTop / documentHeight) * 100, 100)
+								: 0
 
 						if (scrollPercentage >= 25) {
 							// Show button with smooth animation

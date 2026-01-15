@@ -57,12 +57,13 @@ describe('Admin Interface Tests', () => {
 
 	describe('Pagination and Search Features', () => {
 		beforeAll(async () => {
-			// Set authentication for this test suite
+			// Navigate to the site first so localStorage is available
+			await page.goto(adminUrl)
 			await page.evaluate(() => {
 				localStorage.setItem('admin_authenticated', 'true')
 				localStorage.setItem('auth_token', 'test-token')
 			})
-			await page.goto(`${adminUrl}/links`)
+			await page.goto(`${adminUrl}/links`, { waitUntil: 'networkidle2' })
 		})
 
 		it('should have pagination controls when there are multiple pages', async () => {
@@ -100,7 +101,7 @@ describe('Admin Interface Tests', () => {
 			if (pageSizeSelect) {
 				await pageSizeSelect.select('20')
 				await page.click('button[type="submit"]')
-				await page.waitForLoadState('networkidle')
+				await page.waitForNavigation({ waitUntil: 'networkidle2' })
 
 				expect(page.url()).toContain('pageSize=20')
 			}
@@ -114,11 +115,12 @@ describe('Admin Interface Tests', () => {
 
 	describe('Enhanced Form Features', () => {
 		beforeAll(async () => {
+			await page.goto(adminUrl)
 			await page.evaluate(() => {
 				localStorage.setItem('admin_authenticated', 'true')
 				localStorage.setItem('auth_token', 'test-token')
 			})
-			await page.goto(`${adminUrl}/links`)
+			await page.goto(`${adminUrl}/links`, { waitUntil: 'networkidle2' })
 		})
 
 		it('should have form validation error display', async () => {
