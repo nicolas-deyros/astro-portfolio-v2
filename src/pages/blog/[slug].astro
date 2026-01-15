@@ -146,12 +146,6 @@ const audioText = markdown
 	</Section>
 </Layout>
 
-<!-- Enhanced Audio Player with Web Audio API + Web Speech API -->
-<script define:vars={{ markdown }}>
-	// Make markdown content available to summarizer
-	window.__BLOG_MARKDOWN__ = markdown
-</script>
-
 <script>
 	// Progress bar functionality only (audio handled by React component)
 	function initializeBlogFeatures(): (() => void) | null {

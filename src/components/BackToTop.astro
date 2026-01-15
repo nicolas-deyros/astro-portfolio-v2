@@ -24,7 +24,7 @@
 
 <script>
 	// Back to top functionality - only for blog pages
-	function initBackToTop() {
+	function initBackToTop(): void {
 		// Small delay to avoid conflicts with other components
 		setTimeout(() => {
 			const backToTopButton = document.getElementById('back-to-top')
@@ -44,7 +44,7 @@
 			let ticking = false
 
 			// Show/hide button based on scroll position
-			function toggleBackToTop() {
+			function toggleBackToTop(): void {
 				if (!ticking) {
 					requestAnimationFrame(() => {
 						if (!backToTopButton) return
@@ -90,7 +90,7 @@
 			}
 
 			// Smooth scroll to top with progress tracking
-			function scrollToTop() {
+			function scrollToTop(): void {
 				// Use native smooth scroll as primary method
 				if ('scrollBehavior' in document.documentElement.style) {
 					window.scrollTo({
@@ -104,7 +104,7 @@
 				const scrollDuration = 800 // milliseconds
 				const scrollStep = -window.scrollY / (scrollDuration / 15)
 
-				function scrollInterval() {
+				function scrollInterval(): void {
 					if (window.scrollY !== 0) {
 						window.scrollBy(0, scrollStep)
 						setTimeout(scrollInterval, 15)

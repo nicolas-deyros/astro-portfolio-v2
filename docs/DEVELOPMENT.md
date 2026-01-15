@@ -81,24 +81,19 @@ npm run format
 
 ### Git Workflow & Quality Gates
 
-The project uses Husky hooks for automated quality checks:
+The project uses a highly automated workflow. All feature development must follow the protocols defined in `conductor/workflow.md`.
 
-#### Pre-commit Hooks
+#### Automation Scripts
 
-- **Lint-staged**: Automatically formats and lints staged files
-- **Critical tests**: Runs essential tests (SEO, grammar, MDX validation)
+- `npm run session:init`: **Daily Driver.** Syncs Git, updates dependencies, and checks environment health.
+- `npm run git:start <branch> [desc]`: Starts a new feature with a Draft PR on GitHub.
+- `npm run docs:sync`: Checks for documentation drift and suggests changelog updates.
+- `npm run git:ship`: Finalizes a feature, runs full checks, and handles the delivery process.
 
-#### Pre-push Hooks
+#### Quality Hooks (Husky)
 
-- **Full validation**: Comprehensive checks before pushing to remote
-- **Build verification**: Ensures production build works
-- **Type checking**: Validates TypeScript types with Astro
-
-```bash
-# Manual pre-push checks (same as automated)
-npm run pre-push        # Full comprehensive checks
-npm run pre-push:fast   # Faster checks for frequent pushes
-```
+- **Pre-commit**: Automatically formats and lints staged files via `lint-staged`.
+- **Pre-push**: Runs critical tests and type checking.
 
 ### Code Quality Checks
 
@@ -514,12 +509,10 @@ import mdx from '@astrojs/mdx'
 import db from '@astrojs/db'
 
 export default defineConfig({
-	integrations: [tailwind(), mdx(), db()],
-	output: 'hybrid',
-	server: { port: 4321 },
-	build: {
-		assets: 'assets',
-	},
+	site: 'https://www.nicolasdeyros.dev/',
+	output: 'server',
+	adapter: vercel(),
+	integrations: [tailwind(), mdx(), db(), react(), icon()],
 })
 ```
 

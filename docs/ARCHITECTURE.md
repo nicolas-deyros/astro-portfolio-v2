@@ -36,9 +36,9 @@ The portfolio is built using Astro's Islands Architecture, providing optimal per
 ### Core Framework
 
 ```
-Astro 4.x
+Astro 5.x
 ├── TypeScript         # Type safety and developer experience
-├── Tailwind CSS       # Utility-first styling
+├── Tailwind CSS 4     # Modern, high-performance styling
 ├── MDX               # Enhanced Markdown with components
 └── Vite              # Build tool and development server
 ```
@@ -175,10 +175,10 @@ graph TD
 ```sql
 -- Core Tables
 Users (id, email, password_hash, created_at)
-Sessions (id, user_id, device_fingerprint, expires_at, created_at)
+AdminSessions (id, token, device_fingerprint, user_agent, ip, created_at, expires_at, last_activity)
 BlogPosts (id, title, slug, content, published_at, author_id)
-Links (id, title, url, tags, date, created_at)
-FormSubmissions (id, name, email, message, created_at)
+Links (id, title, url, tags, date)
+FormSubmissions (id, fullName, email, message, resendMessageId)
 
 -- Indexes for Performance
 CREATE INDEX idx_sessions_user_device ON Sessions(user_id, device_fingerprint);
