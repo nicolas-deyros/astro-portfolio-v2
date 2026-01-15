@@ -1,8 +1,10 @@
 /// <reference types="vitest" />
 import { getViteConfig } from 'astro/config'
+import { configDefaults } from 'vitest/config'
 
 export default getViteConfig({
 	test: {
+		exclude: [...configDefaults.exclude, 'db/**', 'testsprite_tests/**'],
 		// Run tests with server management sequentially to avoid port conflicts
 		fileParallelism: false,
 		maxWorkers: 1,
@@ -12,8 +14,8 @@ export default getViteConfig({
 		environment: 'jsdom',
 
 		// Optimize timeouts for faster feedback
-		testTimeout: 30000, // 30s instead of default 60s
-		hookTimeout: 60000, // Keep longer for server startup
+		testTimeout: 60000, // Increased from 30s to 60s for Puppeteer tests
+		hookTimeout: 120000, // Keep longer for server startup
 
 		// Better reporter for CI/local development
 		reporter: process.env.CI ? ['verbose', 'github-actions'] : 'verbose',
@@ -25,6 +27,9 @@ export default getViteConfig({
 		env: {
 			TEST_HEADLESS: process.env.CI ? 'true' : 'false',
 			TEST_SLOWMO: process.env.CI ? '0' : '50', // Slower in local dev for debugging
+		},
+		ssr: {
+			external: ['@libsql/client', 'libsql'],
 		},
 	},
 })

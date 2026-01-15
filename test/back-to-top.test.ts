@@ -1,4 +1,5 @@
 import { spawn } from 'child_process'
+import type { Browser, Page } from 'puppeteer'
 import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -30,7 +31,7 @@ async function waitForServer(
 }
 
 // Helper function to kill any existing processes on port 4321
-async function killExistingServer() {
+async function killExistingServer(): Promise<void> {
 	try {
 		await new Promise<void>(resolve => {
 			const killPort = spawn('netstat', ['-ano'], { shell: true })
@@ -68,8 +69,8 @@ async function killExistingServer() {
 }
 
 describe('Back to Top Button', () => {
-	let browser: puppeteer.Browser
-	let page: puppeteer.Page
+	let browser: Browser
+	let page: Page
 	let astroServer: ReturnType<typeof spawn> | null = null
 	const baseUrl = 'http://localhost:4321' // Astro default dev server
 
@@ -83,12 +84,12 @@ describe('Back to Top Button', () => {
 		await new Promise(resolve => setTimeout(resolve, 3000))
 
 		// Start Astro dev server with explicit port
-		        const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
-		        astroServer = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
-		            stdio: ['ignore', 'pipe', 'pipe'],
-		            shell: true,
-		            env: { ...process.env, NODE_ENV: 'development' },
-		        })
+		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+		astroServer = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
+			stdio: ['ignore', 'pipe', 'pipe'],
+			shell: true,
+			env: { ...process.env, NODE_ENV: 'development' },
+		})
 		// Handle server output for debugging
 		if (astroServer.stdout) {
 			astroServer.stdout.on('data', data => {
@@ -219,7 +220,7 @@ describe('Back to Top Button', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check if it's initially hidden with more reliable detection
-		const isHidden = await page.$eval('#back-to-top', el => {
+		const isHidden = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return el.classList.contains('opacity-0') || style.opacity === '0'
 		})
@@ -254,7 +255,7 @@ describe('Back to Top Button', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check if it's hidden by JavaScript with more comprehensive check
-		const isDisplayNone = await page.$eval('#back-to-top', el => {
+		const isDisplayNone = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return (
 				style.display === 'none' ||
@@ -304,7 +305,7 @@ describe('Back to Top Button', () => {
 		let isVisible = false
 		for (let attempt = 0; attempt < 5; attempt++) {
 			try {
-				isVisible = await page.$eval('#back-to-top', el => {
+				isVisible = await page.$eval('#back-to-top', (el: Element) => {
 					const computed = window.getComputedStyle(el)
 					return (
 						el.classList.contains('opacity-100') ||

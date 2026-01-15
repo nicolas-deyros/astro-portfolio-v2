@@ -1,5 +1,5 @@
 import { spawn } from 'child_process'
-import puppeteer from 'puppeteer'
+import puppeteer, { Browser, Page } from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // Use a unique port for this optimized test
@@ -34,8 +34,8 @@ async function waitForServer(
 }
 
 describe('Back to Top Button - Optimized', () => {
-	let browser: puppeteer.Browser
-	let page: puppeteer.Page
+	let browser: Browser
+	let page: Page
 	let astroServer: ReturnType<typeof spawn> | null = null
 
 	beforeAll(async () => {
@@ -127,7 +127,7 @@ describe('Back to Top Button - Optimized', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check initial hidden state
-		const initiallyHidden = await page.$eval('#back-to-top', el => {
+		const initiallyHidden = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return el.classList.contains('opacity-0') || style.opacity === '0'
 		})
@@ -151,7 +151,7 @@ describe('Back to Top Button - Optimized', () => {
 			await new Promise(resolve => setTimeout(resolve, 800))
 
 			// Check if button becomes visible
-			const isVisible = await page.$eval('#back-to-top', el => {
+			const isVisible = await page.$eval('#back-to-top', (el: Element) => {
 				const style = window.getComputedStyle(el)
 				return (
 					!el.classList.contains('opacity-0') &&
@@ -195,7 +195,7 @@ describe('Back to Top Button - Optimized', () => {
 
 		if (homeButton) {
 			// Check if button is actually displayed (not display: none)
-			const buttonState = await page.$eval('#back-to-top', el => {
+			const buttonState = await page.$eval('#back-to-top', (el: Element) => {
 				const style = window.getComputedStyle(el)
 				return {
 					opacity: style.opacity,
@@ -220,14 +220,17 @@ describe('Back to Top Button - Optimized', () => {
 				await new Promise(resolve => setTimeout(resolve, 300))
 
 				// Verify button responds to scroll
-				const scrolledButtonState = await page.$eval('#back-to-top', el => {
-					const style = window.getComputedStyle(el)
-					return {
-						opacity: style.opacity,
-						display: style.display,
-						hasOpacityClass: el.classList.contains('opacity-0'),
-					}
-				})
+				const scrolledButtonState = await page.$eval(
+					'#back-to-top',
+					(el: Element) => {
+						const style = window.getComputedStyle(el)
+						return {
+							opacity: style.opacity,
+							display: style.display,
+							hasOpacityClass: el.classList.contains('opacity-0'),
+						}
+					},
+				)
 
 				// Button should still be functional (not display: none)
 				expect(scrolledButtonState.display).not.toBe('none')
@@ -255,13 +258,16 @@ describe('Back to Top Button - Optimized', () => {
 			const blogButton = await page.$('#back-to-top')
 
 			if (blogButton) {
-				const blogButtonState = await page.$eval('#back-to-top', el => {
-					const style = window.getComputedStyle(el)
-					return {
-						display: style.display,
-						opacity: style.opacity,
-					}
-				})
+				const blogButtonState = await page.$eval(
+					'#back-to-top',
+					(el: Element) => {
+						const style = window.getComputedStyle(el)
+						return {
+							display: style.display,
+							opacity: style.opacity,
+						}
+					},
+				)
 
 				// On blog pages, the button should at least be available (not display: none)
 				// Note: It might have opacity: 0 initially until user scrolls
@@ -274,17 +280,20 @@ describe('Back to Top Button - Optimized', () => {
 				})
 
 				// Wait a bit for the animation
-				await page.waitForTimeout(500)
+				await new Promise(resolve => setTimeout(resolve, 500))
 
 				// Check if button becomes visible after scrolling
-				const scrolledButtonState = await page.$eval('#back-to-top', el => {
-					const style = window.getComputedStyle(el)
-					return {
-						display: style.display,
-						opacity: style.opacity,
-						visibility: style.visibility,
-					}
-				})
+				const scrolledButtonState = await page.$eval(
+					'#back-to-top',
+					(el: Element) => {
+						const style = window.getComputedStyle(el)
+						return {
+							display: style.display,
+							opacity: style.opacity,
+							visibility: style.visibility,
+						}
+					},
+				)
 
 				console.log('📊 Button state after scrolling:', scrolledButtonState)
 

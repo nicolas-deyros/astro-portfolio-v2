@@ -57,7 +57,7 @@ describe.skip('Links Tag Filtering and Pagination', () => {
 		// Fetch all links from API for reference
 		try {
 			const response = await fetch(
-				`${globalThis.testServerUrl || serverUrl}/api/links.json`,
+				`${(globalThis as Record<string, unknown>).testServerUrl || serverUrl}/api/links.json`,
 			)
 			allLinks = await response.json()
 		} catch {

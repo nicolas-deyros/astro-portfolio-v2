@@ -6,7 +6,7 @@ import { spawn } from 'child_process'
  * Test runner that ensures proper port cleanup before running tests
  */
 
-async function killPortProcesses() {
+async function killPortProcesses(): Promise<void> {
 	console.log('🧹 Cleaning up any existing dev servers...')
 
 	return new Promise<void>(resolve => {
@@ -53,7 +53,7 @@ async function killPortProcesses() {
 	})
 }
 
-async function runTests() {
+async function runTests(): Promise<void> {
 	const args = process.argv.slice(2)
 	const testPattern = args[0] || 'back-to-top-isolated'
 

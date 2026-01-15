@@ -95,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
 		}
 
 		// Helper to escape HTML characters
-		const escapeHtml = (unsafe: string) => {
+		const escapeHtml = (unsafe: string): string => {
 			return unsafe
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')

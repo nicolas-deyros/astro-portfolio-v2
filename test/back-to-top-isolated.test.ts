@@ -1,4 +1,5 @@
 import { spawn } from 'child_process'
+import type { Browser, Page } from 'puppeteer'
 import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -34,7 +35,7 @@ async function waitForServer(
 }
 
 // Helper function to kill process on specific port
-async function killProcessOnPort(port: number) {
+async function killProcessOnPort(port: number): Promise<void> {
 	return new Promise<void>(resolve => {
 		const killPort = spawn('netstat', ['-ano'], { shell: true })
 		let output = ''
@@ -70,8 +71,8 @@ async function killProcessOnPort(port: number) {
 }
 
 describe('Back to Top Button - Isolated', () => {
-	let browser: puppeteer.Browser
-	let page: puppeteer.Page
+	let browser: Browser
+	let page: Page
 	let astroServer: ReturnType<typeof spawn> | null = null
 
 	beforeAll(async () => {
@@ -165,7 +166,7 @@ describe('Back to Top Button - Isolated', () => {
 		expect(backToTopButton).toBeTruthy()
 
 		// Check initial state
-		const isHidden = await page.$eval('#back-to-top', el => {
+		const isHidden = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return el.classList.contains('opacity-0') || style.opacity === '0'
 		})
@@ -198,7 +199,7 @@ describe('Back to Top Button - Isolated', () => {
 		await new Promise(resolve => setTimeout(resolve, 1000))
 
 		// Check visibility
-		const isVisible = await page.$eval('#back-to-top', el => {
+		const isVisible = await page.$eval('#back-to-top', (el: Element) => {
 			const style = window.getComputedStyle(el)
 			return (
 				!el.classList.contains('opacity-0') &&

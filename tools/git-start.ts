@@ -4,11 +4,11 @@ function runCommand(command: string): string {
 	return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim()
 }
 
-function log(message: string) {
+function log(message: string): void {
 	console.log(`[Git Start] ${message}`)
 }
 
-async function main() {
+async function main(): Promise<void> {
 	const args = process.argv.slice(2)
 	if (args.length < 1) {
 		console.error('Usage: npm run git:start <branch-name> [description]')
@@ -48,8 +48,9 @@ async function main() {
 				)
 				log(`Draft PR created: ${prUrl}`)
 			}
-		} catch (error: any) {
-			console.error('Failed to create PR:', error.message)
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error)
+			console.error('Failed to create PR:', message)
 			// Don't exit, we can still work locally
 		}
 

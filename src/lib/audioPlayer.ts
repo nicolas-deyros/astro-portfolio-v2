@@ -698,7 +698,7 @@ export class EnhancedAudioPlayer {
 		}
 
 		// Set up event handlers
-		this.currentUtterance.onstart = () => {
+		this.currentUtterance.onstart = (): void => {
 			console.log(
 				`Playing chunk ${this.currentChunkIndex + 1}/${this.textChunks.length}`,
 			)
@@ -706,7 +706,7 @@ export class EnhancedAudioPlayer {
 			this.startProgressTracking()
 		}
 
-		this.currentUtterance.onend = () => {
+		this.currentUtterance.onend = (): void => {
 			this.stopProgressTracking()
 			this.currentChunkIndex++
 			if (this.currentChunkIndex < this.textChunks.length) {
@@ -719,7 +719,9 @@ export class EnhancedAudioPlayer {
 			this.updateProgress()
 		}
 
-		this.currentUtterance.onerror = event => {
+		this.currentUtterance.onerror = (
+			event: SpeechSynthesisErrorEvent,
+		): void => {
 			// Don't show errors for intentional pauses/stops or voice changes
 			if (
 				this.isIntentionalPause &&
@@ -750,7 +752,7 @@ export class EnhancedAudioPlayer {
 			})
 		}
 
-		this.currentUtterance.onpause = () => {
+		this.currentUtterance.onpause = (): void => {
 			this.stopProgressTracking()
 			this.updateState({
 				isPaused: true,
@@ -760,7 +762,7 @@ export class EnhancedAudioPlayer {
 			this.isIntentionalPause = false // Reset flag after successful pause
 		}
 
-		this.currentUtterance.onresume = () => {
+		this.currentUtterance.onresume = (): void => {
 			this.chunkStartTime = Date.now() // Reset timer for resumed chunk
 			this.startProgressTracking()
 			this.updateState({
@@ -789,7 +791,7 @@ export class EnhancedAudioPlayer {
 		this.stopProgressTracking()
 
 		// Performance optimization: Use requestAnimationFrame for smoother updates
-		const updateProgress = () => {
+		const updateProgress = (): void => {
 			if (this.state.isPlaying && !this.state.isPaused) {
 				this.updateContinuousProgress()
 				this.progressUpdateInterval =
@@ -838,7 +840,7 @@ export class EnhancedAudioPlayer {
 	private startVisualization(): void {
 		if (!this.visualizationEnabled) return
 
-		const animate = () => {
+		const animate = (): void => {
 			if (this.state.isPlaying && !this.state.isPaused) {
 				// Visualization animation loop
 				this.animationFrame = requestAnimationFrame(animate)

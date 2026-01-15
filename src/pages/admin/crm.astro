@@ -309,7 +309,7 @@ try {
 				if (!id || !name || !email) return
 
 				// Helper to escape HTML to prevent XSS
-				const escapeHtml = (unsafe: string | null) => {
+				const escapeHtml = (unsafe: string | null): string => {
 					if (!unsafe) return ''
 					return unsafe
 						.replace(/&/g, '&amp;')

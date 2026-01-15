@@ -6,11 +6,11 @@ function runCommand(command: string): string {
 	return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim()
 }
 
-function log(message: string) {
+function log(message: string): void {
 	console.log(`[Docs Sync] ${message}`)
 }
 
-async function main() {
+async function main(): Promise<void> {
 	try {
 		// 1. Analyze Changes
 		log('Analyzing changes...')

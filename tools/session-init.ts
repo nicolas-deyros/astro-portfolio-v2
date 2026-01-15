@@ -7,22 +7,28 @@ const REPORT_PATH = path.join(process.cwd(), '.gemini', 'session-report.md')
 function runCommand(command: string): string {
 	try {
 		return execSync(command, { encoding: 'utf-8', stdio: 'pipe' })
-	} catch (error: any) {
+	} catch (error: unknown) {
 		// npm outdated returns exit code 1 if updates are found, which is not an error for us
-		if (command.includes('npm outdated') && error.status === 1) {
-			return error.stdout
+		if (
+			typeof error === 'object' &&
+			error !== null &&
+			'status' in error &&
+			command.includes('npm outdated') &&
+			(error as { status: number }).status === 1
+		) {
+			return (error as unknown as { stdout: string }).stdout
 		}
 		throw error
 	}
 }
 
-function log(message: string) {
+function log(message: string): void {
 	console.log(`[Session Init] ${message}`)
 }
 
-async function main() {
+async function main(): Promise<void> {
 	const reportLines: string[] = []
-	const addReport = (line: string) => reportLines.push(line)
+	const addReport = (line: string): number => reportLines.push(line)
 
 	addReport('# Session Initialization Report')
 	addReport(`**Date:** ${new Date().toLocaleString()}`)
