@@ -178,7 +178,7 @@ const pageTitle = 'Categories Index'
 			const noResults = document.getElementById('no-results')
 			let activeFilter: string | null = null
 
-			function filterPosts(selectedTag: string | null) {
+			function filterPosts(selectedTag: string | null): void {
 				let visibleCount = 0
 
 				postItems.forEach(item => {

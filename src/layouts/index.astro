@@ -22,7 +22,7 @@ const { title, description, noindex, nofollow } = Astro.props
 		<BackToTop />
 		<script>
 			// Initialize theme immediately to prevent FOUC
-			function initTheme() {
+			function initTheme(): void {
 				const theme =
 					localStorage.getItem('theme') ||
 					(window.matchMedia('(prefers-color-scheme: dark)').matches
