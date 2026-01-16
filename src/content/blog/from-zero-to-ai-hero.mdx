@@ -1,0 +1,72 @@
+---
+title: 'From Zero to AI Hero: How Gemini CLI Transformed Blog'
+description: 'A technical deep-dive into integrating Gemini CLI with my portfolio, detailing a hybrid AI architecture and a fully automated development workflow.'
+date: 'Jan 15 2026'
+heroImage: '/src/assets/blog/ai-orchestration.png'
+tags:
+  [
+    'Gemini',
+    'AI',
+    'Astro',
+    'Workflow',
+    'Automation',
+    'DevEx',
+    'TDD',
+    'Architecture',
+  ]
+category: 'Artificial Intelligence'
+draft: false
+---
+
+import { Image } from 'astro:assets'
+import Video from '@components/Video.astro'
+import AI_Orchestration from '../../assets/blog/ai-orchestration.png'
+
+<Image
+	src={AI_Orchestration}
+	alt="AI Orchestration"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+A few months ago, I embarked on an experiment: could an AI assistant go beyond generating code snippets and become a true development partner? I wanted to integrate **Gemini CLI** into the heart of my portfolio, a modern site built with **Astro**, to automate my workflow and enrich the content with generative AI.
+
+The result exceeded all my expectations. Not only did I automate repetitive tasks, but I ended up designing a sophisticated hybrid AI architecture. This is the story of how I did it.
+
+### The Foundation: A "Zero-Touch" Workflow
+
+Before adding AI features, I needed a bulletproof development process. My goal was simple: **automate everything that wasn't creative coding**. Using Gemini CLI and the **Conductor** extension to plan the task, I created a series of scripts that revolutionized my Developer Experience (DevEx):
+
+- `npm run session:init`: Starts a development session, syncs the main branch, and updates dependencies.
+- `npm run git:start`: Creates a new branch, makes an initial commit, and **automatically opens a draft Pull Request on GitHub**.
+- `npm run docs:sync`: Analyzes changes and automatically updates the `CHANGELOG.md` and other relevant documents.
+
+With this system, starting a new feature is as simple as running one command. Gemini handles all the Git bureaucracy, allowing me to focus 100% on the solution.
+
+### The Brain: A Resilient, Hybrid AI Architecture
+
+For the AI features on the blog (summaries and translations), I didn't want to rely on a single cloud API. Inspired by privacy and speed, I designed a hybrid model:
+
+1.  **Local First (Chrome AI)**: The application first attempts to use the **Gemini Nano** model built into the Chrome browser. This is incredibly fast, works offline, and keeps user data on their machine.
+2.  **Cloud Fallback (Gemini 1.5 Flash)**: If the local API isn't available (e.g., in an unsupported browser), the system transparently falls back to an `api/ai/process` endpoint on my own backend. This endpoint uses the powerful and cost-effective **Gemini 1.5 Flash** API.
+
+To optimize even further, I implemented a **caching layer in the Astro DB**. Generated results are saved, so future requests for the same content are instantaneous and don't consume API quota.
+
+### The Magic in Action: Smart Summaries and Translations
+
+With the architecture in place, the next step was to build the features. Guided by a plan in **Conductor**, I used a strict **Test-Driven Development (TDD)** approach:
+
+1.  **Red Phase**: Write failing tests for all use cases and error conditions (API unavailable, network error, etc.).
+2.  **Green Phase**: Implement the logic in the React components (`BlogSummarizer.tsx` and `BlogTranslator.tsx`) until the tests pass.
+3.  **Refactor**: Clean up and optimize the code.
+
+The result is robust components that gracefully handle loading states, errors, and display the AI-generated results clearly to the user.
+
+### Master Orchestration with Conductor
+
+None of this was improvised. Each of these major tasks was meticulously planned in `plan.md` files using the **Conductor** extension. This allowed me to break down complex problems into phases and checkpoints, and to guide Gemini every step of the way, ensuring the final implementation aligned perfectly with the architectural vision.
+
+### Conclusion: A Partner, Not Just an Assistant
+
+Integrating Gemini CLI has transformed the way I work. I went from using a tool that generates code to collaborating with a partner that helps me **plan, architect, implement, and maintain** complex software.
+
+The combination of an automated workflow, a resilient AI architecture, and structured planning has elevated the quality and sophistication of my project while supercharging my productivity. The future of development isn't just about using AI, but about integrating it natively into our processes and architectures. And that future is already here.
