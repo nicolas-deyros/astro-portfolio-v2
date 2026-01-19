@@ -1,7 +1,6 @@
-import { db, FormSubmissions, Links } from 'astro:db'
-
 // https://astro.build/db/seed
 export default async function seed(): Promise<void> {
+	const { db, FormSubmissions, Links } = await import('astro:db')
 	// Insert form submission sample data
 	await db.insert(FormSubmissions).values({
 		fullName: 'John Doe',
