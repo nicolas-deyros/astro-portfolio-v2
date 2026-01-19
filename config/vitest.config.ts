@@ -29,7 +29,7 @@ export default getViteConfig({
 			TEST_SLOWMO: process.env.CI ? '0' : '50', // Slower in local dev for debugging
 		},
 		ssr: {
-			external: ['@libsql/client', 'libsql'],
+			external: [],
 		},
 	},
 })
