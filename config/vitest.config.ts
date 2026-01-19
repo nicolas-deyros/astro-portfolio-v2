@@ -30,6 +30,7 @@ export default getViteConfig({
 		},
 		ssr: {
 			external: [],
+			noExternal: ['libsql'],
 		},
 	},
 })
