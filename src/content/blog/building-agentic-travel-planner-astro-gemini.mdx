@@ -1,0 +1,83 @@
+---
+title: 'DevLog: Building an Agentic Travel Planner'
+slug: building-agentic-travel-planner-astro-gemini
+date: Feb 04 2026
+author: Nicolas Deyros
+description: A deep dive into building a high-performance itinerary generator using Astro, React, and Gemini 3 Search Grounding in collaboration with an AI coding agent.
+draft: false
+category: AI Development
+tags:
+  [
+    'Astro',
+    'Gemini 3',
+    'AI Agents',
+    'React',
+    'Travel AI',
+    'Web Development',
+    'DevOps',
+    'Antigravity',
+  ]
+---
+
+import { Image } from 'astro:assets'
+import agentic_travel_planner from '../../assets/blog/agentic-travel-planner.png'
+
+<Image
+	src={agentic_travel_planner}
+	alt="Agentic Travel Planner DevLog"
+	class="mb-8 w-full rounded-lg shadow-lg"
+/>
+
+For the past 24 hours, I’ve been working on **Travel AI**, a high-performance itinerary generator. This wasn't a solo project, nor was it a simple "AI prompt-to-code" session. I collaborated with a coding agent (**Antigravity**) in a shared workspace where the agent had terminal access, managed the file system, and handled the DevOps pipeline.
+
+Here is the technical breakdown of how we built it and how the human-agent collaboration actually functioned.
+
+## The Architecture: Astro Islands & Gemini 3
+
+The goal was to build a fast, SEO-friendly site that still felt like a premium SPA. We chose Astro for its Multi-Page Application (MPA) benefits and used React islands for the complex form state management.
+
+### Brain: Gemini 3 (Flash-Preview)
+
+We integrated the latest Gemini 3 model, specifically using the **Search Grounding** feature. Unlike standard LLM responses, we configured the model to validate locations, opening hours, and travel routes against live web data.
+
+- **Infrastructure**: We used a backend-first approach for the API to hide the API keys and handle rate limiting (5 req/hour) via server-side logic.
+- **Validation**: Every response from Gemini is piped through a Zod schema to ensure the JSON structure doesn't break our frontend rendering.
+
+## The Engineering Workflow: Collaborative Debugging
+
+This is where the "Agentic" part gets real. It wasn't just about writing code; it was about maintaining a high-quality codebase.
+
+### 1. The Accessibility Fix (Pa11y & WCAG 2.1 AA)
+
+The initial `TravelForm` was functional but failed accessibility audits. **Antigravity** ran Pa11y locally and identified 6 critical violations (WCAG 2.1 AA) related to dynamic inputs.
+
+- **Discovery**: The city autocomplete component (`CityInput`) and the dynamic child-age inputs were missing proper ARIA relationships.
+- **The Fix**: Instead of me manually fixing labels, the agent implemented a dynamic ID system (`child-age-${i}`) and added full keyboard navigation (ArrowUp/Down, Enter, Esc) to the search results. We re-ran the audit until we hit 0 errors.
+
+### 2. Solving the Union Type Mismatch
+
+Right before the final push, we ran a strict TypeScript check (`tsc --noEmit`). We hit a `TS2345` error in `TravelForm.tsx`.
+
+- **The Problem**: We were attempting to map a dynamic key from an `Object.entries` iterator into a strict Union Type of travel priorities.
+- **The Resolution**: We discussed the trade-off between softening the types or using a safer cast. We ended up implementing a verified type assertion to ensure the frontend wouldn't crash during the translation lookup.
+
+### 3. Internationalization (i18n) Logic
+
+We didn't want to use client-side translation libraries that increase bundle size. We built a static translation map supporting 6 languages (ES, EN, PT, FR, IT, DE).
+
+- **The Agent's Role**: Antigravity handled the heavy lifting of populating the missing translation keys for the `ErrorDisplay` and `LoadingItinerary` components, ensuring the UX was consistent regardless of the `serverLang` prop.
+
+## Key Technical Specs
+
+- **Performance**: 100/100 Lighthouse score on Home and Plan pages.
+- **State Management**: Localized React state for the multi-step form, synced with local storage for draft persistence.
+- **Animations**: Used `AnimatePresence` from Framer Motion for a premium feel without sacrificing fluidity.
+- **CI/CD**: Governed by a strict Git flow. Changes were never committed to main directly; the agent created branches, pushed to GitHub, and opened PRs using the GitHub CLI.
+
+## Final Reflection
+
+Collaborating with an agent that can execute `npm run build` and `git push` while you're architecting the next feature is a game-changer. It’s no longer about "generating code," but about **Engineering Management** where the agent handles the technical audits (Lighthouse, Pa11y, TSC) and the human handles the product vision and logic edge cases.
+
+---
+
+Check out the project: 👉 **[travel-ai-agentic](https://github.com/nicolas-deyros/travel-ai-agentic)**
