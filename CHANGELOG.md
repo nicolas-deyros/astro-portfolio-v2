@@ -1,14 +1,31 @@
 # Changelog
 
-## [Unreleased]
+## [Unreleased] - 2026-02-05
 
-### 🧹 Code Quality & Cleanup
+### 🚀 Astro 5.x & Agentic Features
+
+- **Astro Actions Integration**: Migrated form processing (Contact Form) to type-safe server actions, eliminating legacy JSON endpoints.
+- **AI Agent Skills Integration**: Installed specialized skills for Astro, Playwright, and Web Design Guidelines to enhance agent development efficiency.
+- **Modernized Tech Stack**: Upgraded to Tailwind CSS 4.x for improved performance and modern styling capabilities.
+
+### 🔒 Security Hardening
+
+- **Middleware-Based Auth**: Centralized admin protection in `middleware.ts`.
+- **Astro Actions Security**: Leveraging built-in CSRF protection and type validation in Actions.
+- **CSP & HSTS**: Enforced strict Content Security Policy and HTTP Strict Transport Security.
+
+### 🧹 Project Structure Refinement
+
+- **New Folders**: Documented `.gemini`, `.agent`, and `.agents` for agent-specific configurations.
+- **Documentation Overhaul**: Synchronized `README.md`, `GEMINI.md`, and `SECURITY.md`.
+
+### 🧽 Feb 2026: Code Quality & Cleanup
 
 - **TypeScript Linting Fixes**: Added explicit return types to functions across various files to resolve "missing return type" warnings.
-  - Added `: void` to event handlers and initialization functions in `audioPlayer.ts`, `index.astro`, `layouts/index.astro`.
-  - Added `: string` to utility functions like `escapeHtml` in `crm.astro` and `sendEmail.json.ts`.
-  - Added return types to internal command-line tools: `git-start.ts`, `docs-sync.ts`, `session-init.ts`, `git-flow.ts`.
-  - Fixed TypeScript errors in `performance.test.ts`, `back-to-top.test.ts`, and `back-to-top-isolated.test.ts`.
+- Added `: void` to event handlers and initialization functions in `audioPlayer.ts`, `index.astro`, `layouts/index.astro`.
+- Added `: string` to utility functions like `escapeHtml` in `crm.astro` and `sendEmail.json.ts`.
+- Added return types to internal command-line tools: `git-start.ts`, `docs-sync.ts`, `session-init.ts`, `git-flow.ts`.
+- Fixed TypeScript errors in `performance.test.ts`, `back-to-top.test.ts`, and `back-to-top-isolated.test.ts`.
 - **Residual Code Cleanup**: Removed unused components and related logic that were no longer needed.
 - **Improved Testing Stability**: Adjusted performance thresholds in `performance.test.ts` to be more realistic for development and CI environments (increased LCP threshold to 15s).
 - **Documentation Updates**: Updated `ARCHITECTURE.md` and `DEVELOPMENT.md` to reflect the current project structure and simplified audio player implementation.
@@ -265,7 +282,7 @@
   - Deleted `EnhancedAudioPlayer.astro` (replaced by HybridAudioPlayerWrapper)
   - Removed test pages: `audio-test.astro` and `hybrid-audio-test.astro`
 
-# Changelog
+# Project History & Archives
 
 All notable changes to this project will be documented in this file.
 

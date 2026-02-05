@@ -59,10 +59,10 @@ npm run format       # Format code with Prettier
 
 ## 🛠️ Tech Stack
 
-**Core**: Astro, TypeScript, Tailwind CSS  
+**Core**: Astro 5.x, TypeScript, Tailwind CSS 4.x  
 **Database**: Astro DB (SQLite)  
 **Testing**: Vitest, Puppeteer, Playwright  
-**AI**: Chrome AI APIs (Translation, Summarization)  
+**AI**: Chrome AI APIs & [AI Agent Skills](https://skills.sh)  
 **Deployment**: Vercel
 
 ## 📚 Documentation
@@ -123,20 +123,24 @@ The contact form has been refactored into reusable, maintainable components foll
 
 ## 🏗️ Project Structure
 
-```
+```text
 src/
+├── actions/         # Type-safe server actions (Astro Actions)
 ├── components/      # Reusable UI components
 │   └── Form/        # Form components (Input, TextArea, ContactUS)
 ├── config/          # Centralized configuration
 ├── content/         # Blog posts and data collections
 ├── hooks/           # Custom React hooks (useContactForm)
 ├── layouts/         # Page layouts
-├── middleware.ts    # Security middleware
+├── middleware.ts    # Security & Auth middleware
 ├── pages/           # Route pages and API endpoints
 └── styles/          # Global styles and utilities
 
-docs/               # Comprehensive documentation (see docs/README.md)
-test/               # Test suites and utilities
+test/               # Test suites (Unit, E2E, Performance)
+docs/               # Detailed project documentation
+.gemini/            # Agent "Brain" (Context, Session, Artifacts)
+.agent/             # Agent workflows and skill links
+.agents/            # Agent skill repository
 ```
 
 ## 🤝 Contributing
