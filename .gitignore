@@ -39,3 +39,7 @@ pnpm-debug.log*
 
 .gemini/settings.json
 
+# Test Artifacts
+coverage/
+testsprite_tests/
+*.log

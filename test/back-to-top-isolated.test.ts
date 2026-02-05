@@ -82,16 +82,17 @@ describe('Back to Top Button - Isolated', () => {
 		await killProcessOnPort(TEST_PORT)
 		await new Promise(resolve => setTimeout(resolve, 2000))
 
+		// Prepare environment for dev server (unsetting VITEST to avoid conflict with Astro DB logic)
+		const serverEnv = { ...process.env, NODE_ENV: 'development' } as any
+		delete serverEnv.VITEST
+
 		// Start Astro dev server on unique port
-		astroServer = spawn(
-			'npx',
-			['astro', 'dev', '--port', TEST_PORT.toString()],
-			{
-				stdio: ['ignore', 'pipe', 'pipe'],
-				shell: true,
-				env: { ...process.env, NODE_ENV: 'development' },
-			},
-		)
+		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+		astroServer = spawn(cmd, ['astro', 'dev', '--port', TEST_PORT.toString()], {
+			stdio: ['ignore', 'pipe', 'pipe'],
+			shell: true,
+			env: serverEnv,
+		})
 
 		// Monitor server startup
 		const serverLogs: string[] = []

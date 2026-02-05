@@ -24,6 +24,44 @@ async function waitForServer(
 	throw new Error(`Server at ${url} did not start in time.`)
 }
 
+// Helper function to kill any existing processes on port 4321
+async function killExistingServer(): Promise<void> {
+	try {
+		await new Promise<void>(resolve => {
+			const killPort = spawn('netstat', ['-ano'], { shell: true })
+			let output = ''
+
+			killPort.stdout?.on('data', data => {
+				output += data.toString()
+			})
+
+			killPort.on('close', () => {
+				const lines = output.split('\n')
+				const port4321Line = lines.find(
+					line => line.includes(':4321') && line.includes('LISTENING'),
+				)
+
+				if (port4321Line) {
+					const pid = port4321Line.trim().split(/\s+/).pop()
+					if (pid && !isNaN(Number(pid))) {
+						console.log(`🧹 Killing existing process ${pid} on port 4321`)
+						spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
+						setTimeout(resolve, 2000) // Wait for cleanup
+					} else {
+						resolve()
+					}
+				} else {
+					resolve()
+				}
+			})
+
+			killPort.on('error', () => resolve()) // Continue even if cleanup fails
+		})
+	} catch (err) {
+		console.log('⚠️ Port cleanup error:', err)
+	}
+}
+
 describe('Enhanced Authentication System', () => {
 	let server: ChildProcess
 	let browser: Browser
@@ -35,12 +73,35 @@ describe('Enhanced Authentication System', () => {
 		// Set environment variable for testing
 		process.env.API_SECRET_KEY = 'test-secret-key'
 
+		// First, clean up any existing server on port 4321
+		await killExistingServer()
+		await new Promise(resolve => setTimeout(resolve, 2000))
+
+		// Prepare environment for dev server (unsetting VITEST to avoid conflict with Astro DB logic)
+		const serverEnv = {
+			...process.env,
+			API_SECRET_KEY: 'test-secret-key',
+		} as any
+		delete serverEnv.VITEST
+
 		// Start the dev server
 		server = spawn('npm', ['run', 'dev:clean'], {
 			shell: true,
 			stdio: 'pipe',
-			env: { ...process.env, API_SECRET_KEY: 'test-secret-key' },
+			env: serverEnv,
 		})
+
+		// Monitor server output
+		server.stdout?.on('data', data => {
+			const output = data.toString()
+			if (output.includes('Local:')) {
+				console.log('📡 Server started:', output.trim())
+			}
+		})
+		server.stderr?.on('data', data => {
+			console.error('🚨 Server error:', data.toString().trim())
+		})
+
 		await waitForServer(serverUrl)
 
 		// Launch browser
@@ -50,6 +111,7 @@ describe('Enhanced Authentication System', () => {
 		})
 		page = await browser.newPage()
 		await page.setViewport({ width: 1280, height: 800 })
+		await page.goto(serverUrl, { waitUntil: 'networkidle2' })
 	})
 
 	afterAll(async () => {
