@@ -15,7 +15,7 @@ The project emphasizes performance (Lighthouse 90+), accessibility, and develope
 - **Database:** [Astro DB](https://docs.astro.build/en/guides/astro-db/)
 - **Content:** MDX (Markdown + JSX)
 - **Testing:** Vitest, Puppeteer/Playwright
-- **AI Integration:** Chrome AI APIs (Web AI) & [AI Agent Skills](https://skills.sh)
+- **AI Integration:** Chrome AI APIs (Web AI) & [AI Agent Skills](https://skills.sh) (Astro, Playwright, Browser-Use, Interface-Design)
 - **Deployment:** Vercel
 
 ## 🏗️ Architecture
