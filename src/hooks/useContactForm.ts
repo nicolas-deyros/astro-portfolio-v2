@@ -1,3 +1,4 @@
+import { actions } from 'astro:actions'
 import { useFormik } from 'formik'
 import { useState } from 'react'
 
@@ -7,11 +8,6 @@ export interface FormValues {
 	name: string
 	email: string
 	message: string
-}
-
-export interface SubmitResponse {
-	success: boolean
-	message?: string
 }
 
 export const useContactForm = (): {
@@ -38,31 +34,16 @@ export const useContactForm = (): {
 		setSubmitMessage('')
 
 		try {
-			const response = await fetch('/api/sendEmail.json', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(values),
-			})
+			const { data, error } = await actions.sendEmail(values)
 
-			if (!response.ok) {
-				const errorText = await response.text()
-				console.error('API Response Error:', errorText)
-				throw new Error(`Server error: ${response.status}`)
+			if (error) {
+				console.error('Action error:', error)
+				throw new Error(error.message || 'Failed to send message')
 			}
 
-			let result: SubmitResponse
-			try {
-				result = await response.json()
-			} catch (parseError) {
-				console.error('JSON Parse Error:', parseError)
-				throw new Error('Invalid response from server')
-			}
-
-			if (result.success) {
+			if (data?.success) {
 				setSubmitStatus('success')
-				setSubmitMessage(result.message || "Thanks! I'll be in touch soon.")
+				setSubmitMessage(data.message || "Thanks! I'll be in touch soon.")
 				resetForm()
 
 				setTimeout(() => {
@@ -70,7 +51,7 @@ export const useContactForm = (): {
 					setSubmitMessage('')
 				}, 5000)
 			} else {
-				throw new Error(result.message || 'Failed to send email')
+				throw new Error(data?.message || 'Failed to send email')
 			}
 		} catch (error) {
 			console.error('Form submission error:', error)

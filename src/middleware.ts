@@ -23,6 +23,18 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	response.headers.set('X-Frame-Options', 'DENY')
 	response.headers.set('X-XSS-Protection', '1; mode=block')
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+	response.headers.set(
+		'Strict-Transport-Security',
+		'max-age=31536000; includeSubDomains; preload',
+	)
+	response.headers.set(
+		'Content-Security-Policy',
+		"default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'; upgrade-insecure-requests;",
+	)
+	response.headers.set(
+		'Permissions-Policy',
+		'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+	)
 
 	return response
 })
