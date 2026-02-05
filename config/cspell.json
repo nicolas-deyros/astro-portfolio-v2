@@ -56,7 +56,9 @@
 		".github/**",
 		"public/favicon.svg",
 		"src/assets/**/*.svg",
-		"test/**/*.snap"
+		"test/**/*.snap",
+		".agent/**",
+		".agents/**"
 	],
 	"ignoreRegExpList": [
 		"\\b[A-Z]{2,}\\b",
