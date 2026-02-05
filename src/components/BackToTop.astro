@@ -4,7 +4,7 @@
 
 <button
 	id="back-to-top"
-	class="d-500 pointer-events-none fixed right-6 bottom-6 z-50 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-slate-200 text-gray-900 opacity-0 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-slate-700 focus:ring-4 focus:ring-slate-500/50 sm:right-8 sm:bottom-8 md:h-14 md:w-14 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600 dark:focus:ring-slate-400/50"
+	class="pointer-events-none fixed right-6 bottom-6 z-50 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-slate-200 text-gray-900 opacity-0 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-slate-700 focus:ring-4 focus:ring-slate-500/50 sm:right-8 sm:bottom-8 md:h-14 md:w-14 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600 dark:focus:ring-slate-400/50"
 	aria-label="Back to top"
 	title="Back to top">
 	<svg
@@ -39,6 +39,9 @@
 			if (!isBlogPage) {
 				backToTopButton.style.display = 'none'
 				return
+			} else {
+				// Ensure button is visible for blog pages even if it was hidden previously
+				backToTopButton.style.display = 'flex'
 			}
 
 			let ticking = false
@@ -50,7 +53,7 @@
 						if (!backToTopButton) return
 
 						const scrollTop =
-							window.pageYOffset || document.documentElement.scrollTop
+							window.scrollY || document.documentElement.scrollTop
 						const documentHeight =
 							document.documentElement.scrollHeight - window.innerHeight
 

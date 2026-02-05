@@ -1,6 +1,7 @@
 ---
 import NavList from '@components/List/NavList.astro'
 import navData, { adminNavData } from '@data/navData'
+import { validateSession } from '@lib/session'
 import { Icon } from 'astro-icon/components'
 
 type NavItem = {
@@ -16,8 +17,9 @@ type AdminNavItem = {
 	title: string
 }
 
-// Check if we're on an admin page at build time
-const isAdminPage = Astro.url.pathname.startsWith('/admin')
+// Check authentication state server-side
+const session = await validateSession(Astro.cookies)
+const isLoggedIn = !!session
 ---
 
 <!-- Mobile Hamburger Button -->
@@ -69,26 +71,26 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 			/>
 		))
 	}
-	<!-- Admin Menu Items (Desktop) - Only render on admin pages -->
+	<!-- Admin Menu Items (Desktop) - Only render if logged in -->
 	{
-		isAdminPage &&
+		isLoggedIn &&
 			adminNavData.map((item: AdminNavItem) => (
 				<NavList
 					href={item.path}
 					icon={item.icon}
 					text={item.text}
 					title={item.title}
-					class="admin-menu-item hidden"
+					class="admin-menu-item"
 					data-navLink
 				/>
 			))
 	}
-	<!-- Admin Logout Button (Desktop) - Only render on admin pages -->
+	<!-- Admin Logout Button (Desktop) - Only render if logged in -->
 	{
-		isAdminPage && (
+		isLoggedIn && (
 			<button
 				id="admin-logout-btn"
-				class="hidden rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+				class="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
 				title="Logout from Admin">
 				Logout
 			</button>
@@ -159,13 +161,13 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 				</a>
 			))
 		}
-		<!-- Admin Menu Items (Mobile) - Only render on admin pages -->
+		<!-- Admin Menu Items (Mobile) - Only render if logged in -->
 		{
-			isAdminPage &&
+			isLoggedIn &&
 				adminNavData.map((item: AdminNavItem) => (
 					<a
 						href={item.path}
-						class="admin-menu-item hidden items-center gap-3 rounded-lg px-4 py-3 text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+						class="admin-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
 						data-navLink>
 						<span class="text-xl">
 							<Icon name={item.icon} class="h-5" />
@@ -174,16 +176,14 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 					</a>
 				))
 		}
-		<!-- Admin Logout Button (Mobile) - Only render on admin pages -->
+		<!-- Admin Logout Button (Mobile) - Only render if logged in -->
 		{
-			isAdminPage && (
+			isLoggedIn && (
 				<button
 					id="mobile-admin-logout-btn"
-					class="hidden rounded-lg bg-red-600 px-4 py-3 text-white transition-colors duration-200 hover:bg-red-700">
-					<div class="flex items-center gap-3">
-						<span class="text-xl">🚪</span>
-						<span class="font-medium">Logout</span>
-					</div>
+					class="flex w-full items-center gap-3 rounded-lg bg-red-600 px-4 py-3 text-white transition-colors duration-200 hover:bg-red-700">
+					<span class="text-xl">🚪</span>
+					<span class="font-medium">Logout</span>
 				</button>
 			)
 		}
@@ -263,31 +263,6 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 			link.addEventListener('click', closeMobileMenu)
 		})
 
-		// Close menu when clicking admin nav links
-		const adminNavLinks = document.querySelectorAll(
-			'.admin-menu-item[data-navlink]',
-		)
-		adminNavLinks.forEach(link => {
-			link.addEventListener('click', closeMobileMenu)
-		})
-
-		// Close menu on escape key
-		document.addEventListener('keydown', e => {
-			if (
-				e.key === 'Escape' &&
-				!mobileMenu.classList.contains('translate-x-full')
-			) {
-				closeMobileMenu()
-			}
-		})
-
-		// Close menu on window resize to desktop size
-		window.addEventListener('resize', () => {
-			if (window.innerWidth >= 1024) {
-				closeMobileMenu()
-			}
-		})
-
 		// Theme toggle functionality - handle both desktop and mobile
 		const themeToggleCheckbox = document.getElementById(
 			'theme-toggle-checkbox',
@@ -351,54 +326,6 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 			'mobile-admin-logout-btn',
 		)
 
-		function checkAdminStatus(): void {
-			const isAdmin = localStorage.getItem('admin_authenticated') === 'true'
-			const currentIsAdminPage = window.location.pathname.startsWith('/admin')
-
-			// Only proceed if we're on an admin page (elements exist)
-			if (!currentIsAdminPage) return
-
-			// Show/hide admin menu items - only show if authenticated
-			const adminMenuItems = document.querySelectorAll('.admin-menu-item')
-			const adminLogoutBtns = document.querySelectorAll(
-				'#admin-logout-btn, #mobile-admin-logout-btn',
-			)
-
-			if (isAdmin) {
-				// User is authenticated - show admin items
-				adminMenuItems.forEach(item => {
-					item.classList.remove('hidden')
-					// For mobile menu items (links), add flex to show them properly
-					if (item.tagName.toLowerCase() === 'a') {
-						item.classList.add('flex')
-					}
-					// For desktop menu items (NavList components), restore the flex classes
-					if (item.tagName.toLowerCase() === 'li') {
-						item.classList.add(
-							'flex',
-							'list-none',
-							'items-center',
-							'justify-center',
-						)
-					}
-				})
-				adminLogoutBtns.forEach(btn => btn.classList.remove('hidden'))
-			} else {
-				// User is not authenticated - hide admin items
-				adminMenuItems.forEach(item => {
-					item.classList.add('hidden')
-					// Remove all display classes
-					item.classList.remove(
-						'flex',
-						'list-none',
-						'items-center',
-						'justify-center',
-					)
-				})
-				adminLogoutBtns.forEach(btn => btn.classList.add('hidden'))
-			}
-		}
-
 		async function handleLogout(): Promise<void> {
 			try {
 				// Call server logout to invalidate session
@@ -411,32 +338,16 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin')
 			} catch (error) {
 				console.error('Server logout error:', error)
 			} finally {
-				// Always clear local storage
+				// Always clear local storage if any was used
 				localStorage.removeItem('admin_authenticated')
-				localStorage.removeItem('auth_token')
-				localStorage.removeItem('device_fingerprint')
-				localStorage.removeItem('session_expires')
-				// Always redirect to admin login page after logout
-				window.location.href = '/admin'
+				// Redirect to home
+				window.location.href = '/'
 			}
 		}
-
-		// Check admin status on page load
-		checkAdminStatus()
 
 		// Handle logout button clicks
 		adminLogoutBtn?.addEventListener('click', handleLogout)
 		mobileAdminLogoutBtn?.addEventListener('click', handleLogout)
-
-		// Listen for storage changes (when user logs in/out in another tab)
-		window.addEventListener('storage', e => {
-			if (e.key === 'admin_authenticated') {
-				checkAdminStatus()
-			}
-		})
-
-		// Check admin status when navigating between pages
-		document.addEventListener('astro:after-swap', checkAdminStatus)
 	})
 </script>
 

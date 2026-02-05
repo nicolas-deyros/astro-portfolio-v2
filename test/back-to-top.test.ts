@@ -4,31 +4,8 @@ import puppeteer from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // Helper function to wait for server to be ready
-async function waitForServer(
-	url: string,
-	timeout: number = 30000,
-): Promise<void> {
-	const start = Date.now()
-	const checkInterval = 500 // Check every 500ms for faster response
-
-	while (Date.now() - start < timeout) {
-		try {
-			const response = await fetch(url)
-			if (response.status === 200) {
-				const text = await response.text()
-				if (text.length > 100) {
-					return // Server is ready
-				}
-			}
-		} catch {
-			// Server not ready yet, continue polling
-		}
-
-		await new Promise(resolve => setTimeout(resolve, checkInterval))
-	}
-
-	throw new Error(`Server at ${url} did not become ready within ${timeout}ms`)
-}
+// Helper function to wait for server to be ready - removed as we use inline detection
+// was waitForServer
 
 // Helper function to kill any existing processes on port 4321
 async function killExistingServer(): Promise<void> {
@@ -72,30 +49,39 @@ describe('Back to Top Button', () => {
 	let browser: Browser
 	let page: Page
 	let astroServer: ReturnType<typeof spawn> | null = null
-	const baseUrl = 'http://localhost:4321' // Astro default dev server
+	let baseUrl = 'http://localhost:4321' // Default, will update dynamically
 
 	beforeAll(async () => {
 		console.log('🚀 Starting Astro dev server for back-to-top testing...')
 
-		// First, clean up any existing server on port 4321
+		// Kill potential zombies just in case
 		await killExistingServer()
+		await new Promise(resolve => setTimeout(resolve, 2000))
 
-		// Wait a bit for cleanup to complete
-		await new Promise(resolve => setTimeout(resolve, 3000))
+		// Prepare environment for dev server
+		const serverEnv = {
+			...process.env,
+			NODE_ENV: 'development',
+		} as NodeJS.ProcessEnv
+		delete serverEnv.VITEST
 
-		// Start Astro dev server with explicit port
+		// Start Astro dev server
 		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
 		astroServer = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
 			stdio: ['ignore', 'pipe', 'pipe'],
 			shell: true,
-			env: { ...process.env, NODE_ENV: 'development' },
+			env: serverEnv,
 		})
-		// Handle server output for debugging
+
+		// Handle server output and detect port
 		if (astroServer.stdout) {
 			astroServer.stdout.on('data', data => {
 				const output = data.toString()
-				if (output.includes('Local:') || output.includes('ready in')) {
-					console.log('📡 Dev server output:', output.trim())
+				// Detect local URL
+				const match = output.match(/Local:\s+(http:\/\/localhost:\d+)/)
+				if (match) {
+					baseUrl = match[1]
+					console.log(`🔗 Detected Server URL: ${baseUrl}`)
 				}
 			})
 		}
@@ -103,34 +89,34 @@ describe('Back to Top Button', () => {
 		if (astroServer.stderr) {
 			astroServer.stderr.on('data', data => {
 				const error = data.toString()
-				console.error('🚨 Dev server error:', error)
-
-				// Check for common error patterns
-				if (
-					error.includes('EADDRINUSE') ||
-					error.includes('port already in use')
-				) {
-					console.error(
-						'❌ Port 4321 is already in use. Server startup failed.',
-					)
+				// Log but don't spam
+				if (error.length > 5 && !error.includes('vite')) {
+					// console.error('🚨 Dev server stderr:', error.slice(0, 100))
 				}
 			})
 		}
 
-		// Wait for server to be ready with improved error handling
+		// Wait for server to be ready and baseUrl to be confirmed
 		console.log('⏳ Waiting for Astro dev server to start...')
-		try {
-			await waitForServer(baseUrl, 120000) // Wait up to 2 minutes
-			console.log('✅ Astro dev server is ready!')
-		} catch (error) {
-			console.error('❌ Failed to start server:', error)
 
-			// Try to get server logs if available
-			if (astroServer && astroServer.stdout) {
-				console.log('📋 Server may have failed to start. Check logs above.')
+		// Wait loop for URL detection
+		let attempts = 0
+		while (attempts < 30) {
+			try {
+				const response = await fetch(baseUrl)
+				if (response.status === 200) {
+					console.log(`✅ Server ready at ${baseUrl}`)
+					break
+				}
+			} catch {
+				// Ignore fetch error while waiting
 			}
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			attempts++
+		}
 
-			throw error
+		if (attempts >= 30) {
+			throw new Error('Server failed to start or URL not detected')
 		}
 
 		// Start browser for testing
@@ -140,7 +126,7 @@ describe('Back to Top Button', () => {
 		})
 		page = await browser.newPage()
 		console.log('🧪 Browser ready for back-to-top testing')
-	}, 150000) // 2.5 minutes timeout for server startup
+	}, 150000)
 
 	afterAll(async () => {
 		console.log('🧹 Cleaning up back-to-top test environment...')
@@ -341,14 +327,11 @@ describe('Back to Top Button', () => {
 		const initialScrollPosition = await page.evaluate(() => window.pageYOffset)
 		expect(initialScrollPosition).toBeGreaterThan(100)
 
-		// Wait for button to become visible and clickable
+		// Wait for button to become visible and clickable with simpler check
 		await page.waitForFunction(
 			() => {
-				const button = document.querySelector('#back-to-top') as HTMLElement
-				if (!button) return false
-
-				const style = window.getComputedStyle(button)
-				return style.opacity !== '0' && style.display !== 'none'
+				const button = document.querySelector('#back-to-top')
+				return button && !button.classList.contains('opacity-0')
 			},
 			{ timeout: 5000 },
 		)

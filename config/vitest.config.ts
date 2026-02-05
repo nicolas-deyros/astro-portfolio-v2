@@ -1,36 +1,35 @@
-/// <reference types="vitest" />
-import { getViteConfig } from 'astro/config'
+import path from 'path'
+import { defineConfig } from 'vitest/config'
 import { configDefaults } from 'vitest/config'
 
-export default getViteConfig({
+export default defineConfig({
 	test: {
 		exclude: [...configDefaults.exclude, 'db/**', 'testsprite_tests/**'],
-		// Run tests with server management sequentially to avoid port conflicts
 		fileParallelism: false,
 		maxWorkers: 1,
 		pool: 'forks',
-
-		// Set up browser environment for Chrome AI tests
 		environment: 'jsdom',
-
-		// Optimize timeouts for faster feedback
-		testTimeout: 60000, // Increased from 30s to 60s for Puppeteer tests
-		hookTimeout: 120000, // Keep longer for server startup
-
-		// Better reporter for CI/local development
-		reporter: process.env.CI ? ['verbose', 'github-actions'] : 'verbose',
-
-		// Retry flaky tests once in CI
+		testTimeout: 60000,
+		hookTimeout: 120000,
+		reporters: process.env.CI ? ['verbose', 'github-actions'] : ['verbose'],
 		retry: process.env.CI ? 1 : 0,
-
-		// Environment variables for test optimization
 		env: {
 			TEST_HEADLESS: process.env.CI ? 'true' : 'false',
-			TEST_SLOWMO: process.env.CI ? '0' : '50', // Slower in local dev for debugging
+			TEST_SLOWMO: process.env.CI ? '0' : '50',
 		},
-		ssr: {
-			external: [],
-			noExternal: ['libsql'],
+	},
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, '../src'),
+			'@components': path.resolve(__dirname, '../src/components'),
+			'@layouts': path.resolve(__dirname, '../src/layouts'),
+			'@utils': path.resolve(__dirname, '../src/utils'),
+			'@lib': path.resolve(__dirname, '../src/lib'),
+			'@styles': path.resolve(__dirname, '../src/styles'),
+			'@assets': path.resolve(__dirname, '../src/assets'),
 		},
+	},
+	ssr: {
+		external: ['libsql', '@libsql/client'],
 	},
 })
