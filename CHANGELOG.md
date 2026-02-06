@@ -5,7 +5,7 @@
 ### 🚀 Astro 5.x & Agentic Features
 
 - **Astro Actions Integration**: Migrated form processing (Contact Form) to type-safe server actions, eliminating legacy JSON endpoints.
-- **AI Agent Skills Integration**: Installed specialized skills for Astro, Playwright, Web Design Guidelines, and Interface-Design to enhance agent development efficiency.
+- **AI Agent Skills Integration**: Installed 11 specialized skills (Brainstorming, Frontend-Design, SEO-Audit, Clean-Code, etc.), totaling 17 kits to enhance agent development efficiency.
 - **Modernized Tech Stack**: Upgraded to Tailwind CSS 4.x for improved performance and modern styling capabilities.
 
 ### 🔒 Security Hardening
