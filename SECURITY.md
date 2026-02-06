@@ -21,6 +21,22 @@ The following security vulnerabilities were identified and patched as part of a 
 
 ---
 
+## Modern Hardening (February 2026)
+
+### 🚀 Astro Actions
+
+- **Built-in Security**: Replaced legacy API routes with Astro Actions, which provide automatic CSRF protection and type-safe schema validation (Zod).
+- **Reduced Surface Area**: Eliminated several public JSON endpoints in favor of internal actions.
+
+### 🛡️ Middleware Architecture
+
+- **Centralized Guarding**: `middleware.ts` now acts as a global security layer, enforcing HSTS, CSP, and authentication BEFORE any page rendering begins.
+- **Hardened Headers**:
+  - `Content-Security-Policy`: Strict script and style source control.
+  - `Strict-Transport-Security`: Enforced HTTPS.
+
+---
+
 ## Enhanced Admin Authentication System
 
 This portfolio implements a robust, multi-layered authentication system for admin functionality with the following security features:

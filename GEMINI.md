@@ -8,14 +8,14 @@ The project emphasizes performance (Lighthouse 90+), accessibility, and develope
 
 ## 🛠️ Technology Stack
 
-- **Framework:** [Astro 5.x](https://astro.build)
+- **Framework:** [Astro 5.x](https://astro.build) (with [Astro Actions](https://docs.astro.build/en/guides/actions/))
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [Tailwind CSS 4.x](https://tailwindcss.com/)
-- **UI Libraries:** [React 19](https://react.dev/) (for complex interactive islands)
-- **Database:** [Astro DB](https://docs.astro.build/en/guides/astro-db/) (SQLite based)
-- **Content:** MDX (Markdown + JSX) with Content Collections
-- **Testing:** Vitest (Unit/Integration), Puppeteer/Playwright (end-to-end), Lighthouse (Performance)
-- **AI Integration:** Chrome AI APIs (Translation, Summarization)
+- **UI Libraries:** [React 19](https://react.dev/)
+- **Database:** [Astro DB](https://docs.astro.build/en/guides/astro-db/)
+- **Content:** MDX (Markdown + JSX)
+- **Testing:** Vitest, Puppeteer/Playwright
+- **AI Integration:** Chrome AI APIs (Web AI) & [AI Agent Skills](https://skills.sh) (Astro, Playwright, Browser-Use, Interface-Design, Brainstorming, SEO-Audit, Clean-Code)
 - **Deployment:** Vercel
 
 ## 🏗️ Architecture
@@ -29,20 +29,24 @@ The project emphasizes performance (Lighthouse 90+), accessibility, and develope
 
 ### Key Directories
 
-- `src/pages/`: File-based routing (static pages, dynamic routes `[slug]`, API endpoints).
-- `src/components/`: Reusable UI components (Astro & React).
-- `src/content/`: MDX blog posts and configuration (`config.ts`).
-- `src/layouts/`: Page wrappers (e.g., `index.astro`).
-- `src/lib/` & `src/utils/`: Shared helper functions and logic.
-- `db/`: Database schema (`config.ts`) and seed data (`seed.ts`).
-- `test/`: Comprehensive test suites (Unit, end-to-end, Performance, Integration).
-- `docs/`: Detailed project documentation (`ARCHITECTURE.md`, `DEVELOPMENT.md`, etc.).
+- `src/actions/`: Type-safe server actions for form processing and data mutations.
+- `src/pages/`: File-based routing (SSR & Static endpoints).
+- `src/components/`: Reusable UI components (Islands).
+- `src/content/`: Type-safe MDX collections.
+- `src/layouts/`: Core page wrappers.
+- `src/lib/` & `src/utils/`: Shared utilities.
+- `db/`: Astro DB schema and seed data.
+- `test/`: Comprehensive test suites.
+- `docs/`: Technical documentation.
+- `.gemini/`: Agent session state, settings, and local metadata artifacts.
+- `.agent/`: Standard workflow definitions and active skill symlinks.
+- `.agents/`: Physical repository for AI agent skills managed by the `skills` CLI.
 
 ## ⚡ Key Commands
 
 ### Development
 
-- `npm run dev`: Start local development server (http://localhost:4321).
+- `npm run dev`: Start local development server ([http://localhost:4321](http://localhost:4321)).
 - `npm run build`: Build for production.
 - `npm run preview`: Preview the production build locally.
 - `npm run db:seed`: Seed the local SQLite database.
