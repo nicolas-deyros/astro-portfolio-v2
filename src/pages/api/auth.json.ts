@@ -12,6 +12,14 @@ export const prerender = false
 
 export const POST: APIRoute = async ({ request, cookies }) => {
 	try {
+		const contentType = request.headers.get('content-type') ?? ''
+		if (!contentType.includes('application/json')) {
+			return new Response(
+				JSON.stringify({ success: false, message: 'Content-Type must be application/json' }),
+				{ status: 415, headers: { 'Content-Type': 'application/json' } },
+			)
+		}
+
 		const body = await request.json()
 		const { action, secretKey } = body
 
