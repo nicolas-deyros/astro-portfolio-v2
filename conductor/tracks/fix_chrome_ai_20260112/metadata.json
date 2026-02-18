@@ -1,8 +1,8 @@
 {
-  "track_id": "fix_chrome_ai_20260112",
-  "type": "bug",
-  "status": "completed",
-  "created_at": "2026-01-12T10:50:00Z",
-  "updated_at": "2026-01-12T12:30:00Z",
-  "description": "Fix AI translation and AI resume implementations (failing locally and on production)."
+	"track_id": "fix_chrome_ai_20260112",
+	"type": "bug",
+	"status": "completed",
+	"created_at": "2026-01-12T10:50:00Z",
+	"updated_at": "2026-01-12T12:30:00Z",
+	"description": "Fix AI translation and AI resume implementations (failing locally and on production)."
 }

@@ -4,9 +4,9 @@
 
 Critical regressions have been identified:
 
-1.  **AI Summarizer**: Timeouts during model download/initialization.
-2.  **AI Translator**: Fails to translate despite UI updates.
-3.  **Database**: The `Links` table is empty, and `db:seed` crashes with a libuv assertion error.
+1. **AI Summarizer**: Timeouts during model download/initialization.
+2. **AI Translator**: Fails to translate despite UI updates.
+3. **Database**: The `Links` table is empty, and `db:seed` crashes with a libuv assertion error.
 
 ## 2. Problem Statement
 

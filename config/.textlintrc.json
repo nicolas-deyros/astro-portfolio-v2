@@ -20,7 +20,24 @@
 		},
 		"alex": {
 			"severity": "warning",
-			"allow": ["special", "simple", "just", "easy", "hooks", "hook", "master", "husky", "hero", "attacks", "safely", "failure", "failures", "invalid", "execution", "hijacking"]
+			"allow": [
+				"special",
+				"simple",
+				"just",
+				"easy",
+				"hooks",
+				"hook",
+				"master",
+				"husky",
+				"hero",
+				"attacks",
+				"safely",
+				"failure",
+				"failures",
+				"invalid",
+				"execution",
+				"hijacking"
+			]
 		},
 		"terminology": {
 			"severity": "error",

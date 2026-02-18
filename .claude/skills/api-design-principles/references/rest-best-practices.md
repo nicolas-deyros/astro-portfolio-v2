@@ -255,19 +255,19 @@ X-API-Key: your-api-key-here
 
 ```json
 {
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Request validation failed",
-    "details": [
-      {
-        "field": "email",
-        "message": "Invalid email format",
-        "value": "not-an-email"
-      }
-    ],
-    "timestamp": "2025-10-16T12:00:00Z",
-    "path": "/api/users"
-  }
+	"error": {
+		"code": "VALIDATION_ERROR",
+		"message": "Request validation failed",
+		"details": [
+			{
+				"field": "email",
+				"message": "Invalid email format",
+				"value": "not-an-email"
+			}
+		],
+		"timestamp": "2025-10-16T12:00:00Z",
+		"path": "/api/users"
+	}
 }
 ```
 

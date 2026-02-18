@@ -1,0 +1,105 @@
+---
+import Layout from '@layouts/index.astro'
+import SkillBadge from '@components/Skills/SkillBadge'
+
+const skills = [
+	{
+		name: 'Astro',
+		icon: 'vscode-icons:file-type-astro',
+		level: 'Expert',
+		color: 'orange',
+		description: 'Island Architecture & Server-First Rendering',
+	},
+	{
+		name: 'React',
+		icon: 'vscode-icons:file-type-reactjs',
+		level: 'Advanced',
+		color: 'blue',
+		description: 'Modern UI logic and State Management',
+	},
+	{
+		name: 'Tailwind 4',
+		icon: 'vscode-icons:file-type-tailwind',
+		level: 'Lover',
+		color: 'cyan',
+		description: 'Utility-first CSS at lightspeed',
+	},
+	{
+		name: 'TypeScript',
+		icon: 'vscode-icons:file-type-typescript-official',
+		level: 'Master',
+		color: 'blue',
+		description: 'Type-safe robust application design',
+	},
+	{
+		name: 'Node.js',
+		icon: 'vscode-icons:file-type-node',
+		level: 'Backend',
+		color: 'green',
+		description: 'Scalable server-side environments',
+	},
+	{
+		name: 'AI Agents',
+		icon: 'fluent:bot-24-filled',
+		level: 'Expert',
+		color: 'purple',
+		description: 'Building autonomous coding assistants',
+	},
+]
+---
+
+<Layout
+	title="Skill Badges Demo"
+	description="Demonstrating the new Retro-Futuristic Skill Badge component">
+	<div
+		class="relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-black/90 p-8">
+		{/* Decorative Background Elements */}
+		<div
+			class="pointer-events-none absolute top-0 left-0 h-full w-full overflow-hidden">
+			<div
+				class="absolute -top-[10%] -left-[5%] h-[40%] w-[40%] rounded-full bg-blue-500/10 blur-[120px]">
+			</div>
+			<div
+				class="absolute -right-[5%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-purple-500/10 blur-[120px]">
+			</div>
+		</div>
+
+		<div class="z-10 mb-16 max-w-2xl text-center">
+			<h1
+				class="mb-4 bg-gradient-to-b from-white to-slate-500 bg-clip-text text-4xl font-black tracking-tighter text-transparent md:text-6xl">
+				Skill Forge
+			</h1>
+			<p class="text-lg font-medium text-slate-400 md:text-xl">
+				Experience the fusion of <span class="text-blue-400">
+					Glassmorphism
+				</span> and <span class="text-purple-400">Retro-Futurism</span>. A
+				demonstration of the new Frontend Design skill capability.
+			</p>
+		</div>
+
+		<div
+			class="z-10 grid w-full max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+			{skills.map(skill => <SkillBadge client:load {...skill} />)}
+		</div>
+
+		<div
+			class="z-10 mt-20 max-w-3xl rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-md">
+			<p class="text-sm text-slate-500 italic">
+				"Design is not just what it looks like and feels like. Design is how it
+				works." — This component combines Astro's partial hydration with
+				high-fidelity Tailwind 4 styling.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	/* Optional: Custom glass reflection effect */
+	.glass-reflection {
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.1) 0%,
+			rgba(255, 255, 255, 0) 100%
+		);
+	}
+</style>

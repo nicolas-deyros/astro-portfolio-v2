@@ -1,5 +1,5 @@
 import { type Browser, launch, type Page } from 'puppeteer'
-import { afterAll,beforeAll, describe, expect, test } from 'vitest'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
 describe('Security Hardening Validation', () => {
 	let browser: Browser

@@ -46,5 +46,24 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 		description={description}
 		noindex={noindex}
 		nofollow={nofollow}
+		openGraph={{
+			basic: {
+				title: `Nicolás Deyros | ${title}`,
+				type: 'website',
+				image: 'https://www.nicolasdeyros.dev/favicon.svg',
+			},
+			optional: {
+				description: description,
+				siteName: 'Nicolás Deyros Portfolio',
+			},
+		}}
+		twitter={{
+			card: 'summary_large_image',
+			site: '@ndeyros',
+			creator: '@ndeyros',
+			title: `Nicolás Deyros | ${title}`,
+			description: description,
+			image: 'https://www.nicolasdeyros.dev/favicon.svg',
+		}}
 	/>
 </head>
