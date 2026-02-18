@@ -13,17 +13,14 @@ export interface SessionInfo {
  * Using Web Crypto API for better security than crypto.randomUUID()
  */
 export function generateSecureToken(): string {
-	// Generate 32 bytes of random data
 	const array = new Uint8Array(32)
 	crypto.getRandomValues(array)
 
-	// Convert to base64url (URL-safe base64)
 	const base64 = btoa(String.fromCharCode(...array))
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
 		.replace(/=/g, '')
 
-	// Add timestamp for uniqueness
 	const timestamp = Date.now().toString(36)
 
 	return `${base64}.${timestamp}`
