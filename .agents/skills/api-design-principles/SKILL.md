@@ -257,54 +257,54 @@ class UserResponse(BaseModel):
 
 # Clear type definitions
 type User {
-  id: ID!
-  email: String!
-  name: String!
-  createdAt: DateTime!
+	id: ID!
+	email: String!
+	name: String!
+	createdAt: DateTime!
 
-  # Relationships
-  orders(first: Int = 20, after: String, status: OrderStatus): OrderConnection!
+	# Relationships
+	orders(first: Int = 20, after: String, status: OrderStatus): OrderConnection!
 
-  profile: UserProfile
+	profile: UserProfile
 }
 
 type Order {
-  id: ID!
-  status: OrderStatus!
-  total: Money!
-  items: [OrderItem!]!
-  createdAt: DateTime!
+	id: ID!
+	status: OrderStatus!
+	total: Money!
+	items: [OrderItem!]!
+	createdAt: DateTime!
 
-  # Back-reference
-  user: User!
+	# Back-reference
+	user: User!
 }
 
 # Pagination pattern (Relay-style)
 type OrderConnection {
-  edges: [OrderEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
+	edges: [OrderEdge!]!
+	pageInfo: PageInfo!
+	totalCount: Int!
 }
 
 type OrderEdge {
-  node: Order!
-  cursor: String!
+	node: Order!
+	cursor: String!
 }
 
 type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
+	hasNextPage: Boolean!
+	hasPreviousPage: Boolean!
+	startCursor: String
+	endCursor: String
 }
 
 # Enums for type safety
 enum OrderStatus {
-  PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
+	PENDING
+	CONFIRMED
+	SHIPPED
+	DELIVERED
+	CANCELLED
 }
 
 # Custom scalars
@@ -313,37 +313,37 @@ scalar Money
 
 # Query root
 type Query {
-  user(id: ID!): User
-  users(first: Int = 20, after: String, search: String): UserConnection!
+	user(id: ID!): User
+	users(first: Int = 20, after: String, search: String): UserConnection!
 
-  order(id: ID!): Order
+	order(id: ID!): Order
 }
 
 # Mutation root
 type Mutation {
-  createUser(input: CreateUserInput!): CreateUserPayload!
-  updateUser(input: UpdateUserInput!): UpdateUserPayload!
-  deleteUser(id: ID!): DeleteUserPayload!
+	createUser(input: CreateUserInput!): CreateUserPayload!
+	updateUser(input: UpdateUserInput!): UpdateUserPayload!
+	deleteUser(id: ID!): DeleteUserPayload!
 
-  createOrder(input: CreateOrderInput!): CreateOrderPayload!
+	createOrder(input: CreateOrderInput!): CreateOrderPayload!
 }
 
 # Input types for mutations
 input CreateUserInput {
-  email: String!
-  name: String!
-  password: String!
+	email: String!
+	name: String!
+	password: String!
 }
 
 # Payload types for mutations
 type CreateUserPayload {
-  user: User
-  errors: [Error!]
+	user: User
+	errors: [Error!]
 }
 
 type Error {
-  field: String
-  message: String!
+	field: String
+	message: String!
 }
 ```
 

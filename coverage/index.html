@@ -1,566 +1,871 @@
-
 <!doctype html>
 <html lang="en">
+	<head>
+		<title>Code coverage report for All files</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="prettify.css" />
+		<link rel="stylesheet" href="base.css" />
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style type="text/css">
+			.coverage-summary .sorter {
+				background-image: url(sort-arrow-sprite.png);
+			}
+		</style>
+	</head>
 
-<head>
-    <title>Code coverage report for All files</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type='text/css'>
-        .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
-        }
-    </style>
-</head>
-    
-<body>
-<div class='wrapper'>
-    <div class='pad1'>
-        <h1>All files</h1>
-        <div class='clearfix'>
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">8.23% </span>
-                <span class="quiet">Statements</span>
-                <span class='fraction'>415/5042</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">60.85% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>143/235</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">36.84% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>35/95</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">8.23% </span>
-                <span class="quiet">Lines</span>
-                <span class='fraction'>415/5042</span>
-            </div>
-        
-            
-        </div>
-        <p class="quiet">
-            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
-        </p>
-        <template id="filterTemplate">
-            <div class="quiet">
-                Filter:
-                <input type="search" id="fileSearch">
-            </div>
-        </template>
-    </div>
-    <div class='status-line low'></div>
-    <div class="pad1">
-<table class="coverage-summary">
-<thead>
-<tr>
-   <th data-col="file" data-fmt="html" data-html="true" class="file">File</th>
-   <th data-col="pic" data-type="number" data-fmt="html" data-html="true" class="pic"></th>
-   <th data-col="statements" data-type="number" data-fmt="pct" class="pct">Statements</th>
-   <th data-col="statements_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="branches" data-type="number" data-fmt="pct" class="pct">Branches</th>
-   <th data-col="branches_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="functions" data-type="number" data-fmt="pct" class="pct">Functions</th>
-   <th data-col="functions_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="lines" data-type="number" data-fmt="pct" class="pct">Lines</th>
-   <th data-col="lines_raw" data-type="number" data-fmt="html" class="abs"></th>
-</tr>
-</thead>
-<tbody><tr>
-	<td class="file low" data-value="astro-portfolio-v2"><a href="astro-portfolio-v2/index.html">astro-portfolio-v2</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="41" class="abs low">0/41</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="41" class="abs low">0/41</td>
-	</tr>
+	<body>
+		<div class="wrapper">
+			<div class="pad1">
+				<h1>All files</h1>
+				<div class="clearfix">
+					<div class="fl pad1y space-right2">
+						<span class="strong">8.23%</span>
+						<span class="quiet">Statements</span>
+						<span class="fraction">415/5042</span>
+					</div>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/config"><a href="astro-portfolio-v2/config/index.html">astro-portfolio-v2/config</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="32" class="abs low">0/32</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="32" class="abs low">0/32</td>
-	</tr>
+					<div class="fl pad1y space-right2">
+						<span class="strong">60.85%</span>
+						<span class="quiet">Branches</span>
+						<span class="fraction">143/235</span>
+					</div>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/db"><a href="astro-portfolio-v2/db/index.html">astro-portfolio-v2/db</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="141" class="abs low">0/141</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="141" class="abs low">0/141</td>
-	</tr>
+					<div class="fl pad1y space-right2">
+						<span class="strong">36.84%</span>
+						<span class="quiet">Functions</span>
+						<span class="fraction">35/95</span>
+					</div>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src"><a href="astro-portfolio-v2/src/index.html">astro-portfolio-v2/src</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="18" class="abs low">0/18</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="18" class="abs low">0/18</td>
-	</tr>
+					<div class="fl pad1y space-right2">
+						<span class="strong">8.23%</span>
+						<span class="quiet">Lines</span>
+						<span class="fraction">415/5042</span>
+					</div>
+				</div>
+				<p class="quiet">
+					Press
+					<em>n</em>
+					or
+					<em>j</em>
+					to go to the next uncovered block,
+					<em>b</em>
+					,
+					<em>p</em>
+					or
+					<em>k</em>
+					for the previous block.
+				</p>
+				<template id="filterTemplate">
+					<div class="quiet">
+						Filter:
+						<input type="search" id="fileSearch" />
+					</div>
+				</template>
+			</div>
+			<div class="status-line low"></div>
+			<div class="pad1">
+				<table class="coverage-summary">
+					<thead>
+						<tr>
+							<th data-col="file" data-fmt="html" data-html="true" class="file">
+								File
+							</th>
+							<th
+								data-col="pic"
+								data-type="number"
+								data-fmt="html"
+								data-html="true"
+								class="pic"></th>
+							<th
+								data-col="statements"
+								data-type="number"
+								data-fmt="pct"
+								class="pct">
+								Statements
+							</th>
+							<th
+								data-col="statements_raw"
+								data-type="number"
+								data-fmt="html"
+								class="abs"></th>
+							<th
+								data-col="branches"
+								data-type="number"
+								data-fmt="pct"
+								class="pct">
+								Branches
+							</th>
+							<th
+								data-col="branches_raw"
+								data-type="number"
+								data-fmt="html"
+								class="abs"></th>
+							<th
+								data-col="functions"
+								data-type="number"
+								data-fmt="pct"
+								class="pct">
+								Functions
+							</th>
+							<th
+								data-col="functions_raw"
+								data-type="number"
+								data-fmt="html"
+								class="abs"></th>
+							<th
+								data-col="lines"
+								data-type="number"
+								data-fmt="pct"
+								class="pct">
+								Lines
+							</th>
+							<th
+								data-col="lines_raw"
+								data-type="number"
+								data-fmt="html"
+								class="abs"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2">
+								<a href="astro-portfolio-v2/index.html">astro-portfolio-v2</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="41" class="abs low">0/41</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="41" class="abs low">0/41</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/actions"><a href="astro-portfolio-v2/src/actions/index.html">astro-portfolio-v2/src/actions</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="323" class="abs low">0/323</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="323" class="abs low">0/323</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/config">
+								<a href="astro-portfolio-v2/config/index.html">
+									astro-portfolio-v2/config
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="32" class="abs low">0/32</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="32" class="abs low">0/32</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components"><a href="astro-portfolio-v2/src/components/index.html">astro-portfolio-v2/src/components</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="49" class="abs low">0/49</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="49" class="abs low">0/49</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/db">
+								<a href="astro-portfolio-v2/db/index.html">
+									astro-portfolio-v2/db
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="141" class="abs low">0/141</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="141" class="abs low">0/141</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/AudioPlayer"><a href="astro-portfolio-v2/src/components/AudioPlayer/index.html">astro-portfolio-v2/src/components/AudioPlayer</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="515" class="abs low">0/515</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="515" class="abs low">0/515</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src">
+								<a href="astro-portfolio-v2/src/index.html">
+									astro-portfolio-v2/src
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="18" class="abs low">0/18</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="18" class="abs low">0/18</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/ChromeAI"><a href="astro-portfolio-v2/src/components/ChromeAI/index.html">astro-portfolio-v2/src/components/ChromeAI</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/actions">
+								<a href="astro-portfolio-v2/src/actions/index.html">
+									astro-portfolio-v2/src/actions
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="323" class="abs low">0/323</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="323" class="abs low">0/323</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Form"><a href="astro-portfolio-v2/src/components/Form/index.html">astro-portfolio-v2/src/components/Form</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="239" class="abs low">0/239</td>
-	<td data-value="33.33" class="pct low">33.33%</td>
-	<td data-value="3" class="abs low">1/3</td>
-	<td data-value="33.33" class="pct low">33.33%</td>
-	<td data-value="3" class="abs low">1/3</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="239" class="abs low">0/239</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components">
+								<a href="astro-portfolio-v2/src/components/index.html">
+									astro-portfolio-v2/src/components
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="49" class="abs low">0/49</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="49" class="abs low">0/49</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Header"><a href="astro-portfolio-v2/src/components/Header/index.html">astro-portfolio-v2/src/components/Header</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/AudioPlayer">
+								<a
+									href="astro-portfolio-v2/src/components/AudioPlayer/index.html">
+									astro-portfolio-v2/src/components/AudioPlayer
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="515" class="abs low">0/515</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="515" class="abs low">0/515</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Home"><a href="astro-portfolio-v2/src/components/Home/index.html">astro-portfolio-v2/src/components/Home</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/ChromeAI">
+								<a href="astro-portfolio-v2/src/components/ChromeAI/index.html">
+									astro-portfolio-v2/src/components/ChromeAI
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Link"><a href="astro-portfolio-v2/src/components/Link/index.html">astro-portfolio-v2/src/components/Link</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Form">
+								<a href="astro-portfolio-v2/src/components/Form/index.html">
+									astro-portfolio-v2/src/components/Form
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="239" class="abs low">0/239</td>
+							<td data-value="33.33" class="pct low">33.33%</td>
+							<td data-value="3" class="abs low">1/3</td>
+							<td data-value="33.33" class="pct low">33.33%</td>
+							<td data-value="3" class="abs low">1/3</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="239" class="abs low">0/239</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/List"><a href="astro-portfolio-v2/src/components/List/index.html">astro-portfolio-v2/src/components/List</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="14" class="abs low">0/14</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Header">
+								<a href="astro-portfolio-v2/src/components/Header/index.html">
+									astro-portfolio-v2/src/components/Header
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Summary"><a href="astro-portfolio-v2/src/components/Summary/index.html">astro-portfolio-v2/src/components/Summary</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Home">
+								<a href="astro-portfolio-v2/src/components/Home/index.html">
+									astro-portfolio-v2/src/components/Home
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/components/Translation"><a href="astro-portfolio-v2/src/components/Translation/index.html">astro-portfolio-v2/src/components/Translation</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Link">
+								<a href="astro-portfolio-v2/src/components/Link/index.html">
+									astro-portfolio-v2/src/components/Link
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/config"><a href="astro-portfolio-v2/src/config/index.html">astro-portfolio-v2/src/config</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="21" class="abs low">0/21</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="21" class="abs low">0/21</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/List">
+								<a href="astro-portfolio-v2/src/components/List/index.html">
+									astro-portfolio-v2/src/components/List
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="14" class="abs low">0/14</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/content"><a href="astro-portfolio-v2/src/content/index.html">astro-portfolio-v2/src/content</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="24" class="abs low">0/24</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="24" class="abs low">0/24</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Summary">
+								<a href="astro-portfolio-v2/src/components/Summary/index.html">
+									astro-portfolio-v2/src/components/Summary
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/data"><a href="astro-portfolio-v2/src/data/index.html">astro-portfolio-v2/src/data</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="37" class="abs low">0/37</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="37" class="abs low">0/37</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/components/Translation">
+								<a
+									href="astro-portfolio-v2/src/components/Translation/index.html">
+									astro-portfolio-v2/src/components/Translation
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/hooks"><a href="astro-portfolio-v2/src/hooks/index.html">astro-portfolio-v2/src/hooks</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="73" class="abs low">0/73</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="73" class="abs low">0/73</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/config">
+								<a href="astro-portfolio-v2/src/config/index.html">
+									astro-portfolio-v2/src/config
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="21" class="abs low">0/21</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="21" class="abs low">0/21</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/layouts"><a href="astro-portfolio-v2/src/layouts/index.html">astro-portfolio-v2/src/layouts</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="7" class="abs low">0/7</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/content">
+								<a href="astro-portfolio-v2/src/content/index.html">
+									astro-portfolio-v2/src/content
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="24" class="abs low">0/24</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="24" class="abs low">0/24</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/lib"><a href="astro-portfolio-v2/src/lib/index.html">astro-portfolio-v2/src/lib</a></td>
-	<td data-value="4.67" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 4%"></div><div class="cover-empty" style="width: 96%"></div></div>
-	</td>
-	<td data-value="4.67" class="pct low">4.67%</td>
-	<td data-value="899" class="abs low">42/899</td>
-	<td data-value="56.25" class="pct medium">56.25%</td>
-	<td data-value="16" class="abs medium">9/16</td>
-	<td data-value="57.14" class="pct medium">57.14%</td>
-	<td data-value="7" class="abs medium">4/7</td>
-	<td data-value="4.67" class="pct low">4.67%</td>
-	<td data-value="899" class="abs low">42/899</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/data">
+								<a href="astro-portfolio-v2/src/data/index.html">
+									astro-portfolio-v2/src/data
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="37" class="abs low">0/37</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="37" class="abs low">0/37</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages"><a href="astro-portfolio-v2/src/pages/index.html">astro-portfolio-v2/src/pages</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="144" class="abs low">0/144</td>
-	<td data-value="14.28" class="pct low">14.28%</td>
-	<td data-value="7" class="abs low">1/7</td>
-	<td data-value="14.28" class="pct low">14.28%</td>
-	<td data-value="7" class="abs low">1/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="144" class="abs low">0/144</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/hooks">
+								<a href="astro-portfolio-v2/src/hooks/index.html">
+									astro-portfolio-v2/src/hooks
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="73" class="abs low">0/73</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="73" class="abs low">0/73</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/admin"><a href="astro-portfolio-v2/src/pages/admin/index.html">astro-portfolio-v2/src/pages/admin</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="29" class="abs low">0/29</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="5" class="abs low">0/5</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="5" class="abs low">0/5</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="29" class="abs low">0/29</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/layouts">
+								<a href="astro-portfolio-v2/src/layouts/index.html">
+									astro-portfolio-v2/src/layouts
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="7" class="abs low">0/7</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/api"><a href="astro-portfolio-v2/src/pages/api/index.html">astro-portfolio-v2/src/pages/api</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="600" class="abs low">0/600</td>
-	<td data-value="33.33" class="pct low">33.33%</td>
-	<td data-value="3" class="abs low">1/3</td>
-	<td data-value="33.33" class="pct low">33.33%</td>
-	<td data-value="3" class="abs low">1/3</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="600" class="abs low">0/600</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/lib">
+								<a href="astro-portfolio-v2/src/lib/index.html">
+									astro-portfolio-v2/src/lib
+								</a>
+							</td>
+							<td data-value="4.67" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 4%"></div>
+									<div class="cover-empty" style="width: 96%"></div>
+								</div>
+							</td>
+							<td data-value="4.67" class="pct low">4.67%</td>
+							<td data-value="899" class="abs low">42/899</td>
+							<td data-value="56.25" class="pct medium">56.25%</td>
+							<td data-value="16" class="abs medium">9/16</td>
+							<td data-value="57.14" class="pct medium">57.14%</td>
+							<td data-value="7" class="abs medium">4/7</td>
+							<td data-value="4.67" class="pct low">4.67%</td>
+							<td data-value="899" class="abs low">42/899</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/blog"><a href="astro-portfolio-v2/src/pages/blog/index.html">astro-portfolio-v2/src/pages/blog</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="424" class="abs low">0/424</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="424" class="abs low">0/424</td>
-	</tr>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/pages">
+								<a href="astro-portfolio-v2/src/pages/index.html">
+									astro-portfolio-v2/src/pages
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="144" class="abs low">0/144</td>
+							<td data-value="14.28" class="pct low">14.28%</td>
+							<td data-value="7" class="abs low">1/7</td>
+							<td data-value="14.28" class="pct low">14.28%</td>
+							<td data-value="7" class="abs low">1/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="144" class="abs low">0/144</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/blog/categories"><a href="astro-portfolio-v2/src/pages/blog/categories/index.html">astro-portfolio-v2/src/pages/blog/categories</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="97" class="abs low">0/97</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="97" class="abs low">0/97</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/admin">
+								<a href="astro-portfolio-v2/src/pages/admin/index.html">
+									astro-portfolio-v2/src/pages/admin
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="29" class="abs low">0/29</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="5" class="abs low">0/5</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="5" class="abs low">0/5</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="29" class="abs low">0/29</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/blog/tags"><a href="astro-portfolio-v2/src/pages/blog/tags/index.html">astro-portfolio-v2/src/pages/blog/tags</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="93" class="abs low">0/93</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="2" class="abs low">0/2</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="93" class="abs low">0/93</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/api">
+								<a href="astro-portfolio-v2/src/pages/api/index.html">
+									astro-portfolio-v2/src/pages/api
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="600" class="abs low">0/600</td>
+							<td data-value="33.33" class="pct low">33.33%</td>
+							<td data-value="3" class="abs low">1/3</td>
+							<td data-value="33.33" class="pct low">33.33%</td>
+							<td data-value="3" class="abs low">1/3</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="600" class="abs low">0/600</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/pages/links"><a href="astro-portfolio-v2/src/pages/links/index.html">astro-portfolio-v2/src/pages/links</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="361" class="abs low">0/361</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="361" class="abs low">0/361</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/blog">
+								<a href="astro-portfolio-v2/src/pages/blog/index.html">
+									astro-portfolio-v2/src/pages/blog
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="424" class="abs low">0/424</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="424" class="abs low">0/424</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/src/schemas"><a href="astro-portfolio-v2/src/schemas/index.html">astro-portfolio-v2/src/schemas</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="21" class="abs low">0/21</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="1" class="abs low">0/1</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="21" class="abs low">0/21</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/blog/categories">
+								<a
+									href="astro-portfolio-v2/src/pages/blog/categories/index.html">
+									astro-portfolio-v2/src/pages/blog/categories
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="97" class="abs low">0/97</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="97" class="abs low">0/97</td>
+						</tr>
 
-<tr>
-	<td class="file high" data-value="astro-portfolio-v2/src/utils"><a href="astro-portfolio-v2/src/utils/index.html">astro-portfolio-v2/src/utils</a></td>
-	<td data-value="84.38" class="pic high">
-	<div class="chart"><div class="cover-fill" style="width: 84%"></div><div class="cover-empty" style="width: 16%"></div></div>
-	</td>
-	<td data-value="84.38" class="pct high">84.38%</td>
-	<td data-value="442" class="abs high">373/442</td>
-	<td data-value="81.16" class="pct high">81.16%</td>
-	<td data-value="154" class="abs high">125/154</td>
-	<td data-value="95.65" class="pct high">95.65%</td>
-	<td data-value="23" class="abs high">22/23</td>
-	<td data-value="84.38" class="pct high">84.38%</td>
-	<td data-value="442" class="abs high">373/442</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/blog/tags">
+								<a href="astro-portfolio-v2/src/pages/blog/tags/index.html">
+									astro-portfolio-v2/src/pages/blog/tags
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="93" class="abs low">0/93</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="2" class="abs low">0/2</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="93" class="abs low">0/93</td>
+						</tr>
 
-<tr>
-	<td class="file low" data-value="astro-portfolio-v2/tools"><a href="astro-portfolio-v2/tools/index.html">astro-portfolio-v2/tools</a></td>
-	<td data-value="0" class="pic low">
-	<div class="chart"><div class="cover-fill" style="width: 0%"></div><div class="cover-empty" style="width: 100%"></div></div>
-	</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="335" class="abs low">0/335</td>
-	<td data-value="85.71" class="pct high">85.71%</td>
-	<td data-value="7" class="abs high">6/7</td>
-	<td data-value="85.71" class="pct high">85.71%</td>
-	<td data-value="7" class="abs high">6/7</td>
-	<td data-value="0" class="pct low">0%</td>
-	<td data-value="335" class="abs low">0/335</td>
-	</tr>
+						<tr>
+							<td
+								class="file low"
+								data-value="astro-portfolio-v2/src/pages/links">
+								<a href="astro-portfolio-v2/src/pages/links/index.html">
+									astro-portfolio-v2/src/pages/links
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="361" class="abs low">0/361</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="361" class="abs low">0/361</td>
+						</tr>
 
-</tbody>
-</table>
-</div>
-                <div class='push'></div><!-- for sticky footer -->
-            </div><!-- /wrapper -->
-            <div class='footer quiet pad2 space-top1 center small'>
-                Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-09T15:06:37.802Z
-            </div>
-        <script src="prettify.js"></script>
-        <script>
-            window.onload = function () {
-                prettyPrint();
-            };
-        </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
-    </body>
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/src/schemas">
+								<a href="astro-portfolio-v2/src/schemas/index.html">
+									astro-portfolio-v2/src/schemas
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="21" class="abs low">0/21</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="1" class="abs low">0/1</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="21" class="abs low">0/21</td>
+						</tr>
+
+						<tr>
+							<td class="file high" data-value="astro-portfolio-v2/src/utils">
+								<a href="astro-portfolio-v2/src/utils/index.html">
+									astro-portfolio-v2/src/utils
+								</a>
+							</td>
+							<td data-value="84.38" class="pic high">
+								<div class="chart">
+									<div class="cover-fill" style="width: 84%"></div>
+									<div class="cover-empty" style="width: 16%"></div>
+								</div>
+							</td>
+							<td data-value="84.38" class="pct high">84.38%</td>
+							<td data-value="442" class="abs high">373/442</td>
+							<td data-value="81.16" class="pct high">81.16%</td>
+							<td data-value="154" class="abs high">125/154</td>
+							<td data-value="95.65" class="pct high">95.65%</td>
+							<td data-value="23" class="abs high">22/23</td>
+							<td data-value="84.38" class="pct high">84.38%</td>
+							<td data-value="442" class="abs high">373/442</td>
+						</tr>
+
+						<tr>
+							<td class="file low" data-value="astro-portfolio-v2/tools">
+								<a href="astro-portfolio-v2/tools/index.html">
+									astro-portfolio-v2/tools
+								</a>
+							</td>
+							<td data-value="0" class="pic low">
+								<div class="chart">
+									<div class="cover-fill" style="width: 0%"></div>
+									<div class="cover-empty" style="width: 100%"></div>
+								</div>
+							</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="335" class="abs low">0/335</td>
+							<td data-value="85.71" class="pct high">85.71%</td>
+							<td data-value="7" class="abs high">6/7</td>
+							<td data-value="85.71" class="pct high">85.71%</td>
+							<td data-value="7" class="abs high">6/7</td>
+							<td data-value="0" class="pct low">0%</td>
+							<td data-value="335" class="abs low">0/335</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="push"></div>
+			<!-- for sticky footer -->
+		</div>
+		<!-- /wrapper -->
+		<div class="footer quiet pad2 space-top1 center small">
+			Code coverage generated by
+			<a
+				href="https://istanbul.js.org/"
+				target="_blank"
+				rel="noopener noreferrer">
+				istanbul
+			</a>
+			at 2026-01-09T15:06:37.802Z
+		</div>
+		<script src="prettify.js"></script>
+		<script>
+			window.onload = function () {
+				prettyPrint()
+			}
+		</script>
+		<script src="sorter.js"></script>
+		<script src="block-navigation.js"></script>
+	</body>
 </html>
-    

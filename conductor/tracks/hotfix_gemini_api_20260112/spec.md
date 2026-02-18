@@ -4,8 +4,8 @@
 
 This hotfix addresses two critical bugs blocking the AI features:
 
-1.  **Summarizer**: Persistent "No output language" error despite previous fixes.
-2.  **Translator (Gemini Fallback)**: 404 Error when calling `gemini-1.5-flash`.
+1. **Summarizer**: Persistent "No output language" error despite previous fixes.
+2. **Translator (Gemini Fallback)**: 404 Error when calling `gemini-1.5-flash`.
 
 ## 2. Root Cause Analysis
 

@@ -15,19 +15,19 @@ The system has been refactored into a **Hybrid AI Architecture** to resolve crit
 
 ### Setup Requirements
 
-1.  **GEMINI_API_KEY**: You must provide a valid Gemini API key from [Google AI Studio](https://aistudio.google.com).
-2.  **Environment Variable**: Add `GEMINI_API_KEY=your_key_here` to your `.env` file (local) and production environment variables (Vercel/Vite).
+1. **GEMINI_API_KEY**: You must provide a valid Gemini API key from [Google AI Studio](https://aistudio.google.com).
+2. **Environment Variable**: Add `GEMINI_API_KEY=your_key_here` to your `.env` file (local) and production environment variables (Vercel/Vite).
 
 ## Architecture
 
 ### Hybrid Workflow
 
-1.  **Request**: User clicks "Summarize" or "Translate".
-2.  **Local Attempt**: `BlogSummarizer` or `BlogTranslator` tries to use browser-native APIs.
-3.  **Cloud Fallback**: If local fails, a `fetch` request is made to `/api/ai/process`.
-4.  **Cache Check**: Server checks if the result exists in Astro DB.
-5.  **AI Generation**: If not cached, Gemini 1.5 Flash generates the result.
-6.  **Store & Return**: Result is saved to the cache and returned to the UI.
+1. **Request**: User clicks "Summarize" or "Translate".
+2. **Local Attempt**: `BlogSummarizer` or `BlogTranslator` tries to use browser-native APIs.
+3. **Cloud Fallback**: If local fails, a `fetch` request is made to `/api/ai/process`.
+4. **Cache Check**: Server checks if the result exists in Astro DB.
+5. **AI Generation**: If not cached, Gemini 1.5 Flash generates the result.
+6. **Store & Return**: Result is saved to the cache and returned to the UI.
 
 ### Components
 

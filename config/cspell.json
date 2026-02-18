@@ -44,7 +44,9 @@
 	],
 	"ignorePaths": [
 		"node_modules/**",
+		"**/node_modules/**",
 		"dist/**",
+		"**/dist/**",
 		".astro/**",
 		"coverage/**",
 		"*.log",
@@ -58,7 +60,8 @@
 		"src/assets/**/*.svg",
 		"test/**/*.snap",
 		".agent/**",
-		".agents/**"
+		".agents/**",
+		".claude/**"
 	],
 	"ignoreRegExpList": [
 		"\\b[A-Z]{2,}\\b",

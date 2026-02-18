@@ -129,11 +129,11 @@ feat: fix teh bug in seperate function  // Wrong: misspellings
 
 ### Content File Issues Detected
 
-- **Misspellings**: "seperate" → "separate"
+- **Misspellings**: "separate" → "separate"
 - **Passive voice**: "The bug was fixed" → "Fixed the bug"
 - **Weasel words**: "very good" → "good"
-- **Terminology**: "javascript" → "JavaScript"
-- **Capitalization**: "README" → "readme"
+- **Terminology**: "JavaScript" → "JavaScript"
+- **Capitalization**: "readme" → "readme"
 
 ## Customization
 

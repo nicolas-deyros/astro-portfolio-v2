@@ -1,6 +1,6 @@
 import { validateSession } from '@lib/session'
 import type { APIRoute, AstroCookies } from 'astro'
-import { db, eq,Links } from 'astro:db'
+import { db, eq, Links } from 'astro:db'
 
 // Centralized authentication check using the new session utility
 async function verifyAuth(cookies: AstroCookies): Promise<boolean> {

@@ -7,31 +7,31 @@
 ```graphql
 # user.graphql
 type User {
-  id: ID!
-  email: String!
-  name: String!
-  posts: [Post!]!
+	id: ID!
+	email: String!
+	name: String!
+	posts: [Post!]!
 }
 
 extend type Query {
-  user(id: ID!): User
-  users(first: Int, after: String): UserConnection!
+	user(id: ID!): User
+	users(first: Int, after: String): UserConnection!
 }
 
 extend type Mutation {
-  createUser(input: CreateUserInput!): CreateUserPayload!
+	createUser(input: CreateUserInput!): CreateUserPayload!
 }
 
 # post.graphql
 type Post {
-  id: ID!
-  title: String!
-  content: String!
-  author: User!
+	id: ID!
+	title: String!
+	content: String!
+	author: User!
 }
 
 extend type Query {
-  post(id: ID!): Post
+	post(id: ID!): Post
 }
 ```
 
@@ -41,11 +41,11 @@ extend type Query {
 
 ```graphql
 type User {
-  id: ID! # Always required
-  email: String! # Required
-  phone: String # Optional (nullable)
-  posts: [Post!]! # Non-null array of non-null posts
-  tags: [String!] # Nullable array of non-null strings
+	id: ID! # Always required
+	email: String! # Required
+	phone: String # Optional (nullable)
+	posts: [Post!]! # Non-null array of non-null posts
+	tags: [String!] # Nullable array of non-null strings
 }
 ```
 
@@ -53,24 +53,24 @@ type User {
 
 ```graphql
 interface Node {
-  id: ID!
-  createdAt: DateTime!
+	id: ID!
+	createdAt: DateTime!
 }
 
 type User implements Node {
-  id: ID!
-  createdAt: DateTime!
-  email: String!
+	id: ID!
+	createdAt: DateTime!
+	email: String!
 }
 
 type Post implements Node {
-  id: ID!
-  createdAt: DateTime!
-  title: String!
+	id: ID!
+	createdAt: DateTime!
+	title: String!
 }
 
 type Query {
-  node(id: ID!): Node
+	node(id: ID!): Node
 }
 ```
 
@@ -80,27 +80,27 @@ type Query {
 union SearchResult = User | Post | Comment
 
 type Query {
-  search(query: String!): [SearchResult!]!
+	search(query: String!): [SearchResult!]!
 }
 
 # Query example
 {
-  search(query: "graphql") {
-    ... on User {
-      name
-      email
-    }
-    ... on Post {
-      title
-      content
-    }
-    ... on Comment {
-      text
-      author {
-        name
-      }
-    }
-  }
+	search(query: "graphql") {
+		... on User {
+			name
+			email
+		}
+		... on Post {
+			title
+			content
+		}
+		... on Comment {
+			text
+			author {
+				name
+			}
+		}
+	}
 }
 ```
 
@@ -108,23 +108,23 @@ type Query {
 
 ```graphql
 input CreateUserInput {
-  email: String!
-  name: String!
-  password: String!
-  profileInput: ProfileInput
+	email: String!
+	name: String!
+	password: String!
+	profileInput: ProfileInput
 }
 
 input ProfileInput {
-  bio: String
-  avatar: String
-  website: String
+	bio: String
+	avatar: String
+	website: String
 }
 
 input UpdateUserInput {
-  id: ID!
-  email: String
-  name: String
-  profileInput: ProfileInput
+	id: ID!
+	email: String
+	name: String
+	profileInput: ProfileInput
 }
 ```
 
@@ -134,42 +134,42 @@ input UpdateUserInput {
 
 ```graphql
 type UserConnection {
-  edges: [UserEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
+	edges: [UserEdge!]!
+	pageInfo: PageInfo!
+	totalCount: Int!
 }
 
 type UserEdge {
-  node: User!
-  cursor: String!
+	node: User!
+	cursor: String!
 }
 
 type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
+	hasNextPage: Boolean!
+	hasPreviousPage: Boolean!
+	startCursor: String
+	endCursor: String
 }
 
 type Query {
-  users(first: Int, after: String, last: Int, before: String): UserConnection!
+	users(first: Int, after: String, last: Int, before: String): UserConnection!
 }
 
 # Usage
 {
-  users(first: 10, after: "cursor123") {
-    edges {
-      cursor
-      node {
-        id
-        name
-      }
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-  }
+	users(first: 10, after: "cursor123") {
+		edges {
+			cursor
+			node {
+				id
+				name
+			}
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
 }
 ```
 
@@ -177,14 +177,14 @@ type Query {
 
 ```graphql
 type UserList {
-  items: [User!]!
-  total: Int!
-  page: Int!
-  pageSize: Int!
+	items: [User!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
 }
 
 type Query {
-  users(page: Int = 1, pageSize: Int = 20): UserList!
+	users(page: Int = 1, pageSize: Int = 20): UserList!
 }
 ```
 
@@ -194,25 +194,25 @@ type Query {
 
 ```graphql
 input CreatePostInput {
-  title: String!
-  content: String!
-  tags: [String!]
+	title: String!
+	content: String!
+	tags: [String!]
 }
 
 type CreatePostPayload {
-  post: Post
-  errors: [Error!]
-  success: Boolean!
+	post: Post
+	errors: [Error!]
+	success: Boolean!
 }
 
 type Error {
-  field: String
-  message: String!
-  code: String!
+	field: String
+	message: String!
+	code: String!
 }
 
 type Mutation {
-  createPost(input: CreatePostInput!): CreatePostPayload!
+	createPost(input: CreatePostInput!): CreatePostPayload!
 }
 ```
 
@@ -220,19 +220,19 @@ type Mutation {
 
 ```graphql
 type UpdateUserPayload {
-  user: User
-  clientMutationId: String
-  errors: [Error!]
+	user: User
+	clientMutationId: String
+	errors: [Error!]
 }
 
 input UpdateUserInput {
-  id: ID!
-  name: String
-  clientMutationId: String
+	id: ID!
+	name: String
+	clientMutationId: String
 }
 
 type Mutation {
-  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+	updateUser(input: UpdateUserInput!): UpdateUserPayload!
 }
 ```
 
@@ -240,23 +240,23 @@ type Mutation {
 
 ```graphql
 input BatchCreateUserInput {
-  users: [CreateUserInput!]!
+	users: [CreateUserInput!]!
 }
 
 type BatchCreateUserPayload {
-  results: [CreateUserResult!]!
-  successCount: Int!
-  errorCount: Int!
+	results: [CreateUserResult!]!
+	successCount: Int!
+	errorCount: Int!
 }
 
 type CreateUserResult {
-  user: User
-  errors: [Error!]
-  index: Int!
+	user: User
+	errors: [Error!]
+	index: Int!
 }
 
 type Mutation {
-  batchCreateUsers(input: BatchCreateUserInput!): BatchCreateUserPayload!
+	batchCreateUsers(input: BatchCreateUserInput!): BatchCreateUserPayload!
 }
 ```
 
@@ -266,40 +266,40 @@ type Mutation {
 
 ```graphql
 type Query {
-  posts(
-    # Pagination
-    first: Int = 20
-    after: String
+	posts(
+		# Pagination
+		first: Int = 20
+		after: String
 
-    # Filtering
-    status: PostStatus
-    authorId: ID
-    tag: String
+		# Filtering
+		status: PostStatus
+		authorId: ID
+		tag: String
 
-    # Sorting
-    orderBy: PostOrderBy = CREATED_AT
-    orderDirection: OrderDirection = DESC
+		# Sorting
+		orderBy: PostOrderBy = CREATED_AT
+		orderDirection: OrderDirection = DESC
 
-    # Searching
-    search: String
-  ): PostConnection!
+		# Searching
+		search: String
+	): PostConnection!
 }
 
 enum PostStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+	DRAFT
+	PUBLISHED
+	ARCHIVED
 }
 
 enum PostOrderBy {
-  CREATED_AT
-  UPDATED_AT
-  TITLE
+	CREATED_AT
+	UPDATED_AT
+	TITLE
 }
 
 enum OrderDirection {
-  ASC
-  DESC
+	ASC
+	DESC
 }
 ```
 
@@ -307,17 +307,17 @@ enum OrderDirection {
 
 ```graphql
 type User {
-  firstName: String!
-  lastName: String!
-  fullName: String! # Computed in resolver
-  posts: [Post!]!
-  postCount: Int! # Computed, doesn't load all posts
+	firstName: String!
+	lastName: String!
+	fullName: String! # Computed in resolver
+	posts: [Post!]!
+	postCount: Int! # Computed, doesn't load all posts
 }
 
 type Post {
-  likeCount: Int!
-  commentCount: Int!
-  isLikedByViewer: Boolean! # Context-dependent
+	likeCount: Int!
+	commentCount: Int!
+	isLikedByViewer: Boolean! # Context-dependent
 }
 ```
 
@@ -325,28 +325,28 @@ type Post {
 
 ```graphql
 type Subscription {
-  postAdded: Post!
+	postAdded: Post!
 
-  postUpdated(postId: ID!): Post!
+	postUpdated(postId: ID!): Post!
 
-  userStatusChanged(userId: ID!): UserStatus!
+	userStatusChanged(userId: ID!): UserStatus!
 }
 
 type UserStatus {
-  userId: ID!
-  online: Boolean!
-  lastSeen: DateTime!
+	userId: ID!
+	online: Boolean!
+	lastSeen: DateTime!
 }
 
 # Client usage
 subscription {
-  postAdded {
-    id
-    title
-    author {
-      name
-    }
-  }
+	postAdded {
+		id
+		title
+		author {
+			name
+		}
+	}
 }
 ```
 
@@ -360,14 +360,14 @@ scalar JSON
 scalar Money
 
 type User {
-  email: Email!
-  website: URL
-  createdAt: DateTime!
-  metadata: JSON
+	email: Email!
+	website: URL
+	createdAt: DateTime!
+	metadata: JSON
 }
 
 type Product {
-  price: Money!
+	price: Money!
 }
 ```
 
@@ -402,14 +402,14 @@ query GetUser($isOwner: Boolean!) {
 directive @auth(requires: Role = USER) on FIELD_DEFINITION
 
 enum Role {
-  USER
-  ADMIN
-  MODERATOR
+	USER
+	ADMIN
+	MODERATOR
 }
 
 type Mutation {
-  deleteUser(id: ID!): Boolean! @auth(requires: ADMIN)
-  updateProfile(input: ProfileInput!): User! @auth
+	deleteUser(id: ID!): Boolean! @auth(requires: ADMIN)
+	updateProfile(input: ProfileInput!): User! @auth
 }
 ```
 
@@ -419,46 +419,46 @@ type Mutation {
 
 ```graphql
 type User {
-  id: ID!
-  email: String!
+	id: ID!
+	email: String!
 }
 
 type ValidationError {
-  field: String!
-  message: String!
+	field: String!
+	message: String!
 }
 
 type NotFoundError {
-  message: String!
-  resourceType: String!
-  resourceId: ID!
+	message: String!
+	resourceType: String!
+	resourceId: ID!
 }
 
 type AuthorizationError {
-  message: String!
+	message: String!
 }
 
 union UserResult = User | ValidationError | NotFoundError | AuthorizationError
 
 type Query {
-  user(id: ID!): UserResult!
+	user(id: ID!): UserResult!
 }
 
 # Usage
 {
-  user(id: "123") {
-    ... on User {
-      id
-      email
-    }
-    ... on NotFoundError {
-      message
-      resourceType
-    }
-    ... on AuthorizationError {
-      message
-    }
-  }
+	user(id: "123") {
+		... on User {
+			id
+			email
+		}
+		... on NotFoundError {
+			message
+			resourceType
+		}
+		... on AuthorizationError {
+			message
+		}
+	}
 }
 ```
 
@@ -466,22 +466,22 @@ type Query {
 
 ```graphql
 type CreateUserPayload {
-  user: User
-  errors: [Error!]
-  success: Boolean!
+	user: User
+	errors: [Error!]
+	success: Boolean!
 }
 
 type Error {
-  field: String
-  message: String!
-  code: ErrorCode!
+	field: String
+	message: String!
+	code: ErrorCode!
 }
 
 enum ErrorCode {
-  VALIDATION_ERROR
-  UNAUTHORIZED
-  NOT_FOUND
-  INTERNAL_ERROR
+	VALIDATION_ERROR
+	UNAUTHORIZED
+	NOT_FOUND
+	INTERNAL_ERROR
 }
 ```
 
@@ -540,9 +540,9 @@ def complexity_limit_validator(max_complexity: int):
 
 ```graphql
 type User {
-  name: String! @deprecated(reason: "Use firstName and lastName")
-  firstName: String!
-  lastName: String!
+	name: String! @deprecated(reason: "Use firstName and lastName")
+	firstName: String!
+	lastName: String!
 }
 ```
 
@@ -551,21 +551,21 @@ type User {
 ```graphql
 # v1 - Initial
 type User {
-  name: String!
+	name: String!
 }
 
 # v2 - Add optional field (backward compatible)
 type User {
-  name: String!
-  email: String
+	name: String!
+	email: String
 }
 
 # v3 - Deprecate and add new field
 type User {
-  name: String! @deprecated(reason: "Use firstName/lastName")
-  firstName: String!
-  lastName: String!
-  email: String
+	name: String! @deprecated(reason: "Use firstName/lastName")
+	firstName: String!
+	lastName: String!
+	email: String
 }
 ```
 

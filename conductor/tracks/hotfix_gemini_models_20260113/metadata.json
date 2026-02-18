@@ -1,8 +1,8 @@
 {
-  "track_id": "hotfix_gemini_models_20260113",
-  "type": "hotfix",
-  "status": "completed",
-  "created_at": "2026-01-13T10:00:00Z",
-  "updated_at": "2026-01-13T10:30:00Z",
-  "description": "Hotfix: Fix Gemini Model Name (404) and API Error Handling."
+	"track_id": "hotfix_gemini_models_20260113",
+	"type": "hotfix",
+	"status": "completed",
+	"created_at": "2026-01-13T10:00:00Z",
+	"updated_at": "2026-01-13T10:30:00Z",
+	"description": "Hotfix: Fix Gemini Model Name (404) and API Error Handling."
 }

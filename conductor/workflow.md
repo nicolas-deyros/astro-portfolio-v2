@@ -25,81 +25,88 @@
 
 Before doing anything else, ensure your environment is clean and up-to-date.
 
-1.  **Run Initialization Script:**
+1. **Run Initialization Script:**
 
-    ```bash
-    npm run session:init
-    ```
+   ```bash
+   npm run session:init
+   ```
 
-    _This script will:_
-    - Sync your local `master` with `origin/master`.
-    - Check for dependency updates (`npm outdated`).
-    - Auto-update dependencies if safe (`npm run deps:upgrade`).
-    - Generate a status report in `.gemini/session-report.md`.
+   _This script will:_
+   - Sync your local `master` with `origin/master`.
+   - Check for dependency updates (`npm outdated`).
+   - Auto-update dependencies if safe (`npm run deps:upgrade`).
+   - Generate a status report in `.gemini/session-report.md`.
 
-2.  **Review Report:** Check the report for any failures or significant updates.
+2. **Review Report:** Check the report for any failures or significant updates.
 
 ### 2. Task Start Protocol (Start of Task)
 
 When starting a new task from `plan.md`:
 
-1.  **Select Task:** Mark it as `[~]` in `plan.md`.
-2.  **Start Feature Branch & Draft PR:**
-    ```bash
-    npm run git:start <branch-name> "<description>"
-    ```
+1. **Select Task:** Mark it as `[~]` in `plan.md`.
+2. **Start Feature Branch & Draft PR:**
 
-    - Example: `npm run git:start feat/user-profile "Add user profile page with avatar upload"`
-    - _This script will:_
-      - Create and checkout the branch.
-      - Push an empty commit.
-      - Create a **Draft Pull Request** on GitHub to track progress.
+   ```bash
+   npm run git:start <branch-name> "<description>"
+   ```
+
+   - Example: `npm run git:start feat/user-profile "Add user profile page with avatar upload"`
+   - _This script will:_
+     - Create and checkout the branch.
+     - Push an empty commit.
+     - Create a **Draft Pull Request** on GitHub to track progress.
 
 ### 3. Development Protocol (TDD Loop)
 
-1.  **Red Phase:** Write failing tests.
-2.  **Green Phase:** Implement code to pass tests.
-3.  **Refactor:** Improve code quality.
-4.  **Verify:** Run `npm run check` (Lint + Critical Tests).
+1. **Red Phase:** Write failing tests.
+2. **Green Phase:** Implement code to pass tests.
+3. **Refactor:** Improve code quality.
+4. **Verify:** Run `npm run check` (Lint + Critical Tests).
 
 ### 4. Documentation Gate (Before Completion)
 
 Before marking a task as `[x]` or merging:
 
-1.  **Run Documentation Sync:**
-    ```bash
-    npm run docs:sync
-    ```
+1. **Run Documentation Sync:**
 
-    - _This script will:_
-      - Analyze changed files.
-      - Warn about documentation files (`docs/*`) that might need updates.
-      - Output a proposed `CHANGELOG.md` entry.
-2.  **Update Docs:** Manually update the flagged documentation files and `CHANGELOG.md`.
+   ```bash
+   npm run docs:sync
+   ```
+
+   - _This script will:_
+     - Analyze changed files.
+     - Warn about documentation files (`docs/*`) that might need updates.
+     - Output a proposed `CHANGELOG.md` entry.
+
+2. **Update Docs:** Manually update the flagged documentation files and `CHANGELOG.md`.
 
 ### 5. Delivery Protocol (End of Task)
 
 When the task is complete, verified, and documented:
 
-1.  **Final Check:**
-    ```bash
-    npm run check:full
-    ```
-2.  **Mark PR Ready:**
-    ```bash
-    gh pr ready
-    ```
-3.  **Enable Auto-Merge:**
+1. **Final Check:**
 
-    ```bash
-    gh pr merge --auto --squash
-    ```
+   ```bash
+   npm run check:full
+   ```
 
-    _This tells GitHub to automatically merge the PR once all CI checks (GitHub Actions, Vercel deployments, etc.) have passed._
+2. **Mark PR Ready:**
 
-4.  **Post-Merge Cleanup:**
-    - Once merged, switch to master and sync: `npm run session:init`
-    - Delete the local branch: `git branch -d feature/your-branch`
+   ```bash
+   gh pr ready
+   ```
+
+3. **Enable Auto-Merge:**
+
+   ```bash
+   gh pr merge --auto --squash
+   ```
+
+   _This tells GitHub to automatically merge the PR once all CI checks (GitHub Actions, Vercel deployments, etc.) have passed._
+
+4. **Post-Merge Cleanup:**
+   - Once merged, switch to master and sync: `npm run session:init`
+   - Delete the local branch: `git branch -d feature/your-branch`
 
 ## Development Commands
 
@@ -124,16 +131,16 @@ When the task is complete, verified, and documented:
 
 ### Self-Review Checklist
 
-1.  **Functionality:** Does it meet the requirements?
-2.  **Tests:** Are there tests? Do they pass?
-3.  **Docs:** Did I run `npm run docs:sync`?
-4.  **Security:** No secrets leaked? Inputs sanitized?
+1. **Functionality:** Does it meet the requirements?
+2. **Tests:** Are there tests? Do they pass?
+3. **Docs:** Did I run `npm run docs:sync`?
+4. **Security:** No secrets leaked? Inputs sanitized?
 
 ## Emergency Procedures
 
 ### Critical Bug in Production
 
-1.  `npm run session:init` (to get latest state).
-2.  `npm run git:start hotfix/description "Emergency Fix"`.
-3.  Fix, Test, `npm run check`.
-4.  `gh pr ready` && `gh pr merge --auto --squash`.
+1. `npm run session:init` (to get latest state).
+2. `npm run git:start hotfix/description "Emergency Fix"`.
+3. Fix, Test, `npm run check`.
+4. `gh pr ready` && `gh pr merge --auto --squash`.
