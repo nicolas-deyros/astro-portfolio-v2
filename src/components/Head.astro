@@ -8,6 +8,7 @@ interface Props {
 	nofollow?: boolean
 }
 const { title, description, noindex = false, nofollow = false } = Astro.props
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 ---
 
 <head>
@@ -46,6 +47,7 @@ const { title, description, noindex = false, nofollow = false } = Astro.props
 		description={description}
 		noindex={noindex}
 		nofollow={nofollow}
+		canonical={canonicalURL.toString()}
 		openGraph={{
 			basic: {
 				title: `Nicolás Deyros | ${title}`,
