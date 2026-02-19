@@ -1,4 +1,4 @@
-import { defineAction } from 'astro:actions'
+import { ActionError, defineAction } from 'astro:actions'
 import {
 	AdminSessions,
 	count,
@@ -42,12 +42,12 @@ function normalizeTags(tags: string): string {
 async function verifyAuth(request: Request): Promise<boolean> {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) {
-		throw new Error('Unauthorized: Missing or invalid token')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Missing or invalid token' })
 	}
 
 	const token = authHeader.slice(7)
 	if (!token) {
-		throw new Error('Unauthorized: Invalid token')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid token' })
 	}
 
 	const session = await db
@@ -57,12 +57,12 @@ async function verifyAuth(request: Request): Promise<boolean> {
 		.get()
 
 	if (!session) {
-		throw new Error('Unauthorized: Invalid session')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid session' })
 	}
 
 	if (new Date() > new Date(session.expiresAt)) {
 		await db.delete(AdminSessions).where(eq(AdminSessions.id, session.id))
-		throw new Error('Unauthorized: Session expired')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Session expired' })
 	}
 
 	await db
@@ -181,7 +181,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.url, url))
 				if (existing.length > 0) {
-					throw new Error('A link with this URL already exists')
+					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
 				}
 
 				// Validate date is not too far in the future (optional business rule)
@@ -190,7 +190,7 @@ export const server = {
 				maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 1)
 
 				if (linkDate > maxFutureDate) {
-					throw new Error('Date cannot be more than 1 year in the future')
+					throw new ActionError({ code: 'BAD_REQUEST', message: 'Date cannot be more than 1 year in the future' })
 				}
 
 				const cleanTags = normalizeTags(tags)
@@ -208,9 +208,8 @@ export const server = {
 					data: { title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to create link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -233,7 +232,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new Error('Link not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
 				}
 
 				// Check for duplicate URLs (excluding current link)
@@ -243,7 +242,7 @@ export const server = {
 					.where(sql`${LinksTable.url} = ${url} AND ${LinksTable.id} != ${id}`)
 
 				if (duplicateUrl.length > 0) {
-					throw new Error('A link with this URL already exists')
+					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
 				}
 
 				const cleanTags = normalizeTags(tags)
@@ -264,9 +263,8 @@ export const server = {
 					data: { id, title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to update link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -289,7 +287,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new Error('Link not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
 				}
 
 				await db.delete(LinksTable).where(eq(LinksTable.id, id))
@@ -300,9 +298,8 @@ export const server = {
 					data: { id },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to delete link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -326,7 +323,7 @@ export const server = {
 					.where(sql`${LinksTable.id} IN (${ids.join(',')})`)
 
 				if (existing.length !== ids.length) {
-					throw new Error('One or more links not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'One or more links not found' })
 				}
 
 				// Delete all links
