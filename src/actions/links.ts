@@ -11,7 +11,6 @@ import {
 } from 'astro:db'
 import { z } from 'astro:schema'
 
-// Authentication helper
 async function verifyAuth(request: Request): Promise<boolean> {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) {
@@ -23,7 +22,6 @@ async function verifyAuth(request: Request): Promise<boolean> {
 		throw new Error('Unauthorized: Invalid token')
 	}
 
-	// Validate token against database
 	const session = await db
 		.select()
 		.from(AdminSessions)
@@ -35,12 +33,10 @@ async function verifyAuth(request: Request): Promise<boolean> {
 	}
 
 	if (new Date() > new Date(session.expiresAt)) {
-		// Clean up expired session
 		await db.delete(AdminSessions).where(eq(AdminSessions.id, session.id))
 		throw new Error('Unauthorized: Session expired')
 	}
 
-	// Update last activity
 	await db
 		.update(AdminSessions)
 		.set({ lastActivity: new Date() })
@@ -133,7 +129,9 @@ export const server = {
 					},
 				}
 			} catch (error) {
-				throw new Error(`Failed to fetch links: ${error}`)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to fetch links', { cause: error })
 			}
 		},
 	}),
@@ -205,9 +203,9 @@ export const server = {
 					data: { title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw new Error(
-					`Failed to create link: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to create link', { cause: error })
 			}
 		},
 	}),
@@ -283,9 +281,9 @@ export const server = {
 					data: { id, title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw new Error(
-					`Failed to update link: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to update link', { cause: error })
 			}
 		},
 	}),
@@ -319,9 +317,9 @@ export const server = {
 					data: { id },
 				}
 			} catch (error) {
-				throw new Error(
-					`Failed to delete link: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to delete link', { cause: error })
 			}
 		},
 	}),
@@ -359,9 +357,9 @@ export const server = {
 					data: { deletedIds: ids },
 				}
 			} catch (error) {
-				throw new Error(
-					`Failed to delete links: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to delete links', { cause: error })
 			}
 		},
 	}),
@@ -393,7 +391,9 @@ export const server = {
 					data: Array.from(allTags).sort(),
 				}
 			} catch (error) {
-				throw new Error(`Failed to fetch tags: ${error}`)
+				throw error instanceof Error
+					? error
+					: new Error('Failed to fetch tags', { cause: error })
 			}
 		},
 	}),

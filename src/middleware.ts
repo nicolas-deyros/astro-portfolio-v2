@@ -8,10 +8,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	// 🔒 ADMIN AUTHENTICATION CHECK
 	// Protect all /admin/* routes except /admin/login
 	if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-		const isAuthenticated = await requireAuthentication(cookies, request)
-
-		if (!isAuthenticated) {
-			// Redirect to login - no admin content sent to client
+		try {
+			const isAuthenticated = await requireAuthentication(cookies, request)
+			if (!isAuthenticated) {
+				return redirect('/admin/login', 302)
+			}
+		} catch (error) {
+			console.error('[middleware] Auth check failed:', error)
 			return redirect('/admin/login', 302)
 		}
 	}

@@ -149,7 +149,6 @@ const audioText = markdown
 <script>
 	// Progress bar functionality only (audio handled by React component)
 	function initializeBlogFeatures(): (() => void) | null {
-		console.log('Initializing blog features...')
 
 		// Initialize progress bar
 		const progressCleanup = initProgressBar()
@@ -215,20 +214,18 @@ const audioText = markdown
 
 	// Clean up before navigation
 	document.addEventListener('astro:before-preparation', () => {
-		console.log('Cleaning up before navigation')
 		try {
 			if (cleanup) {
 				cleanup()
 				cleanup = null
 			}
 		} catch (error) {
-			console.log('Error during navigation cleanup:', error)
+			console.warn('Error during navigation cleanup:', error)
 		}
 	})
 
 	// Initialize on Astro page load
 	document.addEventListener('astro:page-load', () => {
-		console.log('Astro page loaded - initializing')
 		if (cleanup) cleanup()
 		setTimeout(() => {
 			cleanup = initializeBlogFeatures()

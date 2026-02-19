@@ -1,19 +1,14 @@
 ---
 export interface Props {
-	// For text-to-speech mode
 	text?: string
-	// For audio file mode
 	audioSrc?: string
-	// Common props
 	className?: string
 	enableVisualization?: boolean
 	autoLoad?: boolean
 	mode?: 'text-to-speech' | 'audio-file' | 'auto'
-	// Audio file specific props
 	preload?: 'none' | 'metadata' | 'auto'
 	crossOrigin?: 'anonymous' | 'use-credentials'
 	loop?: boolean
-	// Astro-specific hydration strategy
 	client?: 'load' | 'idle' | 'visible' | 'media' | 'only'
 }
 
@@ -30,7 +25,6 @@ const {
 	client = 'visible',
 } = Astro.props
 
-// Import the React component
 import HybridAudioPlayer from './HybridAudioPlayer'
 ---
 
@@ -123,13 +117,11 @@ import HybridAudioPlayer from './HybridAudioPlayer'
 
 <style>
 	.hybrid-audio-player-wrapper {
-		/* Container styles */
 		width: 100%;
 		max-width: 100%;
 	}
 
 	.hybrid-audio-player-wrapper :global(.hybrid-audio-container) {
-		/* Global styles for the hybrid audio player */
 		background: var(--color-background);
 		color: var(--color-text);
 		border-radius: 0.5rem;

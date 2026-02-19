@@ -4,7 +4,6 @@ import { z } from 'astro:schema'
 
 import { sendContactEmails } from '@/lib/email'
 
-// Import link actions
 import { server as linkActions } from './links'
 
 export const server = {
@@ -44,14 +43,10 @@ export const server = {
 				}
 			} catch (error) {
 				console.error('Action error:', error)
-				return {
-					success: false,
-					message: 'Failed to send message. Please try again later.',
-				}
+				throw error instanceof Error ? error : new Error('Failed to send message', { cause: error })
 			}
 		},
 	}),
 
-	// Link management actions
 	...linkActions,
 }

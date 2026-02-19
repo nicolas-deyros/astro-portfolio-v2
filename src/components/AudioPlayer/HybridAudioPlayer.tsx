@@ -10,22 +10,17 @@ import {
 } from '../../lib/audioPlayer'
 
 interface HybridAudioPlayerProps {
-	// For text-to-speech mode
 	text?: string
-	// For audio file mode
 	audioSrc?: string
-	// Common props
 	className?: string
 	enableVisualization?: boolean
 	autoLoad?: boolean
 	mode?: 'text-to-speech' | 'audio-file' | 'auto'
-	// Audio file specific props
 	preload?: 'none' | 'metadata' | 'auto'
 	crossOrigin?: 'anonymous' | 'use-credentials'
 	loop?: boolean
 }
 
-// Enhanced content filtering function (same as before)
 const filterContentForAudio = (rawContent: string): string => {
 	let content = rawContent
 
@@ -172,7 +167,9 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 			if (autoLoad && text.trim()) {
 				const filteredText = filterContentForAudio(text)
 				if (filteredText.trim()) {
-					player.loadText(filteredText)
+					Promise.resolve(player.loadText(filteredText)).catch(err => {
+						console.error('[AudioPlayer] Failed to load text:', err)
+					})
 				}
 			}
 

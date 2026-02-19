@@ -54,6 +54,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	}
 
 	try {
+		const contentType = request.headers.get('content-type') ?? ''
+		if (!contentType.includes('application/json')) {
+			return new Response(
+				JSON.stringify({ error: 'Content-Type must be application/json' }),
+				{ status: 415, headers: { 'Content-Type': 'application/json' } },
+			)
+		}
+
 		const { title, url, tags, date } = await request.json()
 
 		if (!title || !url || !date) {
@@ -108,10 +116,16 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 	}
 
 	try {
+		const contentType = request.headers.get('content-type') ?? ''
+		if (!contentType.includes('application/json')) {
+			return new Response(
+				JSON.stringify({ error: 'Content-Type must be application/json' }),
+				{ status: 415, headers: { 'Content-Type': 'application/json' } },
+			)
+		}
+
 		const body = await request.json()
 		const { id, title, url, tags, date } = body
-
-		console.log('PUT request received:', { id, title, url, tags, date })
 
 		if (!id || !title || !url || !date) {
 			console.error('Missing required fields:', {
@@ -143,8 +157,6 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 				date,
 			})
 			.where(eq(Links.id, linkId))
-
-		console.log('Update result:', result)
 
 		return new Response(
 			JSON.stringify({ success: true, message: 'Link updated successfully' }),
