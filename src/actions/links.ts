@@ -11,6 +11,34 @@ import {
 } from 'astro:db'
 import { z } from 'astro:schema'
 
+const linkBaseSchema = z.object({
+	title: z
+		.string()
+		.min(1, 'Title is required')
+		.max(200, 'Title must be less than 200 characters')
+		.refine(val => val.trim().length > 0, 'Title cannot be empty'),
+	url: z
+		.string()
+		.url('Must be a valid URL')
+		.max(2000, 'URL must be less than 2000 characters'),
+	tags: z
+		.string()
+		.max(500, 'Tags must be less than 500 characters')
+		.default(''),
+	date: z
+		.string()
+		.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
+		.transform(val => new Date(val).toISOString().split('T')[0]),
+})
+
+function normalizeTags(tags: string): string {
+	return tags
+		.split(',')
+		.map(tag => tag.trim())
+		.filter(tag => tag.length > 0)
+		.join(', ')
+}
+
 async function verifyAuth(request: Request): Promise<boolean> {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) {
@@ -139,25 +167,7 @@ export const server = {
 	// Create new link with comprehensive validation
 	createLink: defineAction({
 		accept: 'form',
-		input: z.object({
-			title: z
-				.string()
-				.min(1, 'Title is required')
-				.max(200, 'Title must be less than 200 characters')
-				.refine(val => val.trim().length > 0, 'Title cannot be empty'),
-			url: z
-				.string()
-				.url('Must be a valid URL')
-				.max(2000, 'URL must be less than 2000 characters'),
-			tags: z
-				.string()
-				.max(500, 'Tags must be less than 500 characters')
-				.default(''),
-			date: z
-				.string()
-				.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
-				.transform(val => new Date(val).toISOString().split('T')[0]),
-		}),
+		input: linkBaseSchema,
 		handler: async (input, { request }) => {
 			await verifyAuth(request)
 
@@ -183,12 +193,7 @@ export const server = {
 					throw new Error('Date cannot be more than 1 year in the future')
 				}
 
-				// Clean and normalize tags
-				const cleanTags = tags
-					.split(',')
-					.map(tag => tag.trim())
-					.filter(tag => tag.length > 0)
-					.join(', ')
+				const cleanTags = normalizeTags(tags)
 
 				await db.insert(LinksTable).values({
 					title: title.trim(),
@@ -213,25 +218,8 @@ export const server = {
 	// Update existing link with validation
 	updateLink: defineAction({
 		accept: 'form',
-		input: z.object({
+		input: linkBaseSchema.extend({
 			id: z.number().min(1, 'Valid ID is required'),
-			title: z
-				.string()
-				.min(1, 'Title is required')
-				.max(200, 'Title must be less than 200 characters')
-				.refine(val => val.trim().length > 0, 'Title cannot be empty'),
-			url: z
-				.string()
-				.url('Must be a valid URL')
-				.max(2000, 'URL must be less than 2000 characters'),
-			tags: z
-				.string()
-				.max(500, 'Tags must be less than 500 characters')
-				.default(''),
-			date: z
-				.string()
-				.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
-				.transform(val => new Date(val).toISOString().split('T')[0]),
 		}),
 		handler: async (input, { request }) => {
 			await verifyAuth(request)
@@ -258,12 +246,7 @@ export const server = {
 					throw new Error('A link with this URL already exists')
 				}
 
-				// Clean and normalize tags
-				const cleanTags = tags
-					.split(',')
-					.map(tag => tag.trim())
-					.filter(tag => tag.length > 0)
-					.join(', ')
+				const cleanTags = normalizeTags(tags)
 
 				await db
 					.update(LinksTable)

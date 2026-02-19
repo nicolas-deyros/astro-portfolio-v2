@@ -3,6 +3,8 @@ import {
 	createDeviceFingerprint,
 	generateSecureSessionId,
 	generateSecureToken,
+	SESSION_DURATION_MS,
+	SESSION_DURATION_SECONDS,
 	validateSession,
 } from '@lib/session'
 import type { APIRoute } from 'astro'
@@ -51,7 +53,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				const sessionId = generateSecureSessionId()
 				const token = generateSecureToken()
 				const now = new Date()
-				const expiresAt = new Date(now.getTime() + 2 * 60 * 60 * 1000) // 2 hours
+				const expiresAt = new Date(now.getTime() + SESSION_DURATION_MS)
 
 				// Store session in database
 				await db.insert(AdminSessions).values({
@@ -70,7 +72,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === 'production',
 					sameSite: 'strict',
-					maxAge: 2 * 60 * 60, // 2 hours
+					maxAge: SESSION_DURATION_SECONDS,
 					path: '/',
 				})
 
@@ -78,7 +80,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === 'production',
 					sameSite: 'strict',
-					maxAge: 2 * 60 * 60, // 2 hours
+					maxAge: SESSION_DURATION_SECONDS,
 					path: '/',
 				})
 
