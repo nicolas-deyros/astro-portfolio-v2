@@ -8,31 +8,10 @@ export interface SessionInfo {
 	deviceFingerprint: string
 }
 
-/**
- * Generate a cryptographically secure session token
- * Using Web Crypto API for better security than crypto.randomUUID()
- */
-export function generateSecureToken(): string {
-	const array = new Uint8Array(32)
+/** Encode `byteCount` random bytes as a URL-safe base64 string (no padding). */
+function randomBase64Url(byteCount: number): string {
+	const array = new Uint8Array(byteCount)
 	crypto.getRandomValues(array)
-
-	const base64 = btoa(String.fromCharCode(...array))
-		.replace(/\+/g, '-')
-		.replace(/\//g, '_')
-		.replace(/=/g, '')
-
-	const timestamp = Date.now().toString(36)
-
-	return `${base64}.${timestamp}`
-}
-
-/**
- * Generate a cryptographically secure session ID
- */
-export function generateSecureSessionId(): string {
-	const array = new Uint8Array(16)
-	crypto.getRandomValues(array)
-
 	return btoa(String.fromCharCode(...array))
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
@@ -40,35 +19,44 @@ export function generateSecureSessionId(): string {
 }
 
 /**
- * Create device fingerprint from request headers
+ * Generate a cryptographically secure session token.
+ * 32 random bytes + a base-36 timestamp suffix for uniqueness.
+ */
+export function generateSecureToken(): string {
+	return `${randomBase64Url(32)}.${Date.now().toString(36)}`
+}
+
+/**
+ * Generate a cryptographically secure session ID (16 random bytes).
+ */
+export function generateSecureSessionId(): string {
+	return randomBase64Url(16)
+}
+
+/**
+ * Create device fingerprint from request headers.
  */
 export function createDeviceFingerprint(request: Request): {
 	userAgent: string
 	ip: string
 	deviceFingerprint: string
 } {
-	const userAgent = request.headers.get('user-agent') || 'unknown'
+	const userAgent = request.headers.get('user-agent') ?? 'unknown'
 	const ip =
-		request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-		request.headers.get('x-real-ip') ||
-		request.headers.get('cf-connecting-ip') || // Cloudflare
+		request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+		request.headers.get('x-real-ip') ??
+		request.headers.get('cf-connecting-ip') ?? // Cloudflare
 		'unknown'
 
-	// Create a more robust device fingerprint
 	const fingerprint = `${userAgent}|${ip}`
-	const encoder = new TextEncoder()
-	const data = encoder.encode(fingerprint)
+	const data = new TextEncoder().encode(fingerprint)
 
-	// Use a simple hash for device fingerprint
 	let hash = 0
 	for (let i = 0; i < data.length; i++) {
 		hash = ((hash << 5) - hash + data[i]) & 0xffffffff
 	}
 
-	// Convert to base36 for shorter representation
-	const deviceFingerprint = Math.abs(hash).toString(36)
-
-	return { userAgent, ip, deviceFingerprint }
+	return { userAgent, ip, deviceFingerprint: Math.abs(hash).toString(36) }
 }
 
 /**
@@ -86,32 +74,27 @@ export async function validateSession(
 	}
 
 	try {
-		// Get session from database
 		const session = await db
 			.select()
 			.from(AdminSessions)
 			.where(eq(AdminSessions.id, sessionId))
 			.get()
 
-		// Validate session exists, is not expired, and token matches
 		if (
 			!session ||
 			new Date() > new Date(session.expiresAt) ||
 			session.token !== token
 		) {
-			// Clean up invalid session
 			if (session) {
 				await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
 			}
 
-			// Clear invalid cookies
 			cookies.delete('admin_session', { path: '/' })
 			cookies.delete('admin_token', { path: '/' })
 
 			return null
 		}
 
-		// Update last activity
 		await db
 			.update(AdminSessions)
 			.set({ lastActivity: new Date() })
@@ -154,11 +137,9 @@ export async function requireAuthentication(
 		return false
 	}
 
-	// Additional device fingerprint validation
 	const isValidDevice = await validateDeviceFingerprint(sessionInfo, request)
 
 	if (!isValidDevice) {
-		// Suspicious activity - invalidate session
 		await db
 			.delete(AdminSessions)
 			.where(eq(AdminSessions.id, sessionInfo.sessionId))
