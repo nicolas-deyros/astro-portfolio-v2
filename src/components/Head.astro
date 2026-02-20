@@ -6,9 +6,15 @@ interface Props {
 	description: string
 	noindex?: boolean
 	nofollow?: boolean
+	ogImage?: string
 }
-const { title, description, noindex = false, nofollow = false } = Astro.props
+const { title, description, noindex = false, nofollow = false, ogImage } = Astro.props
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+const dynamicOgImageUrl = new URL(
+	`/api/og.png?title=${encodeURIComponent(title)}&desc=${encodeURIComponent(description)}`,
+	Astro.site || 'https://www.nicolasdeyros.dev'
+).toString()
 ---
 
 <head>
@@ -52,7 +58,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 			basic: {
 				title: `Nicolás Deyros | ${title}`,
 				type: 'website',
-				image: 'https://www.nicolasdeyros.dev/favicon.svg',
+				image: ogImage || dynamicOgImageUrl,
 			},
 			optional: {
 				description: description,

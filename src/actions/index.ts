@@ -1,4 +1,4 @@
-import { defineAction } from 'astro:actions'
+import { ActionError, defineAction } from 'astro:actions'
 import { db, FormSubmissions } from 'astro:db'
 import { z } from 'astro:schema'
 
@@ -43,7 +43,11 @@ export const server = {
 				}
 			} catch (error) {
 				console.error('Action error:', error)
-				throw error instanceof Error ? error : new Error('Failed to send message', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: error instanceof Error ? error.message : 'Failed to send message',
+				})
 			}
 		},
 	}),

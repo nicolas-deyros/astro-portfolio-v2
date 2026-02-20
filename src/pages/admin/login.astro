@@ -1,141 +1,152 @@
 ---
-import Layout from '@layouts/index.astro'
-import { validateSession } from '@lib/session'
+import Layout from "@layouts/index.astro";
+import { validateSession } from "@lib/session";
 
 // If user is already authenticated, redirect to admin dashboard
-const sessionInfo = await validateSession(Astro.cookies)
+const sessionInfo = await validateSession(Astro.cookies);
 if (sessionInfo) {
-	return Astro.redirect('/admin', 302)
+  return Astro.redirect("/admin", 302);
 }
 ---
 
 <Layout title="Admin Login">
-	<div class="min-h-screen bg-white dark:bg-gray-900">
-		<!-- Login Section -->
-		<div class="flex min-h-screen items-center justify-center">
-			<div
-				class="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-				<div>
-					<h1
-						class="text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-						Admin Login
-					</h1>
-					<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-						Sign in to your admin account
-					</p>
-				</div>
-				<form id="login-form" class="mt-8 space-y-6">
-					<div>
-						<label for="secretKey" class="sr-only">Secret Key</label>
-						<input
-							type="password"
-							id="secretKey"
-							name="secretKey"
-							required
-							class="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-							placeholder="Secret Key"
-						/>
-					</div>
-					<div>
-						<button
-							type="submit"
-							class="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
-							<span id="login-text">Sign in</span>
-							<span id="login-loading" class="hidden">
-								<svg
-									class="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24">
-									<circle
-										class="opacity-25"
-										cx="12"
-										cy="12"
-										r="10"
-										stroke="currentColor"
-										stroke-width="4">
-									</circle>
-									<path
-										class="opacity-75"
-										fill="currentColor"
-										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-									</path>
-								</svg>
-								Signing in...
-							</span>
-						</button>
-					</div>
-					<div
-						id="login-error"
-						class="hidden rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-						<div class="text-sm text-red-700 dark:text-red-400">
-							Invalid secret key. Please try again.
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+  <div class="min-h-screen bg-white dark:bg-gray-900">
+    <!-- Login Section -->
+    <div class="flex min-h-screen items-center justify-center">
+      <div
+        class="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800"
+      >
+        <div>
+          <h1
+            class="text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
+          >
+            Admin Login
+          </h1>
+          <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+            Sign in to your admin account
+          </p>
+        </div>
+        <form id="login-form" class="mt-8 space-y-6">
+          <div>
+            <label for="secretKey" class="sr-only">Secret Key</label>
+            <input
+              type="password"
+              id="secretKey"
+              name="secretKey"
+              required
+              class="relative block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              placeholder="Secret Key"
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              class="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800"
+            >
+              <span id="login-text">Sign in</span>
+              <span id="login-loading" class="hidden">
+                <svg
+                  class="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  >
+                  </circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  >
+                  </path>
+                </svg>
+                Signing in...
+              </span>
+            </button>
+          </div>
+          <div
+            id="login-error"
+            class="hidden rounded-md bg-red-50 p-4 dark:bg-red-900/20"
+          >
+            <div class="text-sm text-red-700 dark:text-red-400">
+              Invalid secret key. Please try again.
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-	<script>
-		document.addEventListener('astro:page-load', () => {
-			const loginForm = document.getElementById('login-form') as HTMLFormElement
-			const loginError = document.getElementById('login-error')
-			const loginText = document.getElementById('login-text')
-			const loginLoading = document.getElementById('login-loading')
+  <script>
+    document.addEventListener("astro:page-load", () => {
+      const loginForm = document.getElementById(
+        "login-form",
+      ) as HTMLFormElement;
+      const loginError = document.getElementById("login-error");
+      const loginText = document.getElementById("login-text");
+      const loginLoading = document.getElementById("login-loading");
 
-			loginForm?.addEventListener('submit', async e => {
-				e.preventDefault()
+      loginForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-				// Show loading state
-				loginText?.classList.add('hidden')
-				loginLoading?.classList.remove('hidden')
-				loginError?.classList.add('hidden')
+        // Show loading state
+        loginText?.classList.add("hidden");
+        loginLoading?.classList.remove("hidden");
+        loginError?.classList.add("hidden");
 
-				const formData = new FormData(loginForm)
-				const secretKey = formData.get('secretKey') as string
+        const formData = new FormData(loginForm);
+        const secretKey = formData.get("secretKey") as string;
 
-				try {
-					const response = await fetch('/api/auth.json', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({
-							action: 'login',
-							secretKey,
-						}),
-						credentials: 'include',
-					})
+        try {
+          const response = await fetch("/api/auth.json", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "login",
+              secretKey,
+            }),
+            credentials: "include",
+          });
 
-					const data = await response.json()
+          const data = await response.json();
 
-					if (response.ok && data.success) {
-						// Successful login - redirect to admin dashboard
-						window.location.href = '/admin'
-					} else {
-						// Show error
-						loginError?.classList.remove('hidden')
-						const errorDiv = loginError?.querySelector('.text-sm')
-						if (errorDiv) {
-							errorDiv.textContent =
-								data.message || 'Invalid credentials. Please try again.'
-						}
+          if (response.ok && data.success) {
+            // Successful login - redirect to admin dashboard
+            window.location.href = "/admin";
+          } else {
+            // Show error
+            loginError?.classList.remove("hidden");
+            const errorDiv = loginError?.querySelector(".text-sm");
+            if (errorDiv) {
+              errorDiv.textContent =
+                data.error?.message ||
+                data.message ||
+                "Invalid credentials. Please try again.";
+            }
 
-						// Clear form
-						loginForm.reset()
-					}
-				} catch (error) {
-					console.error('Login error:', error)
-					loginError?.classList.remove('hidden')
-					const errorDiv = loginError?.querySelector('.text-sm')
-					if (errorDiv) {
-						errorDiv.textContent = 'Connection error. Please try again.'
-					}
-				} finally {
-					// Hide loading state
-					loginText?.classList.remove('hidden')
-					loginLoading?.classList.add('hidden')
-				}
-			})
-		})
-	</script>
+            // Clear form
+            loginForm.reset();
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          loginError?.classList.remove("hidden");
+          const errorDiv = loginError?.querySelector(".text-sm");
+          if (errorDiv) {
+            errorDiv.textContent = "Connection error. Please try again.";
+          }
+        } finally {
+          // Hide loading state
+          loginText?.classList.remove("hidden");
+          loginLoading?.classList.add("hidden");
+        }
+      });
+    });
+  </script>
 </Layout>

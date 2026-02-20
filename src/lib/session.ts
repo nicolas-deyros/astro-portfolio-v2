@@ -1,6 +1,12 @@
 import type { AstroCookies } from 'astro'
 import { AdminSessions, db, eq, lt } from 'astro:db'
 
+export const SESSION_DURATION_MS = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+export const SESSION_DURATION_SECONDS = 2 * 60 * 60 // 2 hours in seconds
+
+const TOKEN_BYTE_LENGTH = 32
+const SESSION_ID_BYTE_LENGTH = 16
+
 export interface SessionInfo {
 	sessionId: string
 	token: string
@@ -23,14 +29,14 @@ function randomBase64Url(byteCount: number): string {
  * 32 random bytes + a base-36 timestamp suffix for uniqueness.
  */
 export function generateSecureToken(): string {
-	return `${randomBase64Url(32)}.${Date.now().toString(36)}`
+	return `${randomBase64Url(TOKEN_BYTE_LENGTH)}.${Date.now().toString(36)}`
 }
 
 /**
  * Generate a cryptographically secure session ID (16 random bytes).
  */
 export function generateSecureSessionId(): string {
-	return randomBase64Url(16)
+	return randomBase64Url(SESSION_ID_BYTE_LENGTH)
 }
 
 /**

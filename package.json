@@ -72,6 +72,7 @@
 		"@tailwindcss/vite": "^4.1.18",
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
+		"@vercel/og": "^0.8.6",
 		"astro": "^5.16.9",
 		"astro-icon": "^1.1.5",
 		"astro-seo": "^0.8.4",

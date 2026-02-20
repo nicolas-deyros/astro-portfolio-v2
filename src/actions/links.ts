@@ -1,4 +1,4 @@
-import { defineAction } from 'astro:actions'
+import { ActionError, defineAction } from 'astro:actions'
 import {
 	AdminSessions,
 	count,
@@ -11,15 +11,43 @@ import {
 } from 'astro:db'
 import { z } from 'astro:schema'
 
+const linkBaseSchema = z.object({
+	title: z
+		.string()
+		.min(1, 'Title is required')
+		.max(200, 'Title must be less than 200 characters')
+		.refine(val => val.trim().length > 0, 'Title cannot be empty'),
+	url: z
+		.string()
+		.url('Must be a valid URL')
+		.max(2000, 'URL must be less than 2000 characters'),
+	tags: z
+		.string()
+		.max(500, 'Tags must be less than 500 characters')
+		.default(''),
+	date: z
+		.string()
+		.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
+		.transform(val => new Date(val).toISOString().split('T')[0]),
+})
+
+function normalizeTags(tags: string): string {
+	return tags
+		.split(',')
+		.map(tag => tag.trim())
+		.filter(tag => tag.length > 0)
+		.join(', ')
+}
+
 async function verifyAuth(request: Request): Promise<boolean> {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) {
-		throw new Error('Unauthorized: Missing or invalid token')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Missing or invalid token' })
 	}
 
 	const token = authHeader.slice(7)
 	if (!token) {
-		throw new Error('Unauthorized: Invalid token')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid token' })
 	}
 
 	const session = await db
@@ -29,12 +57,12 @@ async function verifyAuth(request: Request): Promise<boolean> {
 		.get()
 
 	if (!session) {
-		throw new Error('Unauthorized: Invalid session')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid session' })
 	}
 
 	if (new Date() > new Date(session.expiresAt)) {
 		await db.delete(AdminSessions).where(eq(AdminSessions.id, session.id))
-		throw new Error('Unauthorized: Session expired')
+		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Session expired' })
 	}
 
 	await db
@@ -139,25 +167,7 @@ export const server = {
 	// Create new link with comprehensive validation
 	createLink: defineAction({
 		accept: 'form',
-		input: z.object({
-			title: z
-				.string()
-				.min(1, 'Title is required')
-				.max(200, 'Title must be less than 200 characters')
-				.refine(val => val.trim().length > 0, 'Title cannot be empty'),
-			url: z
-				.string()
-				.url('Must be a valid URL')
-				.max(2000, 'URL must be less than 2000 characters'),
-			tags: z
-				.string()
-				.max(500, 'Tags must be less than 500 characters')
-				.default(''),
-			date: z
-				.string()
-				.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
-				.transform(val => new Date(val).toISOString().split('T')[0]),
-		}),
+		input: linkBaseSchema,
 		handler: async (input, { request }) => {
 			await verifyAuth(request)
 
@@ -171,7 +181,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.url, url))
 				if (existing.length > 0) {
-					throw new Error('A link with this URL already exists')
+					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
 				}
 
 				// Validate date is not too far in the future (optional business rule)
@@ -180,15 +190,10 @@ export const server = {
 				maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 1)
 
 				if (linkDate > maxFutureDate) {
-					throw new Error('Date cannot be more than 1 year in the future')
+					throw new ActionError({ code: 'BAD_REQUEST', message: 'Date cannot be more than 1 year in the future' })
 				}
 
-				// Clean and normalize tags
-				const cleanTags = tags
-					.split(',')
-					.map(tag => tag.trim())
-					.filter(tag => tag.length > 0)
-					.join(', ')
+				const cleanTags = normalizeTags(tags)
 
 				await db.insert(LinksTable).values({
 					title: title.trim(),
@@ -203,9 +208,8 @@ export const server = {
 					data: { title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to create link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -213,25 +217,8 @@ export const server = {
 	// Update existing link with validation
 	updateLink: defineAction({
 		accept: 'form',
-		input: z.object({
+		input: linkBaseSchema.extend({
 			id: z.number().min(1, 'Valid ID is required'),
-			title: z
-				.string()
-				.min(1, 'Title is required')
-				.max(200, 'Title must be less than 200 characters')
-				.refine(val => val.trim().length > 0, 'Title cannot be empty'),
-			url: z
-				.string()
-				.url('Must be a valid URL')
-				.max(2000, 'URL must be less than 2000 characters'),
-			tags: z
-				.string()
-				.max(500, 'Tags must be less than 500 characters')
-				.default(''),
-			date: z
-				.string()
-				.refine(val => !isNaN(Date.parse(val)), 'Must be a valid date')
-				.transform(val => new Date(val).toISOString().split('T')[0]),
 		}),
 		handler: async (input, { request }) => {
 			await verifyAuth(request)
@@ -245,7 +232,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new Error('Link not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
 				}
 
 				// Check for duplicate URLs (excluding current link)
@@ -255,15 +242,10 @@ export const server = {
 					.where(sql`${LinksTable.url} = ${url} AND ${LinksTable.id} != ${id}`)
 
 				if (duplicateUrl.length > 0) {
-					throw new Error('A link with this URL already exists')
+					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
 				}
 
-				// Clean and normalize tags
-				const cleanTags = tags
-					.split(',')
-					.map(tag => tag.trim())
-					.filter(tag => tag.length > 0)
-					.join(', ')
+				const cleanTags = normalizeTags(tags)
 
 				await db
 					.update(LinksTable)
@@ -281,9 +263,8 @@ export const server = {
 					data: { id, title, url, tags: cleanTags, date },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to update link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -306,7 +287,7 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new Error('Link not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
 				}
 
 				await db.delete(LinksTable).where(eq(LinksTable.id, id))
@@ -317,9 +298,8 @@ export const server = {
 					data: { id },
 				}
 			} catch (error) {
-				throw error instanceof Error
-					? error
-					: new Error('Failed to delete link', { cause: error })
+				if (error instanceof ActionError) throw error
+				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete link', stack: error instanceof Error ? error.stack : undefined })
 			}
 		},
 	}),
@@ -343,7 +323,7 @@ export const server = {
 					.where(sql`${LinksTable.id} IN (${ids.join(',')})`)
 
 				if (existing.length !== ids.length) {
-					throw new Error('One or more links not found')
+					throw new ActionError({ code: 'NOT_FOUND', message: 'One or more links not found' })
 				}
 
 				// Delete all links
