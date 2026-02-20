@@ -1,4 +1,11 @@
 import { validateSession } from '@lib/session'
+import {
+	ApplicationError,
+	createErrorResponse,
+	createSuccessResponse,
+	UnauthorizedError,
+	ValidationError,
+} from '@lib/errors'
 import type { APIRoute, AstroCookies } from 'astro'
 import { db, eq, Links } from 'astro:db'
 
@@ -9,71 +16,35 @@ async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
 }
 
 export const GET: APIRoute = async ({ cookies }) => {
-	// 🔒 CRITICAL: Protect GET endpoint - no public access to admin data
-	if (!(await verifyAuth(cookies))) {
-		return new Response(
-			JSON.stringify({
-				success: false,
-				message: 'Unauthorized access denied',
-			}),
-			{
-				status: 401,
-				headers: { 'Content-Type': 'application/json' },
-			},
-		)
-	}
 	try {
+		if (!(await verifyAuth(cookies))) {
+			throw new UnauthorizedError('Unauthorized access denied')
+		}
+
 		const links = await db.select().from(Links)
-		return new Response(JSON.stringify(links), {
-			status: 200,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
+		// Array can't be merged simply with { success: true }, so we wrap it
+		return createSuccessResponse({ data: links })
 	} catch (error) {
 		console.error('Error fetching links:', error)
-		return new Response(JSON.stringify({ error: 'Failed to fetch links' }), {
-			status: 500,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
+		return createErrorResponse(error)
 	}
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-	// 🔒 Server-side authentication check
-	const isAuthenticated = await verifyAuth(cookies)
-	if (!isAuthenticated) {
-		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-			status: 401,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-	}
-
 	try {
+		if (!(await verifyAuth(cookies))) {
+			throw new UnauthorizedError('Unauthorized access denied')
+		}
+
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			return new Response(
-				JSON.stringify({ error: 'Content-Type must be application/json' }),
-				{ status: 415, headers: { 'Content-Type': 'application/json' } },
-			)
+			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
 		}
 
 		const { title, url, tags, date } = await request.json()
 
 		if (!title || !url || !date) {
-			return new Response(
-				JSON.stringify({ error: 'Title, URL, and date are required' }),
-				{
-					status: 400,
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				},
-			)
+			throw new ValidationError('Title, URL, and date are required')
 		}
 
 		const result = await db.insert(Links).values({
@@ -83,45 +54,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			date,
 		})
 
-		return new Response(
-			JSON.stringify({ success: true, id: Number(result.lastInsertRowid) }),
-			{
-				status: 201,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
+		return createSuccessResponse({ id: Number(result.lastInsertRowid) }, 201)
 	} catch (error) {
 		console.error('Error creating link:', error)
-		return new Response(JSON.stringify({ error: 'Failed to create link' }), {
-			status: 500,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
+		return createErrorResponse(error)
 	}
 }
 
 export const PUT: APIRoute = async ({ request, cookies }) => {
-	// 🔒 Server-side authentication check
-	const isAuthenticated = await verifyAuth(cookies)
-	if (!isAuthenticated) {
-		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-			status: 401,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-	}
-
 	try {
+		if (!(await verifyAuth(cookies))) {
+			throw new UnauthorizedError('Unauthorized access denied')
+		}
+
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			return new Response(
-				JSON.stringify({ error: 'Content-Type must be application/json' }),
-				{ status: 415, headers: { 'Content-Type': 'application/json' } },
-			)
+			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
 		}
 
 		const body = await request.json()
@@ -134,21 +82,12 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 				url: !!url,
 				date: !!date,
 			})
-			return new Response(
-				JSON.stringify({ error: 'ID, title, URL, and date are required' }),
-				{
-					status: 400,
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				},
-			)
+			throw new ValidationError('ID, title, URL, and date are required')
 		}
 
-		// Convert id to number if it's a string
 		const linkId = typeof id === 'string' ? parseInt(id) : id
 
-		const result = await db
+		await db
 			.update(Links)
 			.set({
 				title,
@@ -158,45 +97,19 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 			})
 			.where(eq(Links.id, linkId))
 
-		return new Response(
-			JSON.stringify({ success: true, message: 'Link updated successfully' }),
-			{
-				status: 200,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
+		return createSuccessResponse({ message: 'Link updated successfully' })
 	} catch (error) {
 		console.error('Error updating link:', error)
-		return new Response(
-			JSON.stringify({
-				error: 'Failed to update link',
-				details: error instanceof Error ? error.message : 'Unknown error',
-			}),
-			{
-				status: 500,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
+		return createErrorResponse(error)
 	}
 }
 
 export const DELETE: APIRoute = async ({ request, cookies }) => {
-	// 🔒 Server-side authentication check
-	const isAuthenticated = await verifyAuth(cookies)
-	if (!isAuthenticated) {
-		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-			status: 401,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-	}
-
 	try {
+		if (!(await verifyAuth(cookies))) {
+			throw new UnauthorizedError('Unauthorized access denied')
+		}
+
 		const url = new URL(request.url)
 		const idParam = url.searchParams.get('id')
 
@@ -204,55 +117,25 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 
 		if (!idParam) {
 			console.error('Missing ID parameter in DELETE request')
-			return new Response(JSON.stringify({ error: 'ID is required' }), {
-				status: 400,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
+			throw new ValidationError('ID is required')
 		}
 
 		const linkId = parseInt(idParam)
 		if (isNaN(linkId)) {
 			console.error('Invalid ID format:', idParam)
-			return new Response(JSON.stringify({ error: 'Invalid ID format' }), {
-				status: 400,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
+			throw new ValidationError('Invalid ID format')
 		}
 
-		const result = await db.delete(Links).where(eq(Links.id, linkId))
+		await db.delete(Links).where(eq(Links.id, linkId))
 
-		console.log('Delete result:', result)
+		console.log(`Link ID ${linkId} deleted successfully`)
 
-		return new Response(
-			JSON.stringify({
-				success: true,
-				message: 'Link deleted successfully',
-				deletedId: linkId,
-			}),
-			{
-				status: 200,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
+		return createSuccessResponse({
+			message: 'Link deleted successfully',
+			deletedId: linkId,
+		})
 	} catch (error) {
 		console.error('Error deleting link:', error)
-		return new Response(
-			JSON.stringify({
-				error: 'Failed to delete link',
-				details: error instanceof Error ? error.message : 'Unknown error',
-			}),
-			{
-				status: 500,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
+		return createErrorResponse(error)
 	}
 }

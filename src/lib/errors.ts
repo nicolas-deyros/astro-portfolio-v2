@@ -74,3 +74,34 @@ export function toApplicationError(error: unknown): ApplicationError {
 		cause: error,
 	})
 }
+
+/**
+ * Creates a standardized success JSON response.
+ */
+export function createSuccessResponse(data: Record<string, unknown> = {}, statusCode = 200): Response {
+	return new Response(JSON.stringify({ success: true, ...data }), {
+		status: statusCode,
+		headers: { 'Content-Type': 'application/json' },
+	})
+}
+
+/**
+ * Creates a standardized error JSON response from an unknown error.
+ * Implements ISSUE-18 pattern: { success: false, error: { code, message } }
+ */
+export function createErrorResponse(error: unknown): Response {
+	const appError = toApplicationError(error)
+	return new Response(
+		JSON.stringify({
+			success: false,
+			error: {
+				code: appError.code,
+				message: appError.message,
+			},
+		}),
+		{
+			status: appError.statusCode,
+			headers: { 'Content-Type': 'application/json' },
+		}
+	)
+}

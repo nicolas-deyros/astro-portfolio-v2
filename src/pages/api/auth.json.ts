@@ -7,6 +7,13 @@ import {
 	SESSION_DURATION_SECONDS,
 	validateSession,
 } from '@lib/session'
+import {
+	ApplicationError,
+	createErrorResponse,
+	createSuccessResponse,
+	UnauthorizedError,
+	ValidationError,
+} from '@lib/errors'
 import type { APIRoute } from 'astro'
 import { AdminSessions, db, eq } from 'astro:db'
 
@@ -16,10 +23,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	try {
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			return new Response(
-				JSON.stringify({ success: false, message: 'Content-Type must be application/json' }),
-				{ status: 415, headers: { 'Content-Type': 'application/json' } },
-			)
+			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
 		}
 
 		const body = await request.json()
@@ -31,19 +35,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		switch (action) {
 			case 'login': {
 				// Validate credentials using environment variable
-				const validSecretKey =
-					process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
+				const validSecretKey = process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
 				if (secretKey !== validSecretKey) {
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'Invalid credentials',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
+					throw new UnauthorizedError('Invalid credentials')
 				}
 
 				// Get client information
@@ -84,18 +78,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					path: '/',
 				})
 
-				return new Response(
-					JSON.stringify({
-						success: true,
-						message: 'Login successful',
-						sessionId,
-						expiresAt: expiresAt.toISOString(),
-					}),
-					{
-						status: 200,
-						headers: { 'Content-Type': 'application/json' },
-					},
-				)
+				return createSuccessResponse({
+					message: 'Login successful',
+					sessionId,
+					expiresAt: expiresAt.toISOString(),
+				})
 			}
 
 			case 'logout': {
@@ -110,16 +97,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				cookies.delete('admin_session', { path: '/' })
 				cookies.delete('admin_token', { path: '/' })
 
-				return new Response(
-					JSON.stringify({
-						success: true,
-						message: 'Logout successful',
-					}),
-					{
-						status: 200,
-						headers: { 'Content-Type': 'application/json' },
-					},
-				)
+				return createSuccessResponse({ message: 'Logout successful' })
 			}
 
 			case 'validate': {
@@ -127,16 +105,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				const sessionInfo = await validateSession(cookies)
 
 				if (!sessionInfo) {
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'No valid session found',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
+					throw new UnauthorizedError('No valid session found')
 				}
 
 				// Additional device fingerprint validation
@@ -148,57 +117,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 						.where(eq(AdminSessions.id, sessionInfo.sessionId))
 					cookies.delete('admin_session', { path: '/' })
 					cookies.delete('admin_token', { path: '/' })
-
-					return new Response(
-						JSON.stringify({
-							success: false,
-							message: 'Device mismatch detected. Please login again.',
-						}),
-						{
-							status: 401,
-							headers: { 'Content-Type': 'application/json' },
-						},
-					)
+					throw new UnauthorizedError('Device mismatch detected. Please login again.')
 				}
 
-				return new Response(
-					JSON.stringify({
-						success: true,
-						message: 'Session valid',
-						sessionId: sessionInfo.sessionId,
-						expiresAt: sessionInfo.expiresAt,
-					}),
-					{
-						status: 200,
-						headers: { 'Content-Type': 'application/json' },
-					},
-				)
+				return createSuccessResponse({
+					message: 'Session valid',
+					sessionId: sessionInfo.sessionId,
+					expiresAt: sessionInfo.expiresAt,
+				})
 			}
 
 			default:
-				return new Response(
-					JSON.stringify({
-						success: false,
-						message: 'Invalid action',
-					}),
-					{
-						status: 400,
-						headers: { 'Content-Type': 'application/json' },
-					},
-				)
+				throw new ValidationError('Invalid action')
 		}
 	} catch (error) {
 		console.error('Auth API error:', error)
-		return new Response(
-			JSON.stringify({
-				success: false,
-				message: 'Internal server error',
-			}),
-			{
-				status: 500,
-				headers: { 'Content-Type': 'application/json' },
-			},
-		)
+		return createErrorResponse(error)
 	}
 }
 
@@ -211,43 +145,19 @@ export const GET: APIRoute = async ({ cookies }) => {
 		const sessionInfo = await validateSession(cookies)
 
 		if (!sessionInfo) {
-			return new Response(
-				JSON.stringify({
-					success: true,
-					authenticated: false,
-					message: 'No valid session found',
-				}),
-				{
-					status: 200,
-					headers: { 'Content-Type': 'application/json' },
-				},
-			)
+			return createSuccessResponse({
+				authenticated: false,
+				message: 'No valid session found',
+			})
 		}
 
-		return new Response(
-			JSON.stringify({
-				success: true,
-				authenticated: true,
-				sessionId: sessionInfo.sessionId,
-				expiresAt: sessionInfo.expiresAt,
-			}),
-			{
-				status: 200,
-				headers: { 'Content-Type': 'application/json' },
-			},
-		)
+		return createSuccessResponse({
+			authenticated: true,
+			sessionId: sessionInfo.sessionId,
+			expiresAt: sessionInfo.expiresAt,
+		})
 	} catch (error) {
 		console.error('Auth status check error:', error)
-		return new Response(
-			JSON.stringify({
-				success: false,
-				authenticated: false,
-				message: 'Error checking authentication status',
-			}),
-			{
-				status: 500,
-				headers: { 'Content-Type': 'application/json' },
-			},
-		)
+		return createErrorResponse(error)
 	}
 }
