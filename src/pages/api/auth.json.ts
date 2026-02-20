@@ -1,4 +1,11 @@
 import {
+	ApplicationError,
+	createErrorResponse,
+	createSuccessResponse,
+	UnauthorizedError,
+	ValidationError,
+} from '@lib/errors'
+import {
 	cleanExpiredSessions,
 	createDeviceFingerprint,
 	generateSecureSessionId,
@@ -7,13 +14,6 @@ import {
 	SESSION_DURATION_SECONDS,
 	validateSession,
 } from '@lib/session'
-import {
-	ApplicationError,
-	createErrorResponse,
-	createSuccessResponse,
-	UnauthorizedError,
-	ValidationError,
-} from '@lib/errors'
 import type { APIRoute } from 'astro'
 import { AdminSessions, db, eq } from 'astro:db'
 
@@ -23,7 +23,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	try {
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
+			throw new ApplicationError(
+				'Content-Type must be application/json',
+				415,
+				'UNSUPPORTED_MEDIA_TYPE',
+			)
 		}
 
 		const body = await request.json()
@@ -35,7 +39,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		switch (action) {
 			case 'login': {
 				// Validate credentials using environment variable
-				const validSecretKey = process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
+				const validSecretKey =
+					process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
 				if (secretKey !== validSecretKey) {
 					throw new UnauthorizedError('Invalid credentials')
 				}
@@ -117,7 +122,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 						.where(eq(AdminSessions.id, sessionInfo.sessionId))
 					cookies.delete('admin_session', { path: '/' })
 					cookies.delete('admin_token', { path: '/' })
-					throw new UnauthorizedError('Device mismatch detected. Please login again.')
+					throw new UnauthorizedError(
+						'Device mismatch detected. Please login again.',
+					)
 				}
 
 				return createSuccessResponse({
