@@ -127,6 +127,24 @@ Direct commits to `master` (or `main`) are strictly forbidden. Always use featur
    - Mark the PR as **Ready for Review** (`gh pr ready`).
    - Enable **Auto-Merge** (`gh pr merge --auto --squash`).
 
+### 4. Workspace Cleanup
+
+Keep the local machine clean by periodically removing obsolete branches:
+
+1. **Prune Tracking Branches:** Fetch and remove tracking references to remote branches that were deleted:
+
+   ```bash
+   git fetch --prune
+   ```
+
+2. **Review & Delete Local Branches:** Check your local branches against remote branches. Since PRs are squashed, use force delete (`-D`) for branches that have already been merged on GitHub:
+   ```bash
+   git branch -vv
+   git branch -D <branch-name>
+   ```
+
+_(AI Agent Note: Proactively suggest and automate this cleanup process for the user if you notice stalled or previously merged branches.)_
+
 Review this plan thoroughly before making any code changes. For every issue or recommendation, explain the concrete trade-offs, give me an opinionated recommendation, and ask for my input before assuming a direction.
 
 My engineering preferences (use these to guide your recommendations):

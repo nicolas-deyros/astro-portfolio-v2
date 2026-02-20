@@ -32,17 +32,18 @@ Only interactive components get client directives. Static content ships zero JS.
 
 ### Hybrid Rendering (`output: 'server'`)
 
-| Route | Prerender | Why |
-|---|---|---|
-| Blog (`[slug]`, `[...page]`, tags, categories) | `true` | Static content |
-| `robot.txt.ts` | `true` | Static |
-| API (`auth.json.ts`, `sendEmail.json.ts`) | `false` | Dynamic |
-| Admin pages | Default (server) | Auth required |
-| Home, Contact | Default (server) | Dynamic content |
+| Route                                          | Prerender        | Why             |
+| ---------------------------------------------- | ---------------- | --------------- |
+| Blog (`[slug]`, `[...page]`, tags, categories) | `true`           | Static content  |
+| `robot.txt.ts`                                 | `true`           | Static          |
+| API (`auth.json.ts`, `sendEmail.json.ts`)      | `false`          | Dynamic         |
+| Admin pages                                    | Default (server) | Auth required   |
+| Home, Contact                                  | Default (server) | Dynamic content |
 
 ### Content Collections
 
 Single `blog` collection in `src/content/config.ts` with Zod schema:
+
 - `title` (max 60 chars for SEO), `description` (max 160 chars)
 - `draft`, `category`, `tags`, `date`, `image`, `author`
 
@@ -59,6 +60,7 @@ Single `blog` collection in `src/content/config.ts` with Zod schema:
 ### Middleware
 
 Centralized in `src/middleware.ts`:
+
 - Admin auth: Protects `/admin/*` (except `/admin/login`)
 - Security headers: HSTS, CSP, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
 
@@ -134,7 +136,7 @@ npm run git:ship                         # Full check + ship (PR ready + auto-me
 
 - **Type Safety:** Strict TypeScript everywhere. All new code must be typed.
 - **Styling:** Tailwind CSS utility classes. Scoped `<style>` blocks in Astro files or CSS Modules for component-specific styles.
-- **Testing:** New features MUST include tests (unit, integration, and/or E2E as appropriate).
+- **Testing:** New features MUST include tests (unit, integration, and/or end-to-end as appropriate).
 - **Commits:** Conventional commits enforced by commitlint. Pre-commit hooks (lint-staged) auto-lint and format. Pre-push hooks run critical tests.
 - **Documentation:** Maintain `docs/` for significant architectural changes.
 - **Astro Components:** Use typed `Props` interface. Prefer static over hydrated. Choose the least-eager client directive that works.
@@ -163,6 +165,25 @@ npm run session:init
 1. Sync docs: `npm run docs:sync`
 2. Full verification: `npm run check:full`
 3. PR lifecycle: Mark Ready for Review (`gh pr ready`) → Enable Auto-Merge (`gh pr merge --auto --squash`)
+
+### 4. Workspace Cleanup
+
+Keep the local machine clean by periodically removing obsolete branches:
+
+1. **Prune Tracking Branches:** Fetch and remove tracking references to remote branches that were deleted:
+
+   ```bash
+   git fetch --prune
+   ```
+
+2. **Review & Delete Local Branches:** Check your local branches against remote branches. Since PRs are squashed, use force delete (`-D`) for branches that have already been merged on GitHub:
+
+   ```bash
+   git branch -vv
+   git branch -D <branch-name>
+   ```
+
+> **AI Agent Note:** Proactively suggest and automate this cleanup process for the user if you notice stalled or previously merged branches.
 
 ## Engineering Preferences
 
@@ -226,7 +247,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 ### Error Handling Patterns
 
 - **No custom error hierarchy** — All errors are generic `Error`. No way to distinguish auth/validation/not-found/service errors at catch sites.
-- **Stack traces destroyed** — `actions/links.ts` wraps errors losing original cause. Use ES2022 Error `cause`.
+- **Stack traces destroyed** — `actions/links.ts` wraps errors losing original cause. Use ECMAScript 2022 Error `cause`.
 - **Errors swallowed** — `actions/index.ts` catches and returns `{success: false}` hiding error type from callers.
 - **Middleware unprotected** — `middleware.ts` has zero try-catch. DB failure crashes with unhandled exception.
 - **Inconsistent API error formats** — 3 different error response shapes across endpoints.
@@ -243,7 +264,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 ### SEO Issues
 
 - **No canonical tags** — Zero `<link rel="canonical">` across the site. Duplicate content risk from www/non-www, trailing slashes.
-- **No structured data** — Zero JSON-LD markup. Missing Person, BlogPosting, BreadcrumbList, WebSite schemas.
+- **No structured data** — Zero JSON-LD markup. Missing Person, BlogPosting, BreadcrumbList, site schemas.
 - **OG image is favicon.svg** — Social shares show tiny icon. Need proper 1200×630 PNG OG image, ideally per-page.
 - **404 page** — Heading hierarchy violation (h1→h3 skips h2), missing meta description.
 
@@ -252,4 +273,4 @@ See `docs/ISSUES.md` for full details and implementation plan.
 This project uses MCP servers defined in `.mcp.json`:
 
 - **astro-mcp** — Astro framework operations (`npx -y @astrojs/mcp-server`)
-- **github** — GitHub integration for repos, issues, and PRs (`npx -y @modelcontextprotocol/server-github`)
+- **GitHub** — GitHub integration for repos, issues, and PRs (`npx -y @modelcontextprotocol/server-github`)
