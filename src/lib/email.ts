@@ -1,5 +1,6 @@
-import { Resend } from 'resend'
 import { render } from '@react-email/components'
+import { Resend } from 'resend'
+
 import { ContactEmail } from '@/components/Emails/ContactEmail'
 import { siteConfig } from '@/config/site.config'
 

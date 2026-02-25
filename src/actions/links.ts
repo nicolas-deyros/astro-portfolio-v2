@@ -42,7 +42,10 @@ function normalizeTags(tags: string): string {
 async function verifyAuth(request: Request): Promise<boolean> {
 	const authHeader = request.headers.get('authorization')
 	if (!authHeader?.startsWith('Bearer ')) {
-		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Missing or invalid token' })
+		throw new ActionError({
+			code: 'UNAUTHORIZED',
+			message: 'Missing or invalid token',
+		})
 	}
 
 	const token = authHeader.slice(7)
@@ -181,7 +184,10 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.url, url))
 				if (existing.length > 0) {
-					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
+					throw new ActionError({
+						code: 'CONFLICT',
+						message: 'A link with this URL already exists',
+					})
 				}
 
 				// Validate date is not too far in the future (optional business rule)
@@ -190,7 +196,10 @@ export const server = {
 				maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 1)
 
 				if (linkDate > maxFutureDate) {
-					throw new ActionError({ code: 'BAD_REQUEST', message: 'Date cannot be more than 1 year in the future' })
+					throw new ActionError({
+						code: 'BAD_REQUEST',
+						message: 'Date cannot be more than 1 year in the future',
+					})
 				}
 
 				const cleanTags = normalizeTags(tags)
@@ -209,7 +218,11 @@ export const server = {
 				}
 			} catch (error) {
 				if (error instanceof ActionError) throw error
-				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create link', stack: error instanceof Error ? error.stack : undefined })
+				throw new ActionError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Failed to create link',
+					stack: error instanceof Error ? error.stack : undefined,
+				})
 			}
 		},
 	}),
@@ -232,7 +245,10 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
+					throw new ActionError({
+						code: 'NOT_FOUND',
+						message: 'Link not found',
+					})
 				}
 
 				// Check for duplicate URLs (excluding current link)
@@ -242,7 +258,10 @@ export const server = {
 					.where(sql`${LinksTable.url} = ${url} AND ${LinksTable.id} != ${id}`)
 
 				if (duplicateUrl.length > 0) {
-					throw new ActionError({ code: 'CONFLICT', message: 'A link with this URL already exists' })
+					throw new ActionError({
+						code: 'CONFLICT',
+						message: 'A link with this URL already exists',
+					})
 				}
 
 				const cleanTags = normalizeTags(tags)
@@ -264,7 +283,11 @@ export const server = {
 				}
 			} catch (error) {
 				if (error instanceof ActionError) throw error
-				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update link', stack: error instanceof Error ? error.stack : undefined })
+				throw new ActionError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Failed to update link',
+					stack: error instanceof Error ? error.stack : undefined,
+				})
 			}
 		},
 	}),
@@ -287,7 +310,10 @@ export const server = {
 					.from(LinksTable)
 					.where(eq(LinksTable.id, id))
 				if (existing.length === 0) {
-					throw new ActionError({ code: 'NOT_FOUND', message: 'Link not found' })
+					throw new ActionError({
+						code: 'NOT_FOUND',
+						message: 'Link not found',
+					})
 				}
 
 				await db.delete(LinksTable).where(eq(LinksTable.id, id))
@@ -299,7 +325,11 @@ export const server = {
 				}
 			} catch (error) {
 				if (error instanceof ActionError) throw error
-				throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete link', stack: error instanceof Error ? error.stack : undefined })
+				throw new ActionError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Failed to delete link',
+					stack: error instanceof Error ? error.stack : undefined,
+				})
 			}
 		},
 	}),
@@ -323,7 +353,10 @@ export const server = {
 					.where(sql`${LinksTable.id} IN (${ids.join(',')})`)
 
 				if (existing.length !== ids.length) {
-					throw new ActionError({ code: 'NOT_FOUND', message: 'One or more links not found' })
+					throw new ActionError({
+						code: 'NOT_FOUND',
+						message: 'One or more links not found',
+					})
 				}
 
 				// Delete all links

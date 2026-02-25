@@ -1,16 +1,21 @@
 import { ImageResponse } from '@vercel/og'
-import React from 'react'
 import type { APIRoute } from 'astro'
+import React from 'react'
 
 export const GET: APIRoute = async ({ request }) => {
 	const { searchParams } = new URL(request.url)
 	const title = searchParams.get('title') || 'Nicolás Deyros'
 	const description =
-		searchParams.get('desc') || 'Full-Stack Developer | Astro & React Specialist'
+		searchParams.get('desc') ||
+		'Full-Stack Developer | Astro & React Specialist'
 
 	// Ensure parameters fit nicely
-	const displayTitle = title.length > 60 ? title.substring(0, 57) + '...' : title
-	const displayDesc = description.length > 120 ? description.substring(0, 117) + '...' : description
+	const displayTitle =
+		title.length > 60 ? title.substring(0, 57) + '...' : title
+	const displayDesc =
+		description.length > 120
+			? description.substring(0, 117) + '...'
+			: description
 
 	return new ImageResponse(
 		React.createElement(
@@ -25,7 +30,8 @@ export const GET: APIRoute = async ({ request }) => {
 					justifyContent: 'center',
 					padding: '80px',
 					backgroundColor: '#0f172a', // Tailwind slate-900
-					backgroundImage: 'radial-gradient(circle at 25px 25px, #1e293b 2%, transparent 0%), radial-gradient(circle at 75px 75px, #1e293b 2%, transparent 0%)',
+					backgroundImage:
+						'radial-gradient(circle at 25px 25px, #1e293b 2%, transparent 0%), radial-gradient(circle at 75px 75px, #1e293b 2%, transparent 0%)',
 					backgroundSize: '100px 100px',
 				},
 			},
@@ -55,7 +61,7 @@ export const GET: APIRoute = async ({ request }) => {
 							marginRight: '20px',
 						},
 					},
-					'ND'
+					'ND',
 				),
 				React.createElement(
 					'span',
@@ -67,8 +73,8 @@ export const GET: APIRoute = async ({ request }) => {
 							letterSpacing: '-1px',
 						},
 					},
-					'nicolasdeyros.dev'
-				)
+					'nicolasdeyros.dev',
+				),
 			),
 			React.createElement(
 				'h1',
@@ -83,7 +89,7 @@ export const GET: APIRoute = async ({ request }) => {
 						fontFamily: 'sans-serif',
 					},
 				},
-				displayTitle
+				displayTitle,
 			),
 			React.createElement(
 				'p',
@@ -96,7 +102,7 @@ export const GET: APIRoute = async ({ request }) => {
 						fontFamily: 'sans-serif',
 					},
 				},
-				displayDesc
+				displayDesc,
 			),
 			React.createElement(
 				'div',
@@ -118,7 +124,7 @@ export const GET: APIRoute = async ({ request }) => {
 							fontWeight: 600,
 						},
 					},
-					'#Astro'
+					'#Astro',
 				),
 				React.createElement(
 					'span',
@@ -129,7 +135,7 @@ export const GET: APIRoute = async ({ request }) => {
 							fontWeight: 600,
 						},
 					},
-					'#React'
+					'#React',
 				),
 				React.createElement(
 					'span',
@@ -140,15 +146,15 @@ export const GET: APIRoute = async ({ request }) => {
 							fontWeight: 600,
 						},
 					},
-					'#TypeScript'
-				)
-			)
+					'#TypeScript',
+				),
+			),
 		),
 		{
 			width: 1200,
 			height: 630,
 			// Here we could include a local font to avoid text rendering issues in production on Vercel
-			// fonts: [...] 
-		}
+			// fonts: [...]
+		},
 	)
 }

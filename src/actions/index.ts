@@ -46,7 +46,8 @@ export const server = {
 				if (error instanceof ActionError) throw error
 				throw new ActionError({
 					code: 'INTERNAL_SERVER_ERROR',
-					message: error instanceof Error ? error.message : 'Failed to send message',
+					message:
+						error instanceof Error ? error.message : 'Failed to send message',
 				})
 			}
 		},
