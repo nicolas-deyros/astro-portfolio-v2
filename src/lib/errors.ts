@@ -68,17 +68,27 @@ export class ExternalServiceError extends ApplicationError {
 export function toApplicationError(error: unknown): ApplicationError {
 	if (error instanceof ApplicationError) return error
 	if (error instanceof Error) {
-		return new ApplicationError(error.message, 500, 'INTERNAL_ERROR', { cause: error })
+		return new ApplicationError(error.message, 500, 'INTERNAL_ERROR', {
+			cause: error,
+		})
 	}
-	return new ApplicationError('An unexpected error occurred', 500, 'INTERNAL_ERROR', {
-		cause: error,
-	})
+	return new ApplicationError(
+		'An unexpected error occurred',
+		500,
+		'INTERNAL_ERROR',
+		{
+			cause: error,
+		},
+	)
 }
 
 /**
  * Creates a standardized success JSON response.
  */
-export function createSuccessResponse(data: Record<string, unknown> = {}, statusCode = 200): Response {
+export function createSuccessResponse(
+	data: Record<string, unknown> = {},
+	statusCode = 200,
+): Response {
 	return new Response(JSON.stringify({ success: true, ...data }), {
 		status: statusCode,
 		headers: { 'Content-Type': 'application/json' },
@@ -102,6 +112,6 @@ export function createErrorResponse(error: unknown): Response {
 		{
 			status: appError.statusCode,
 			headers: { 'Content-Type': 'application/json' },
-		}
+		},
 	)
 }

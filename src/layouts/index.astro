@@ -1,62 +1,61 @@
 ---
-import "@styles/global.css";
+import '@styles/global.css'
 
-import BackToTop from "@components/BackToTop.astro";
-import Footer from "@components/Footer.astro";
-import Head from "@components/Head.astro";
-import Header from "@components/Header/Header.astro";
-import { ClientRouter } from "astro:transitions";
-const { title, description, noindex, nofollow, ogImage } = Astro.props;
+import BackToTop from '@components/BackToTop.astro'
+import Footer from '@components/Footer.astro'
+import Head from '@components/Head.astro'
+import Header from '@components/Header/Header.astro'
+import { ClientRouter } from 'astro:transitions'
+const { title, description, noindex, nofollow, ogImage } = Astro.props
 ---
 
 <html lang="en">
-  <Head {title} {description} {noindex} {nofollow} {ogImage} />
-  <ClientRouter />
-  <body
-    class="flex min-h-screen flex-col bg-white font-sans text-black dark:bg-gray-900 dark:text-white"
-  >
-    <Header />
-    <main class="container mx-auto my-20 w-full flex-grow px-5 md:px-10">
-      <slot />
-    </main>
-    <Footer />
-    <BackToTop />
-    <script>
-      // Initialize theme immediately to prevent FOUC
-      function initTheme(): void {
-        const theme =
-          localStorage.getItem("theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light");
+	<Head {title} {description} {noindex} {nofollow} {ogImage} />
+	<ClientRouter />
+	<body
+		class="flex min-h-screen flex-col bg-white font-sans text-black dark:bg-gray-900 dark:text-white">
+		<Header />
+		<main class="container mx-auto my-20 w-full flex-grow px-5 md:px-10">
+			<slot />
+		</main>
+		<Footer />
+		<BackToTop />
+		<script>
+			// Initialize theme immediately to prevent FOUC
+			function initTheme(): void {
+				const theme =
+					localStorage.getItem('theme') ||
+					(window.matchMedia('(prefers-color-scheme: dark)').matches
+						? 'dark'
+						: 'light')
 
-        if (theme === "dark") {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark')
+				} else {
+					document.documentElement.classList.remove('dark')
+				}
 
-        // Sync checkbox state after theme is set
-        const themeToggleCheckbox = document.getElementById(
-          "theme-toggle-checkbox",
-        ) as HTMLInputElement;
-        const mobileThemeToggleCheckbox = document.getElementById(
-          "mobile-theme-toggle-checkbox",
-        ) as HTMLInputElement;
+				// Sync checkbox state after theme is set
+				const themeToggleCheckbox = document.getElementById(
+					'theme-toggle-checkbox',
+				) as HTMLInputElement
+				const mobileThemeToggleCheckbox = document.getElementById(
+					'mobile-theme-toggle-checkbox',
+				) as HTMLInputElement
 
-        if (themeToggleCheckbox) {
-          themeToggleCheckbox.checked = theme === "dark";
-        }
-        if (mobileThemeToggleCheckbox) {
-          mobileThemeToggleCheckbox.checked = theme === "dark";
-        }
-      }
+				if (themeToggleCheckbox) {
+					themeToggleCheckbox.checked = theme === 'dark'
+				}
+				if (mobileThemeToggleCheckbox) {
+					mobileThemeToggleCheckbox.checked = theme === 'dark'
+				}
+			}
 
-      // Initialize immediately
-      initTheme();
+			// Initialize immediately
+			initTheme()
 
-      // Handle view transitions
-      document.addEventListener("astro:after-swap", initTheme);
-    </script>
-  </body>
+			// Handle view transitions
+			document.addEventListener('astro:after-swap', initTheme)
+		</script>
+	</body>
 </html>

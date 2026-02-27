@@ -1,4 +1,3 @@
-import { validateSession } from '@lib/session'
 import {
 	ApplicationError,
 	createErrorResponse,
@@ -6,6 +5,7 @@ import {
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { validateSession } from '@lib/session'
 import type { APIRoute, AstroCookies } from 'astro'
 import { db, eq, Links } from 'astro:db'
 
@@ -38,7 +38,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
+			throw new ApplicationError(
+				'Content-Type must be application/json',
+				415,
+				'UNSUPPORTED_MEDIA_TYPE',
+			)
 		}
 
 		const { title, url, tags, date } = await request.json()
@@ -69,7 +73,11 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 
 		const contentType = request.headers.get('content-type') ?? ''
 		if (!contentType.includes('application/json')) {
-			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
+			throw new ApplicationError(
+				'Content-Type must be application/json',
+				415,
+				'UNSUPPORTED_MEDIA_TYPE',
+			)
 		}
 
 		const body = await request.json()
