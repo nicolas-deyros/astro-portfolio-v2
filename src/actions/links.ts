@@ -1,15 +1,8 @@
 import { ActionError, defineAction } from 'astro:actions'
-import {
-	AdminSessions,
-	count,
-	db,
-	eq,
-	like,
-	Links as LinksTable,
-	or,
-	sql,
-} from 'astro:db'
+import { count, db, eq, like, Links as LinksTable, or, sql } from 'astro:db'
 import { z } from 'astro:schema'
+
+import { validateSession } from '@/lib/session'
 
 const linkBaseSchema = z.object({
 	title: z
@@ -39,40 +32,14 @@ function normalizeTags(tags: string): string {
 		.join(', ')
 }
 
-async function verifyAuth(request: Request): Promise<boolean> {
-	const authHeader = request.headers.get('authorization')
-	if (!authHeader?.startsWith('Bearer ')) {
+async function verifyAuth(cookies: any): Promise<boolean> {
+	const sessionInfo = await validateSession(cookies)
+	if (!sessionInfo) {
 		throw new ActionError({
 			code: 'UNAUTHORIZED',
-			message: 'Missing or invalid token',
+			message: 'Invalid or missing session',
 		})
 	}
-
-	const token = authHeader.slice(7)
-	if (!token) {
-		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid token' })
-	}
-
-	const session = await db
-		.select()
-		.from(AdminSessions)
-		.where(eq(AdminSessions.token, token))
-		.get()
-
-	if (!session) {
-		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Invalid session' })
-	}
-
-	if (new Date() > new Date(session.expiresAt)) {
-		await db.delete(AdminSessions).where(eq(AdminSessions.id, session.id))
-		throw new ActionError({ code: 'UNAUTHORIZED', message: 'Session expired' })
-	}
-
-	await db
-		.update(AdminSessions)
-		.set({ lastActivity: new Date() })
-		.where(eq(AdminSessions.id, session.id))
-
 	return true
 }
 
@@ -88,8 +55,8 @@ export const server = {
 			search: z.string().optional(),
 			tag: z.string().optional(),
 		}),
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			const { page, pageSize, sort, dir, search, tag } = input
 			const offset = (page - 1) * pageSize
@@ -171,8 +138,8 @@ export const server = {
 	createLink: defineAction({
 		accept: 'form',
 		input: linkBaseSchema,
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			try {
 				// Additional server-side validation
@@ -233,8 +200,8 @@ export const server = {
 		input: linkBaseSchema.extend({
 			id: z.number().min(1, 'Valid ID is required'),
 		}),
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			try {
 				const { id, title, url, tags, date } = input
@@ -298,8 +265,8 @@ export const server = {
 		input: z.object({
 			id: z.number().min(1, 'Valid ID is required'),
 		}),
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			try {
 				const { id } = input
@@ -340,8 +307,8 @@ export const server = {
 		input: z.object({
 			ids: z.array(z.number().min(1)).min(1, 'At least one ID is required'),
 		}),
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			try {
 				const { ids } = input
@@ -381,8 +348,8 @@ export const server = {
 	getTags: defineAction({
 		accept: 'json',
 		input: z.object({}),
-		handler: async (input, { request }) => {
-			await verifyAuth(request)
+		handler: async (input, { cookies }) => {
+			await verifyAuth(cookies)
 
 			try {
 				const links = await db

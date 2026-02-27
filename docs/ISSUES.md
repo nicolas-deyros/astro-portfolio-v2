@@ -7,34 +7,34 @@
 
 ## 🔴 Critical — DRY Violations
 
-### ISSUE-01: Duplicate Email Implementation
+### ~~ISSUE-01: Duplicate Email Implementation~~ (FIXED)
 
 |             |                                                                                                                                                                                               |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | `src/lib/email.ts` (52 lines, React Email), `src/pages/api/sendEmail.json.ts` (277 lines, inline HTML)                                                                                        |
+| **Files**   | `src/lib/email.ts` (52 lines, React Email), ~~`src/pages/api/sendEmail.json.ts`~~                                                                                                             |
 | **Problem** | Two completely separate email systems. `email.ts` uses React Email templates (clean). `sendEmail.json.ts` has inline HTML, manual validation, manual escapeHtml, separate Resend client init. |
 | **Impact**  | Bugfixes must be applied twice. Template drift. Inconsistent validation.                                                                                                                      |
-| **Fix**     | Refactor `sendEmail.json.ts` to delegate to `email.ts` service, or replace the API endpoint entirely with an Astro Action.                                                                    |
+| **Fix**     | Refactored `sendEmail.json.ts` to delegate to `email.ts` service, or replace the API endpoint entirely with an Astro Action.                                                                  |
 | **Effort**  | Medium (2-3 hours)                                                                                                                                                                            |
 
-### ISSUE-02: Triplicate Auth Logic
+### ~~ISSUE-02: Triplicate Auth Logic~~ (FIXED)
 
 |             |                                                                                                                                                                                              |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | `src/actions/links.ts:15` (Bearer token), `src/pages/api/links.json.ts:6` (cookie), `src/lib/session.ts:150` (cookie + fingerprint)                                                          |
+| **Files**   | `src/actions/links.ts`, `src/pages/api/links.json.ts`, `src/lib/session.ts`                                                                                                                  |
 | **Problem** | Three different auth strategies for the same admin functionality. `actions/links.ts` uses Authorization header with Bearer token — different from the cookie-based approach everywhere else. |
 | **Impact**  | Security inconsistency, maintenance overhead, potential bypass vectors.                                                                                                                      |
-| **Fix**     | Unify all auth on `session.ts` centralized functions (`validateSession`, `requireAuthentication`).                                                                                           |
+| **Fix**     | Unified all auth on `session.ts` centralized functions (`validateSession`, `requireAuthentication`).                                                                                         |
 | **Effort**  | Medium (2-3 hours)                                                                                                                                                                           |
 
-### ISSUE-03: Duplicate Zod Schemas in Actions
+### ~~ISSUE-03: Duplicate Zod Schemas in Actions~~ (FIXED)
 
 |             |                                                                                                                                                         |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **File**    | `src/actions/links.ts` (lines 145-161 and 220-236)                                                                                                      |
+| **File**    | `src/actions/links.ts`                                                                                                                                  |
 | **Problem** | `createLink` and `updateLink` have identical Zod schemas for title, URL, tags, date. Tag-cleaning logic is also duplicated (lines 189-193 and 264-268). |
 | **Impact**  | Validation changes must be applied in two places.                                                                                                       |
-| **Fix**     | Extract `linkBaseSchema` constant and `cleanTags()` utility function.                                                                                   |
+| **Fix**     | Extracted `linkBaseSchema` constant and `cleanTags()` utility function.                                                                                 |
 | **Effort**  | Low (30 minutes)                                                                                                                                        |
 
 ---
