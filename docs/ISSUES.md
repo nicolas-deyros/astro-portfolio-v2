@@ -51,13 +51,13 @@
 | **Fix**             | Split into: `AudioEngine`, `SpeechEngine`, `ContentExtractor`, `Visualizer`, `ProgressTracker`.                                                                                                             |
 | **Effort**          | High (4-6 hours)                                                                                                                                                                                            |
 
-### ISSUE-05: `admin/links.astro` God File
+### ~~ISSUE-05: `admin/links.astro` God File~~ (FIXED)
 
 |             |                                                                                                                                                                                                                             |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **File**    | `src/pages/admin/links.astro` (1325 lines)                                                                                                                                                                                  |
 | **Problem** | Server-side data fetching, 3 dialog modals (error, delete confirm, update confirm), full CRUD UI (form + table + pagination + search + filter + bulk ops), and all JavaScript interaction logic — all in one `.astro` file. |
-| **Fix**     | Extract: `LinkFormModal.astro`, `ConfirmDialog.astro`, `LinksTable.astro`, client-side JS into `lib/linksAdmin.ts`.                                                                                                         |
+| **Fix**     | Extracted into a React Island (`AdminLinksManager.tsx`) containing modular UI components, leaving `links.astro` as a simple container.                                                                                      |
 | **Effort**  | High (4-6 hours)                                                                                                                                                                                                            |
 
 ---
@@ -364,8 +364,8 @@ ISSUE-07, 08, 09, 10, 11, 12 (clean code), ISSUE-15, 16, 17, 20 (error handling)
 
 ### Medium Effort (2-4 hours each)
 
-ISSUE-01, 02, 03, 06 (clean code), ISSUE-14, 18, 21 (error handling), ISSUE-23, 24 (API design), ISSUE-30, 31 (SEO)
+~~ISSUE-01, 02, 03~~, 06 (clean code), ISSUE-14, 18, 21 (error handling), ISSUE-23, 24 (API design), ISSUE-30, 31 (SEO)
 
 ### Large Refactors (4-6 hours each)
 
-ISSUE-04, 05 (SRP), ISSUE-19 (w/ ISSUE-01), ISSUE-25 (API consolidation), ISSUE-29 (structured data)
+ISSUE-04, ~~05~~ (SRP), ISSUE-19 (w/ ~~ISSUE-01~~), ISSUE-25 (API consolidation), ISSUE-29 (structured data)
