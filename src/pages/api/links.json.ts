@@ -121,8 +121,6 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 		const url = new URL(request.url)
 		const idParam = url.searchParams.get('id')
 
-		console.log('DELETE request received for ID:', idParam)
-
 		if (!idParam) {
 			console.error('Missing ID parameter in DELETE request')
 			throw new ValidationError('ID is required')
@@ -135,8 +133,6 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 		}
 
 		await db.delete(Links).where(eq(Links.id, linkId))
-
-		console.log(`Link ID ${linkId} deleted successfully`)
 
 		return createSuccessResponse({
 			message: 'Link deleted successfully',

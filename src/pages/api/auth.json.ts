@@ -38,15 +38,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		switch (action) {
 			case 'login': {
-				// Validate credentials using environment variable
 				const validSecretKey =
 					process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
-				console.log({
-					secretKey,
-					validSecretKey,
-					processEnv: process.env.API_SECRET_KEY,
-					importMeta: import.meta.env.API_SECRET_KEY,
-				})
 				if (secretKey !== validSecretKey) {
 					throw new UnauthorizedError('Invalid credentials')
 				}
