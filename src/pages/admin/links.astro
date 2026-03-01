@@ -126,10 +126,6 @@ try {
 		}
 	})
 	availableTags = Array.from(allTags).sort()
-
-	console.log(
-		`Loaded ${links.length} of ${total} links (page ${page}/${totalPages}), sorted by ${sort} ${dir}, search: "${search}", tag: "${tag}"`,
-	)
 } catch (error) {
 	console.error('Error fetching links from database:', error)
 	links = []
