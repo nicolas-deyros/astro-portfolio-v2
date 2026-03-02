@@ -76,7 +76,7 @@
 
 **Effort:** Low (1 hour)
 
-### ISSUE-07: Debug Logs in Production
+### ~~ISSUE-07: Debug Logs in Production~~ (FIXED)
 
 | File                | Lines              |
 | ------------------- | ------------------ |
@@ -86,7 +86,7 @@
 **Fix:** Remove all `console.log` debug statements. Keep `console.error` for actual errors.
 **Effort:** Low (15 minutes)
 
-### ISSUE-08: Unnecessary Comments
+### ~~ISSUE-08: Unnecessary Comments~~ (FIXED)
 
 Comments that restate what the code does (violates clean-code "no obvious comments"):
 
@@ -105,7 +105,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ## 💡 Minor — Astro Best Practices
 
-### ISSUE-09: Ineffective `prerender` in Component
+### ~~ISSUE-09: Ineffective `prerender` in Component~~ (FIXED)
 
 |             |                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------- |
@@ -114,7 +114,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 | **Fix**     | Remove the export.                                                                                       |
 | **Effort**  | Trivial (1 minute)                                                                                       |
 
-### ISSUE-10: Date Schema Using `transform` Instead of `coerce`
+### ~~ISSUE-10: Date Schema Using `transform` Instead of `coerce`~~ (FIXED)
 
 |             |                                                                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -360,7 +360,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### Quick Wins (≤2 hours total)
 
-ISSUE-07, 08, 09, 10, 11, 12 (clean code), ISSUE-15, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
+~~ISSUE-07, 08, 09, 10~~, 11, 12 (clean code), ISSUE-15, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
 
 ### Medium Effort (2-4 hours each)
 
