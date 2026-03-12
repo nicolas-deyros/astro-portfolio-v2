@@ -29,7 +29,7 @@ export const GET: APIRoute = async context => {
 			site: context.site || 'https://nicolasdeyros.dev',
 			items: sortedPosts.map(post => {
 				// Clean MDX content by removing import statements and processing
-				const cleanMdxContent = post.body
+				const cleanMdxContent = (post.body ?? '')
 					// Remove import statements
 					.replace(/^import\s+.*$/gm, '')
 					// Remove empty lines that were left by imports
@@ -58,13 +58,13 @@ export const GET: APIRoute = async context => {
 
 				return {
 					title: post.data.title,
-					link: `/blog/${post.slug}`,
+					link: `/blog/${post.id}`,
 					description: post.data.description,
 					pubDate: new Date(post.data.date),
 					content: cleanContent,
 					categories: post.data.category ? [post.data.category] : undefined,
 					author: 'Nicolás Deyros',
-					guid: `/blog/${post.slug}`,
+					guid: `/blog/${post.id}`,
 				}
 			}),
 			customData: [

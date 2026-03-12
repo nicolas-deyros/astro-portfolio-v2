@@ -8,6 +8,7 @@ export interface AudioPlayerConfig {
 	pitch?: number
 	volume?: number
 	lang?: string
+	voiceURI?: string
 }
 
 export interface AudioPlayerState {

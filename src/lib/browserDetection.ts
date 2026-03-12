@@ -92,10 +92,10 @@ export function supportsAI(): boolean {
 		const hasTranslator = aiObject && 'translator' in aiObject
 		const hasSummarizer = aiObject && 'summarizer' in aiObject
 
-		return (
+		return Boolean(
 			hasAIObject &&
-			typeof aiObject === 'object' &&
-			(hasTranslator || hasSummarizer)
+				typeof aiObject === 'object' &&
+				(hasTranslator || hasSummarizer),
 		)
 	} catch {
 		return false
