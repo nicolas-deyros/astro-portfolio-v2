@@ -38,7 +38,7 @@ export default defineConfig({
 		react(),
 	],
 
-	experimental: {
+	security: {
 		csp: true,
 	},
 })

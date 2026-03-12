@@ -1,11 +1,11 @@
 ---
 export const prerender = true
-import { type CollectionEntry, getCollection } from 'astro:content'
+import { type CollectionEntry, getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
 	const blog = await getCollection('blog')
 	return blog.map(post => ({
-		params: { slug: post.slug },
+		params: { slug: post.id },
 		props: { post },
 	}))
 }
@@ -15,15 +15,15 @@ type Props = {
 }
 
 const { post } = Astro.props
-const { data, render } = post
-const { Content } = await render()
+const { data } = post
+const { Content } = await render(post)
 
 import HybridAudioPlayerWrapper from '@components/AudioPlayer/HybridAudioPlayerWrapper.astro'
 import Section from '@components/Section.astro'
 import Layout from '@layouts/index.astro'
 const { title, date, author, description, category } = data
 
-const markdown = post.body
+const markdown = post.body ?? ''
 
 // Enhanced text cleaning for reading time calculation
 const getReadableText = (text: string): string => {

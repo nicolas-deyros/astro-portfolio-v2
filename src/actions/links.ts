@@ -63,8 +63,10 @@ export const server = {
 
 			try {
 				// Build base query
-				let query = db.select().from(LinksTable)
-				let countQuery = db.select({ count: count() }).from(LinksTable)
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				let query: any = db.select().from(LinksTable)
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				let countQuery: any = db.select({ count: count() }).from(LinksTable)
 
 				// Add search conditions
 				if (search) {
@@ -103,12 +105,12 @@ export const server = {
 				return {
 					success: true,
 					data: {
-						links: links.map(link => ({
-							id: link.id,
-							title: link.title,
-							url: link.url,
-							tags: link.tags,
-							date: link.date,
+						links: (links as Array<Record<string, unknown>>).map(link => ({
+							id: link['id'] as number,
+							title: link['title'] as string,
+							url: link['url'] as string,
+							tags: link['tags'] as string,
+							date: link['date'] as string,
 						})),
 						pagination: {
 							page,

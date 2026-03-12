@@ -1,3 +1,4 @@
+import type React from 'react'
 import { render } from '@react-email/components'
 import { Resend } from 'resend'
 
@@ -25,7 +26,9 @@ export async function sendContactEmails({
 	const adminEmail = import.meta.env.ADMIN_EMAIL || siteConfig.author.email
 
 	// Render React template to HTML
-	const emailHtml = await render(ContactEmail({ name, message }))
+	const emailHtml = await render(
+		ContactEmail({ name, message }) as React.ReactElement,
+	)
 
 	// 1. Send confirmation to user
 	const userEmailPromise = resend.emails.send({
