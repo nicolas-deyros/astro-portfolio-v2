@@ -1,5 +1,5 @@
-import type React from 'react'
 import { render } from '@react-email/components'
+import type React from 'react'
 import { Resend } from 'resend'
 
 import { ContactEmail } from '@/components/Emails/ContactEmail'
