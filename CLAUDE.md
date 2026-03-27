@@ -123,7 +123,25 @@ npm run check            # Quick check (lint:all + critical tests)
 npm run check:full       # Full check (lint:all + all tests)
 ```
 
-### Git Automation
+### Dependency Management
+
+```bash
+npm run deps:check           # Check for outdated packages
+npm run deps:upgrade         # Upgrade Astro + all packages
+npm run deps:scan            # Full Socket.dev supply chain scan (creates report)
+npm run deps:audit           # Quick Socket.dev audit of current dependencies
+```
+
+> **Socket.dev is a global tool, not a project dependency.**
+> It must be installed globally and the npm wrapper must be active on any machine working on this project:
+>
+> ```bash
+> npm install -g socket    # one-time global install
+> socket wrapper on        # intercepts every npm install system-wide
+> ```
+>
+> Verify the wrapper is active: `socket wrapper status`
+> The `~/.npmrc` setting `ignore-scripts=true` blocks lifecycle scripts globally — keep it.
 
 ```bash
 npm run session:init                     # Sync environment before starting work
