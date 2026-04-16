@@ -1,23 +1,8 @@
-import { AnimatePresence, motion } from 'framer-motion'
-
 interface TextAreaProps
 	extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 	label: string
 	error?: string | undefined
 	touched?: boolean | undefined
-}
-
-const fadeInOut = {
-	initial: { opacity: 0, y: -10 },
-	animate: { opacity: 1, y: 0 },
-	exit: { opacity: 0, y: -10 },
-	transition: { duration: 0.3 },
-}
-
-const shakeAnimation = {
-	initial: { x: 0 },
-	animate: { x: [-10, 10, -10, 10, 0] },
-	transition: { duration: 0.4 },
 }
 
 const TextArea = ({
@@ -44,20 +29,14 @@ const TextArea = ({
 			<label htmlFor={props.id || props.name} className={labelClasses}>
 				{label}
 			</label>
-			<motion.div
-				animate={hasError ? shakeAnimation.animate : {}}
-				transition={shakeAnimation.transition}>
+			<div className={hasError ? 'animate-shake' : ''}>
 				<textarea className={`${baseClasses} ${stateClasses}`} {...props} />
-			</motion.div>
-			<AnimatePresence>
-				{hasError && (
-					<motion.span
-						{...fadeInOut}
-						className="mt-1 block text-sm font-medium text-red-600">
-						{error}
-					</motion.span>
-				)}
-			</AnimatePresence>
+			</div>
+			{hasError && (
+				<span className="mt-1 block text-sm font-medium text-red-600 transition-opacity duration-300">
+					{error}
+				</span>
+			)}
 		</div>
 	)
 }

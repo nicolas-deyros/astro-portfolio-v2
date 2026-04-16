@@ -1,80 +1,108 @@
 import { actions } from 'astro:actions'
-import { useFormik } from 'formik'
 import { useState } from 'react'
 
-import { BasicSchema } from '@/schemas'
+import type { FormErrors, FormValues } from '@/schemas'
+import { validateContactForm } from '@/schemas'
 
-export interface FormValues {
-	name: string
-	email: string
-	message: string
+type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
+
+interface ContactFormState {
+	values: FormValues
+	errors: FormErrors
+	touched: Partial<Record<keyof FormValues, boolean>>
 }
 
-export const useContactForm = (): {
-	formik: ReturnType<typeof useFormik<FormValues>>
-	submitStatus: 'idle' | 'submitting' | 'success' | 'error'
-	submitMessage: string
-} => {
-	const [submitStatus, setSubmitStatus] = useState<
-		'idle' | 'submitting' | 'success' | 'error'
-	>('idle')
-	const [submitMessage, setSubmitMessage] = useState<string>('')
+const INITIAL_VALUES: FormValues = { name: '', email: '', message: '' }
 
-	const initialValues: FormValues = {
-		name: '',
-		email: '',
-		message: '',
+export function useContactForm() {
+	const [status, setStatus] = useState<SubmitStatus>('idle')
+	const [submitMessage, setSubmitMessage] = useState('')
+	const [formState, setFormState] = useState<ContactFormState>({
+		values: INITIAL_VALUES,
+		errors: {},
+		touched: {},
+	})
+
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		const { name, value } = e.target
+		const nextValues = { ...formState.values, [name]: value }
+		setFormState(prev => ({
+			...prev,
+			values: nextValues,
+			errors: validateContactForm(nextValues),
+		}))
 	}
 
-	const handleSubmit = async (
-		values: FormValues,
-		{ resetForm, setSubmitting }: import('formik').FormikHelpers<FormValues>,
-	): Promise<void> => {
-		setSubmitStatus('submitting')
+	const handleBlur = (
+		e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		const { name } = e.target
+		setFormState(prev => ({
+			...prev,
+			touched: { ...prev.touched, [name]: true },
+		}))
+	}
+
+	const isDirty = Object.values(formState.values).some(v => v !== '')
+	const isValid =
+		Object.keys(validateContactForm(formState.values)).length === 0
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+
+		// Mark all fields touched on submit attempt
+		setFormState(prev => ({
+			...prev,
+			touched: { name: true, email: true, message: true },
+			errors: validateContactForm(prev.values),
+		}))
+
+		if (!isValid) return
+
+		setStatus('submitting')
 		setSubmitMessage('')
 
 		try {
-			const { data, error } = await actions.sendEmail(values)
+			const { data, error } = await actions.sendEmail(formState.values)
 
 			if (error) {
-				console.error('Action error:', error)
 				throw new Error(error.message || 'Failed to send message')
 			}
 
 			if (data?.success) {
-				setSubmitStatus('success')
+				setStatus('success')
 				setSubmitMessage(data.message || "Thanks! I'll be in touch soon.")
-				resetForm()
-
+				setFormState({ values: INITIAL_VALUES, errors: {}, touched: {} })
 				setTimeout(() => {
-					setSubmitStatus('idle')
+					setStatus('idle')
 					setSubmitMessage('')
 				}, 5000)
 			} else {
 				throw new Error(data?.message || 'Failed to send email')
 			}
-		} catch (error) {
-			console.error('Form submission error:', error)
-			setSubmitStatus('error')
+		} catch (err) {
+			console.error('Form submission error:', err)
+			setStatus('error')
 			setSubmitMessage(
-				error instanceof Error
-					? error.message
+				err instanceof Error
+					? err.message
 					: 'Something went wrong. Please try again.',
 			)
-		} finally {
-			setSubmitting(false)
 		}
 	}
 
-	const formik = useFormik({
-		initialValues,
-		onSubmit: handleSubmit,
-		validationSchema: BasicSchema,
-	})
-
 	return {
-		formik,
-		submitStatus,
+		values: formState.values,
+		errors: formState.errors,
+		touched: formState.touched,
+		isDirty,
+		isValid,
+		submitStatus: status,
 		submitMessage,
+		handleChange,
+		handleBlur,
+		handleSubmit,
 	}
 }

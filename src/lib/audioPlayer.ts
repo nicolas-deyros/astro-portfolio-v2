@@ -389,6 +389,9 @@ export function isAudioPlayerSupported(): {
 	webAudio: boolean
 	fullSupport: boolean
 } {
+	if (typeof window === 'undefined') {
+		return { speechSynthesis: false, webAudio: false, fullSupport: false }
+	}
 	const speechSynthesis = 'speechSynthesis' in window
 	const webAudio = 'AudioContext' in window || 'webkitAudioContext' in window
 
