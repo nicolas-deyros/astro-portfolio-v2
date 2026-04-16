@@ -8,6 +8,7 @@ import {
 	createAudioPlayer,
 	isAudioPlayerSupported,
 } from '../../lib/audioPlayer'
+import { filterMDXContent } from '../../lib/contentFilter'
 
 interface HybridAudioPlayerProps {
 	text?: string
@@ -19,80 +20,6 @@ interface HybridAudioPlayerProps {
 	preload?: 'none' | 'metadata' | 'auto'
 	crossOrigin?: 'anonymous' | 'use-credentials'
 	loop?: boolean
-}
-
-const filterContentForAudio = (rawContent: string): string => {
-	let content = rawContent
-
-	// Extract title from markdown (first H1)
-	const titleMatch = content.match(/^#\s+(.+)$/m)
-	const title = titleMatch?.[1]?.trim() || ''
-
-	// Step 1: Remove frontmatter (YAML between --- lines) - ONLY at the start
-	if (content.startsWith('---')) {
-		const endIndex = content.indexOf('\n---\n', 4)
-		if (endIndex !== -1) {
-			content = content.substring(endIndex + 5)
-		}
-	}
-
-	// Step 2: Remove import statements
-	content = content.replace(/^import\s+[\s\S]*?from\s+['"][^'"]*['"].*$/gm, '')
-	content = content.replace(/^import\s+[\s\S]*?['"][^'"]*['"].*$/gm, '')
-
-	// Step 3: Remove Astro/React components
-	content = content.replace(/<[A-Z][a-zA-Z0-9_]*[^>]*\/>/g, '') // Self-closing
-	content = content.replace(
-		/<[A-Z][a-zA-Z0-9_]*[^>]*>[\s\S]*?<\/[A-Z][a-zA-Z0-9_]*>/g,
-		'',
-	) // With content
-
-	// Step 4: Remove images and videos
-	content = content.replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
-	content = content.replace(
-		/\[!\[.*?\]\(.*?\)\]\(.*?(youtube|youtu\.be|vimeo|dailymotion).*?\)/gi,
-		'',
-	)
-
-	// Step 5: Remove problematic HTML elements
-	content = content.replace(
-		/<(script|style|svg|video|audio|iframe|embed)[^>]*>[\s\S]*?<\/\1>/gis,
-		'',
-	)
-	content = content.replace(
-		/<(script|style|svg|video|audio|iframe|embed)[^>]*\/?>/gi,
-		'',
-	)
-
-	// Step 6: Remove HTML tags but keep content
-	content = content.replace(/<[^>]*>/g, '')
-
-	// Step 7: Remove code blocks
-	content = content.replace(/```[\s\S]*?```/g, '')
-	content = content.replace(/`([^`]+)`/g, '$1') // Keep inline code content
-
-	// Step 8: Minimal markdown cleanup
-	content = content.replace(/^#{1,6}\s+/gm, '') // Headers
-	content = content.replace(/(\*{1,2}|_{1,2})(.*?)\1/g, '$2') // Bold/italic
-	content = content.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Links
-	content = content.replace(/^[-*_]{3,}$/gm, '') // Horizontal rules
-	content = content.replace(/^>\s*/gm, '') // Blockquotes
-	content = content.replace(/^[\s]*[-*+]\s+/gm, '') // Lists
-	content = content.replace(/^[\s]*\d+\.\s+/gm, '') // Numbered lists
-
-	// Step 9: Final cleanup
-	content = content
-		.replace(/\s+/g, ' ') // Multiple spaces to single
-		.replace(/^\s*[-_+*#>|=~`^]\s*$/gm, '') // Lines with ONLY symbols
-		.replace(/https?:\/\/[^\s]+/gi, '') // URLs
-		.trim()
-
-	// Add title
-	if (title && !content.toLowerCase().startsWith(title.toLowerCase())) {
-		content = `${title}. ${content}`
-	}
-
-	return content
 }
 
 const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
@@ -165,7 +92,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 			setAudioPlayer(player)
 
 			if (autoLoad && text.trim()) {
-				const filteredText = filterContentForAudio(text)
+				const filteredText = filterMDXContent(text)
 				if (filteredText.trim()) {
 					Promise.resolve(player.loadText(filteredText)).catch(err => {
 						console.error('[AudioPlayer] Failed to load text:', err)

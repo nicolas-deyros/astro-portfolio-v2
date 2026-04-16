@@ -3,6 +3,8 @@
  * Provides advanced audio controls, visualization, and better user experience
  */
 
+import { extractReadableContent } from './contentFilter'
+
 export interface AudioPlayerConfig {
 	rate?: number
 	pitch?: number
@@ -115,17 +117,17 @@ export class EnhancedAudioPlayer {
 			this.updateState({ isLoading: true, error: null })
 
 			// Clean and prepare text with enhanced content filtering
-			const cleanText = this.extractReadableContent(text)
-			if (!cleanText.trim()) {
+			const cleanedText = extractReadableContent(text)
+			if (!cleanedText.trim()) {
 				throw new Error('No readable content found')
 			}
 
 			// Split text into manageable chunks
-			this.textChunks = this.splitTextIntoChunks(cleanText)
+			this.textChunks = this.splitTextIntoChunks(cleanedText)
 			this.currentChunkIndex = 0
 
 			// Estimate duration (rough calculation: ~150 words per minute)
-			const wordCount = cleanText.split(/\s+/).length
+			const wordCount = cleanedText.split(/\s+/).length
 			const estimatedDuration = (wordCount / 150) * 60 // seconds
 
 			this.updateState({
@@ -403,233 +405,6 @@ export class EnhancedAudioPlayer {
 		this.stateListeners = []
 		this.textChunks = []
 		this.currentUtterance = null
-	}
-
-	// Private helper methods
-
-	/**
-	 * Extract readable content from text, filtering out videos, images, and other non-readable elements
-	 */
-	private extractReadableContent(text: string): string {
-		// If the text appears to be HTML or contains HTML elements, parse it properly
-		if (text.includes('<') && text.includes('>')) {
-			return this.extractFromHTML(text)
-		}
-
-		// If it's markdown, clean it up
-		if (text.includes('![') || text.includes('](') || text.includes('##')) {
-			return this.extractFromMarkdown(text)
-		}
-
-		// Plain text - just clean it up
-		return this.cleanText(text)
-	}
-
-	/**
-	 * Extract readable content from HTML
-	 */
-	private extractFromHTML(html: string): string {
-		// Create a temporary DOM element to parse HTML
-		const tempDiv = document.createElement('div')
-		tempDiv.innerHTML = html
-
-		// Remove video elements and containers
-		const videoSelectors = [
-			'video',
-			'audio',
-			'iframe[src*="youtube"]',
-			'iframe[src*="youtu.be"]',
-			'iframe[src*="vimeo"]',
-			'iframe[src*="dailymotion"]',
-			'iframe[src*="twitch"]',
-			'embed',
-			'object',
-			'.video-container',
-			'.video-wrapper',
-			'.youtube-container',
-			'.vimeo-container',
-			'.media-embed',
-			'.aspect-video',
-			'[data-video]',
-			'[data-embed]',
-		]
-
-		videoSelectors.forEach(selector => {
-			const elements = tempDiv.querySelectorAll(selector)
-			elements.forEach(el => el.remove())
-		})
-
-		// Remove image elements (but keep alt text if meaningful)
-		const images = tempDiv.querySelectorAll('img')
-		images.forEach(img => {
-			const altText = img.getAttribute('alt')
-			const title = img.getAttribute('title')
-
-			// Only keep alt text if it's descriptive and not just filename
-			if (
-				altText &&
-				altText.length > 5 &&
-				!altText.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
-			) {
-				const textNode = document.createTextNode(`${altText}. `)
-				img.parentNode?.replaceChild(textNode, img)
-			} else if (title && title.length > 5) {
-				const textNode = document.createTextNode(`${title}. `)
-				img.parentNode?.replaceChild(textNode, img)
-			} else {
-				img.remove()
-			}
-		})
-
-		// Remove figure captions if they're just describing images
-		const figures = tempDiv.querySelectorAll('figure')
-		figures.forEach(figure => {
-			const figcaption = figure.querySelector('figcaption')
-			const img = figure.querySelector('img')
-
-			if (img && figcaption) {
-				// If figure contains an image, remove the whole thing
-				figure.remove()
-			}
-		})
-
-		// Remove script and style elements
-		const nonContentElements = tempDiv.querySelectorAll(
-			'script, style, noscript, svg',
-		)
-		nonContentElements.forEach(el => el.remove())
-
-		// Remove code blocks (but keep inline code)
-		const codeBlocks = tempDiv.querySelectorAll('pre, .highlight, .code-block')
-		codeBlocks.forEach(block => {
-			const codeText = block.textContent || ''
-			// Replace with a simple description
-			const description =
-				codeText.length > 50
-					? 'Code block with ' +
-						Math.ceil(codeText.split('\n').length) +
-						' lines. '
-					: ''
-			if (description) {
-				const textNode = document.createTextNode(description)
-				block.parentNode?.replaceChild(textNode, block)
-			} else {
-				block.remove()
-			}
-		})
-
-		// Remove inline code but keep the content
-		const inlineCode = tempDiv.querySelectorAll('code:not(pre code)')
-		inlineCode.forEach(code => {
-			const textNode = document.createTextNode(code.textContent || '')
-			code.parentNode?.replaceChild(textNode, code)
-		})
-
-		// Remove buttons and interactive elements
-		const interactiveElements = tempDiv.querySelectorAll(
-			'button, .btn, input, select, textarea, form',
-		)
-		interactiveElements.forEach(el => el.remove())
-
-		// Convert links to just their text content
-		const links = tempDiv.querySelectorAll('a')
-		links.forEach(link => {
-			const textNode = document.createTextNode(link.textContent || '')
-			link.parentNode?.replaceChild(textNode, link)
-		})
-
-		// Get the cleaned text content
-		const textContent = tempDiv.textContent || tempDiv.innerText || ''
-
-		return this.cleanText(textContent)
-	}
-
-	/**
-	 * Extract readable content from Markdown
-	 */
-	private extractFromMarkdown(markdown: string): string {
-		let cleaned = markdown
-
-		// Remove image syntax ![alt](url) but keep alt text if meaningful
-		cleaned = cleaned.replace(/!\[([^\]]*)\]\([^)]+\)/g, (match, altText) => {
-			// Only keep alt text if it's descriptive
-			if (
-				altText &&
-				altText.length > 5 &&
-				!altText.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
-			) {
-				return altText + '. '
-			}
-			return ''
-		})
-
-		// Remove video embeds (YouTube, Vimeo, etc.)
-		cleaned = cleaned.replace(
-			/\[!\[.*?\]\(.*?\)\]\(.*?(youtube|youtu\.be|vimeo|dailymotion).*?\)/gi,
-			'',
-		)
-
-		// Remove HTML video/audio tags
-		cleaned = cleaned.replace(
-			/<(video|audio|iframe|embed|object)[^>]*>.*?<\/\1>/gis,
-			'',
-		)
-		cleaned = cleaned.replace(
-			/<(video|audio|iframe|embed|object)[^>]*\/?>.*?/gi,
-			'',
-		)
-
-		// Remove link syntax [text](url) but keep the text
-		cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-
-		// Remove code blocks
-		cleaned = cleaned.replace(/```[\s\S]*?```/g, match => {
-			const lines = match.split('\n').length - 2
-			return lines > 3 ? `Code block with ${lines} lines. ` : ''
-		})
-
-		// Remove inline code backticks but keep content
-		cleaned = cleaned.replace(/`([^`]+)`/g, '$1')
-
-		// Remove markdown headers symbols but keep the text
-		cleaned = cleaned.replace(/^#{1,6}\s+/gm, '')
-
-		// Remove markdown emphasis but keep text
-		cleaned = cleaned.replace(/(\*{1,2}|_{1,2})(.*?)\1/g, '$2')
-
-		// Remove horizontal rules
-		cleaned = cleaned.replace(/^[-*_]{3,}$/gm, '')
-
-		// Remove blockquote markers
-		cleaned = cleaned.replace(/^>\s*/gm, '')
-
-		// Remove list markers
-		cleaned = cleaned.replace(/^[\s]*[-*+]\s+/gm, '')
-		cleaned = cleaned.replace(/^[\s]*\d+\.\s+/gm, '')
-
-		return this.cleanText(cleaned)
-	}
-
-	private cleanText(text: string): string {
-		return (
-			text
-				// Normalize whitespace
-				.replace(/\s+/g, ' ')
-				// Remove multiple line breaks
-				.replace(/\n\s*\n/g, '\n')
-				// Remove special characters except basic punctuation
-				.replace(/[^\w\s.,!?;:()-]/g, '')
-				// Remove URLs that might have slipped through
-				.replace(/https?:\/\/[^\s]+/gi, '')
-				// Remove email addresses
-				.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '')
-				// Clean up extra punctuation
-				.replace(/[.,!?;:]{2,}/g, '.')
-				// Remove standalone numbers that might be image dimensions
-				.replace(/\b\d{2,4}x\d{2,4}\b/g, '')
-				.replace(/\b\d{3,}\b/g, '')
-				.trim()
-		)
 	}
 
 	private splitTextIntoChunks(text: string, maxLength = 32767): string[] {
