@@ -61,6 +61,9 @@
 		"test/**/*.snap",
 		".agent/**",
 		".agents/**",
+		".agents/skills/**",
+		"**/.agents/**",
+		"**/.agents/skills/**",
 		".claude/**"
 	],
 	"ignoreRegExpList": [
@@ -75,6 +78,9 @@
 		"href\\s*=\\s*['\"][^'\"]*['\"]"
 	],
 	"words": [
+		"PREFS",
+		"GTM",
+		"DSN",
 		"astro",
 		"astrojs",
 		"tailwindcss",
