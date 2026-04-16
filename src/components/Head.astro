@@ -8,12 +8,18 @@ interface Props {
 	nofollow?: boolean
 	ogImage?: string
 }
-const { title, description, noindex = false, nofollow = false, ogImage } = Astro.props
+const {
+	title,
+	description,
+	noindex = false,
+	nofollow = false,
+	ogImage,
+} = Astro.props
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 
 const dynamicOgImageUrl = new URL(
 	`/api/og.png?title=${encodeURIComponent(title)}&desc=${encodeURIComponent(description)}`,
-	Astro.site || 'https://www.nicolasdeyros.dev'
+	Astro.site || 'https://www.nicolasdeyros.dev',
 ).toString()
 ---
 
@@ -27,22 +33,18 @@ const dynamicOgImageUrl = new URL(
 				<script
 					type="text/partytown"
 					src="https://www.googletagmanager.com/gtag/js?id=G-SW4ZXZJ9WH"
-				></script>
-				<script type="text/partytown">
-					/* eslint-disable @typescript-eslint/explicit-function-return-type, prefer-rest-params */
-					window.dataLayer = window.dataLayer || [];
-					function gtag() {
-						dataLayer.push(arguments);
-					}
-					gtag('js', new Date());
-					gtag('config', 'G-SW4ZXZJ9WH');
-					/* eslint-enable @typescript-eslint/explicit-function-return-type, prefer-rest-params */
-				</script>
+				/>
+				<script
+					type="text/partytown"
+					set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SW4ZXZJ9WH');`}
+				/>
 			</>
 		)
 	}
 
 	<meta charset="utf-8" />
+	<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+	<link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
 	<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 	<meta name="viewport" content="width=device-width" />
 	<meta name="author" content="Nicolás Deyros" />
