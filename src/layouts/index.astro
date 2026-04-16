@@ -5,6 +5,7 @@ import BackToTop from '@components/BackToTop.astro'
 import Footer from '@components/Footer.astro'
 import Head from '@components/Head.astro'
 import Header from '@components/Header/Header.astro'
+import SpeedInsights from '@vercel/speed-insights/astro'
 import { ClientRouter } from 'astro:transitions'
 const { title, description, noindex, nofollow, ogImage } = Astro.props
 ---
@@ -20,6 +21,7 @@ const { title, description, noindex, nofollow, ogImage } = Astro.props
 		</main>
 		<Footer />
 		<BackToTop />
+		<SpeedInsights />
 		<script>
 			// Initialize theme immediately to prevent FOUC
 			function initTheme(): void {
