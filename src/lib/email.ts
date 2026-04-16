@@ -5,8 +5,6 @@ import { Resend } from 'resend'
 import { ContactEmail } from '@/components/Emails/ContactEmail'
 import { siteConfig } from '@/config/site.config'
 
-const resend = new Resend(import.meta.env.RESEND_API_KEY)
-
 interface SendContactEmailParams {
 	name: string
 	email: string
@@ -21,6 +19,8 @@ export async function sendContactEmails({
 	if (!import.meta.env.RESEND_API_KEY) {
 		throw new Error('RESEND_API_KEY is missing')
 	}
+
+	const resend = new Resend(import.meta.env.RESEND_API_KEY)
 
 	const fromEmail = import.meta.env.FROM_EMAIL || siteConfig.author.email
 	const adminEmail = import.meta.env.ADMIN_EMAIL || siteConfig.author.email
