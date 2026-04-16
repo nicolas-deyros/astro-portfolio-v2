@@ -1,14 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React from 'react'
 
-import type {
-	AudioPlayerState,
-	EnhancedAudioPlayer,
-} from '../../lib/audioPlayer'
-import {
-	createAudioPlayer,
-	isAudioPlayerSupported,
-} from '../../lib/audioPlayer'
-import { filterMDXContent } from '../../lib/contentFilter'
+import { useAudioElement } from '../../hooks/useAudioElement'
+import { useTextToSpeech } from '../../hooks/useTextToSpeech'
 
 interface HybridAudioPlayerProps {
 	text?: string
@@ -22,6 +15,12 @@ interface HybridAudioPlayerProps {
 	loop?: boolean
 }
 
+const formatTime = (seconds: number): string => {
+	const mins = Math.floor(seconds / 60)
+	const secs = Math.floor(seconds % 60)
+	return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
 const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 	text,
 	audioSrc,
@@ -33,332 +32,32 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 	crossOrigin,
 	loop = false,
 }) => {
-	// Determine the actual mode to use
 	const actualMode =
 		mode === 'auto' ? (audioSrc ? 'audio-file' : 'text-to-speech') : mode
 
-	// Text-to-speech state
-	const [audioPlayer, setAudioPlayer] = useState<EnhancedAudioPlayer | null>(
-		null,
-	)
-	const [playerState, setPlayerState] = useState<AudioPlayerState>({
-		isPlaying: false,
-		isPaused: false,
-		isLoading: false,
-		currentTime: 0,
-		duration: 0,
-		volume: 0.8,
-		rate: 1.0,
-		progress: 0,
-		error: null,
-	})
+	const isTTS = actualMode === 'text-to-speech'
 
-	// HTML5 audio state
-	const audioRef = useRef<HTMLAudioElement>(null)
-	const [audioFileState, setAudioFileState] = useState({
-		isPlaying: false,
-		isPaused: false,
-		isLoading: false,
-		currentTime: 0,
-		duration: 0,
-		volume: 0.8,
-		progress: 0,
-		error: null as string | null,
-	})
+	const {
+		playerState,
+		handlers: ttsHandlers,
+		supported,
+	} = useTextToSpeech(text, autoLoad, enableVisualization)
 
-	const [supported, setSupported] = useState({
-		speechSynthesis: false,
-		webAudio: false,
-		fullSupport: false,
-		htmlAudio: false,
-	})
-	const [isSeeking, setIsSeeking] = useState(false)
-	const seekTimeoutRef = useRef<number | undefined>(undefined)
+	const {
+		audioRef,
+		audioFileState,
+		handlers: audioHandlers,
+	} = useAudioElement(actualMode === 'audio-file')
 
-	// Initialize based on mode
-	useEffect(() => {
-		const support = isAudioPlayerSupported()
-		const htmlAudio = 'Audio' in window
-		setSupported({ ...support, htmlAudio })
+	const currentState = isTTS ? playerState : audioFileState
+	const currentError = isTTS ? playerState.error : audioFileState.error
 
-		if (actualMode === 'text-to-speech' && support.speechSynthesis && text) {
-			const player = createAudioPlayer({
-				rate: 1.0,
-				volume: 0.8,
-				lang: 'en-US',
-			})
+	const onPlay = isTTS ? ttsHandlers.play : audioHandlers.play
+	const onPause = isTTS ? ttsHandlers.pause : audioHandlers.pause
+	const onStop = isTTS ? ttsHandlers.stop : audioHandlers.stop
+	const onSeek = isTTS ? ttsHandlers.seek : audioHandlers.seek
 
-			const unsubscribe = player.onStateChange(setPlayerState)
-			setAudioPlayer(player)
-
-			if (autoLoad && text.trim()) {
-				const filteredText = filterMDXContent(text)
-				if (filteredText.trim()) {
-					Promise.resolve(player.loadText(filteredText)).catch(err => {
-						console.error('[AudioPlayer] Failed to load text:', err)
-					})
-				}
-			}
-
-			return () => {
-				unsubscribe()
-				player.destroy()
-				if (seekTimeoutRef.current) {
-					clearTimeout(seekTimeoutRef.current)
-				}
-			}
-		}
-	}, [text, audioSrc, actualMode, autoLoad])
-
-	// Set up HTML5 audio event listeners
-	useEffect(() => {
-		const audio = audioRef.current
-		if (!audio || actualMode !== 'audio-file') return
-
-		const handleLoadStart = () =>
-			setAudioFileState(prev => ({ ...prev, isLoading: true }))
-		const handleLoadedMetadata = () => {
-			setAudioFileState(prev => ({
-				...prev,
-				duration: audio.duration,
-				isLoading: false,
-			}))
-		}
-		const handleLoadedData = () =>
-			setAudioFileState(prev => ({ ...prev, isLoading: false }))
-		const handleCanPlay = () =>
-			setAudioFileState(prev => ({ ...prev, isLoading: false }))
-
-		const handleTimeUpdate = () => {
-			if (!isSeeking) {
-				const progress =
-					audio.duration > 0 ? audio.currentTime / audio.duration : 0
-				setAudioFileState(prev => ({
-					...prev,
-					currentTime: audio.currentTime,
-					progress,
-				}))
-			}
-		}
-
-		const handlePlay = () => {
-			setAudioFileState(prev => ({
-				...prev,
-				isPlaying: true,
-				isPaused: false,
-				error: null,
-			}))
-		}
-
-		const handlePause = () => {
-			setAudioFileState(prev => ({
-				...prev,
-				isPlaying: false,
-				isPaused: true,
-			}))
-		}
-
-		const handleEnded = () => {
-			setAudioFileState(prev => ({
-				...prev,
-				isPlaying: false,
-				isPaused: false,
-				currentTime: 0,
-				progress: 0,
-			}))
-		}
-
-		const handleError = (e: Event) => {
-			const target = e.target as HTMLAudioElement
-			const error = target.error
-			let errorMessage = 'Audio playback error'
-
-			if (error) {
-				switch (error.code) {
-					case error.MEDIA_ERR_ABORTED:
-						errorMessage = 'Audio playback aborted'
-						break
-					case error.MEDIA_ERR_NETWORK:
-						errorMessage = 'Network error while loading audio'
-						break
-					case error.MEDIA_ERR_DECODE:
-						errorMessage = 'Audio decoding error'
-						break
-					case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-						errorMessage = 'Audio format not supported'
-						break
-				}
-			}
-
-			setAudioFileState(prev => ({
-				...prev,
-				error: errorMessage,
-				isLoading: false,
-				isPlaying: false,
-			}))
-		}
-
-		const handleVolumeChange = () => {
-			setAudioFileState(prev => ({
-				...prev,
-				volume: audio.volume,
-			}))
-		}
-
-		// Add event listeners
-		audio.addEventListener('loadstart', handleLoadStart)
-		audio.addEventListener('loadedmetadata', handleLoadedMetadata)
-		audio.addEventListener('loadeddata', handleLoadedData)
-		audio.addEventListener('canplay', handleCanPlay)
-		audio.addEventListener('timeupdate', handleTimeUpdate)
-		audio.addEventListener('play', handlePlay)
-		audio.addEventListener('pause', handlePause)
-		audio.addEventListener('ended', handleEnded)
-		audio.addEventListener('error', handleError)
-		audio.addEventListener('volumechange', handleVolumeChange)
-
-		return () => {
-			audio.removeEventListener('loadstart', handleLoadStart)
-			audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
-			audio.removeEventListener('loadeddata', handleLoadedData)
-			audio.removeEventListener('canplay', handleCanPlay)
-			audio.removeEventListener('timeupdate', handleTimeUpdate)
-			audio.removeEventListener('play', handlePlay)
-			audio.removeEventListener('pause', handlePause)
-			audio.removeEventListener('ended', handleEnded)
-			audio.removeEventListener('error', handleError)
-			audio.removeEventListener('volumechange', handleVolumeChange)
-		}
-	}, [actualMode, isSeeking])
-
-	// Set up visualization for text-to-speech
-	useEffect(() => {
-		if (
-			audioPlayer &&
-			enableVisualization !== undefined &&
-			actualMode === 'text-to-speech'
-		) {
-			audioPlayer.setVisualizationEnabled(enableVisualization)
-		}
-	}, [audioPlayer, enableVisualization, actualMode])
-
-	// Control handlers for text-to-speech
-	const handleTextPlay = useCallback(() => {
-		audioPlayer?.play()
-	}, [audioPlayer])
-
-	const handleTextPause = useCallback(() => {
-		audioPlayer?.pause()
-	}, [audioPlayer])
-
-	const handleTextStop = useCallback(() => {
-		if (audioPlayer) {
-			audioPlayer.stop()
-			setTimeout(() => {
-				setPlayerState(prev => ({ ...prev, error: null }))
-			}, 100)
-		}
-	}, [audioPlayer])
-
-	const handleTextSeek = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const position = parseFloat(event.target.value)
-			setIsSeeking(true)
-
-			if (seekTimeoutRef.current) {
-				clearTimeout(seekTimeoutRef.current)
-			}
-
-			audioPlayer?.seek(position)
-
-			seekTimeoutRef.current = setTimeout(() => {
-				setIsSeeking(false)
-			}, 150) as unknown as number
-		},
-		[audioPlayer],
-	)
-
-	// Control handlers for audio file
-	const handleAudioPlay = useCallback(() => {
-		const audio = audioRef.current
-		if (audio) {
-			audio.play().catch(error => {
-				setAudioFileState(prev => ({
-					...prev,
-					error: `Playback failed: ${error.message}`,
-				}))
-			})
-		}
-	}, [])
-
-	const handleAudioPause = useCallback(() => {
-		const audio = audioRef.current
-		if (audio) {
-			audio.pause()
-		}
-	}, [])
-
-	const handleAudioStop = useCallback(() => {
-		const audio = audioRef.current
-		if (audio) {
-			audio.pause()
-			audio.currentTime = 0
-		}
-	}, [])
-
-	const handleAudioSeek = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const audio = audioRef.current
-			if (audio) {
-				const position = parseFloat(event.target.value)
-				setIsSeeking(true)
-
-				if (seekTimeoutRef.current) {
-					clearTimeout(seekTimeoutRef.current)
-				}
-
-				const newTime = (position / 100) * audio.duration
-				audio.currentTime = newTime
-
-				seekTimeoutRef.current = setTimeout(() => {
-					setIsSeeking(false)
-				}, 150) as unknown as number
-			}
-		},
-		[],
-	)
-
-	const handleVolumeChange = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const volume = parseFloat(event.target.value) / 100
-
-			if (actualMode === 'text-to-speech' && audioPlayer) {
-				// Text-to-speech volume control would go here
-				// Note: Web Speech API doesn't have runtime volume control
-			} else if (actualMode === 'audio-file') {
-				const audio = audioRef.current
-				if (audio) {
-					audio.volume = volume
-				}
-			}
-		},
-		[actualMode, audioPlayer],
-	)
-
-	const formatTime = (seconds: number): string => {
-		const mins = Math.floor(seconds / 60)
-		const secs = Math.floor(seconds % 60)
-		return `${mins}:${secs.toString().padStart(2, '0')}`
-	}
-
-	// Get current state based on mode
-	const currentState =
-		actualMode === 'text-to-speech' ? playerState : audioFileState
-	const currentError =
-		actualMode === 'text-to-speech' ? playerState.error : audioFileState.error
-
-	// Check support
-	if (actualMode === 'text-to-speech' && !supported.speechSynthesis) {
+	if (isTTS && !supported.speechSynthesis) {
 		return (
 			<div
 				className={`rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20 ${className}`}>
@@ -370,7 +69,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 		)
 	}
 
-	if (actualMode === 'audio-file' && !supported.htmlAudio) {
+	if (!isTTS && !('Audio' in window)) {
 		return (
 			<div
 				className={`rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20 ${className}`}>
@@ -386,9 +85,9 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 		<div
 			className={`space-y-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 ${className}`}
 			role="application"
-			aria-label={`Hybrid Audio Player - ${actualMode === 'text-to-speech' ? 'Text-to-Speech' : 'Audio File'} Mode`}>
+			aria-label={`Hybrid Audio Player - ${isTTS ? 'Text-to-Speech' : 'Audio File'} Mode`}>
 			{/* Hidden HTML5 audio element for audio-file mode */}
-			{actualMode === 'audio-file' && audioSrc && (
+			{!isTTS && audioSrc && (
 				<audio
 					ref={audioRef}
 					preload={preload}
@@ -396,12 +95,11 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 					loop={loop}
 					className="hidden"
 					src={audioSrc}>
-					{/* Empty track for accessibility compliance */}
 					<track kind="captions" srcLang="en" label="English captions" />
 				</audio>
 			)}
 
-			{/* Keyboard navigation instructions */}
+			{/* Screen-reader live region */}
 			<div className="sr-only" aria-live="polite">
 				Hybrid audio player in {actualMode} mode. Use spacebar to play/pause,
 				arrow keys to seek and adjust volume.
@@ -411,18 +109,17 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 			<div className="flex items-center justify-between">
 				<div className="flex items-center space-x-2">
 					<h3 className="font-medium text-slate-900 dark:text-white">
-						{actualMode === 'text-to-speech' ? '🎧' : '🔊'} Hybrid Audio Player
+						{isTTS ? '🎧' : '🔊'} Hybrid Audio Player
 					</h3>
 					<span className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-						{actualMode === 'text-to-speech' ? 'Text-to-Speech' : 'Audio File'}
+						{isTTS ? 'Text-to-Speech' : 'Audio File'}
 					</span>
-					{actualMode === 'text-to-speech' && !supported.webAudio && (
+					{isTTS && !supported.webAudio && (
 						<span className="rounded bg-yellow-100 px-2 py-1 text-xs text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
 							Basic mode
 						</span>
 					)}
 				</div>
-
 				{currentError && !currentError.includes('interrupted') && (
 					<div className="text-sm text-red-600 dark:text-red-400">
 						⚠️ {currentError}
@@ -433,9 +130,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 			{/* Main Controls */}
 			<div className="flex items-center space-x-3">
 				<button
-					onClick={
-						actualMode === 'text-to-speech' ? handleTextPlay : handleAudioPlay
-					}
+					onClick={onPlay}
 					disabled={currentState.isLoading || currentState.isPlaying}
 					className="rounded-full bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:bg-slate-300 dark:disabled:bg-slate-600"
 					title="Play (Spacebar)"
@@ -471,9 +166,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 				</button>
 
 				<button
-					onClick={
-						actualMode === 'text-to-speech' ? handleTextPause : handleAudioPause
-					}
+					onClick={onPause}
 					disabled={!currentState.isPlaying}
 					className="rounded-full bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:outline-none disabled:bg-slate-300 dark:disabled:bg-slate-600"
 					title="Pause"
@@ -488,9 +181,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 				</button>
 
 				<button
-					onClick={
-						actualMode === 'text-to-speech' ? handleTextStop : handleAudioStop
-					}
+					onClick={onStop}
 					disabled={!currentState.isPlaying && !currentState.isPaused}
 					className="rounded-full bg-red-500 p-2 text-white transition-colors hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:bg-slate-300 dark:disabled:bg-slate-600"
 					title="Stop"
@@ -504,7 +195,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 					</svg>
 				</button>
 
-				{/* Progress display */}
+				{/* Time display */}
 				<div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
 					<span>{formatTime(currentState.currentTime)}</span>
 					<span>/</span>
@@ -521,16 +212,10 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 					<input
 						type="range"
 						min="0"
-						max={actualMode === 'text-to-speech' ? '1' : '100'}
-						step={actualMode === 'text-to-speech' ? '0.01' : '0.1'}
-						value={
-							actualMode === 'text-to-speech'
-								? currentState.progress
-								: currentState.progress * 100
-						}
-						onChange={
-							actualMode === 'text-to-speech' ? handleTextSeek : handleAudioSeek
-						}
+						max={isTTS ? '1' : '100'}
+						step={isTTS ? '0.01' : '0.1'}
+						value={isTTS ? currentState.progress : currentState.progress * 100}
+						onChange={onSeek}
 						className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700"
 						title="Seek position"
 						aria-label="Seek audio position"
@@ -540,8 +225,8 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 					</span>
 				</div>
 
-				{/* Volume Control (primarily for audio-file mode) */}
-				{actualMode === 'audio-file' && (
+				{/* Volume control (audio-file mode only) */}
+				{!isTTS && (
 					<div className="flex items-center space-x-2">
 						<span className="text-sm text-slate-600 dark:text-slate-400">
 							Volume:
@@ -552,7 +237,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 							max="100"
 							step="1"
 							value={currentState.volume * 100}
-							onChange={handleVolumeChange}
+							onChange={audioHandlers.volumeChange}
 							className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700"
 							title="Adjust volume"
 							aria-label="Adjust audio volume"
@@ -564,15 +249,14 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 				)}
 			</div>
 
-			{/* Mode Information */}
+			{/* Mode badge */}
 			<div className="text-xs text-slate-500 dark:text-slate-400">
-				{actualMode === 'text-to-speech' && (
+				{isTTS ? (
 					<p>
 						🎧 Text-to-Speech mode: Converting text to speech using Web Speech
 						API
 					</p>
-				)}
-				{actualMode === 'audio-file' && (
+				) : (
 					<p>🔊 Audio File mode: Playing audio file using HTML5 Audio API</p>
 				)}
 			</div>
