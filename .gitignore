@@ -43,3 +43,7 @@ pnpm-debug.log*
 coverage/
 testsprite_tests/
 *.log
+
+# Agent tool symlinks (local junctions, not source)
+.claude/skills/
+.continue/

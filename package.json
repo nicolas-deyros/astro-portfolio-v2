@@ -140,12 +140,12 @@
     "*.{js,jsx,ts,tsx,astro}": [
       "prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
       "eslint --fix --config ./config/eslint.config.js",
-      "cspell --no-progress --config ./config/cspell.json"
+      "cspell --no-progress --no-must-find-files --config ./config/cspell.json"
     ],
     "*.{md,mdx}": [
       "prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
       "textlint --fix --config ./config/.textlintrc.json",
-      "cspell --no-progress --config ./config/cspell.json"
+      "cspell --no-progress --no-must-find-files --config ./config/cspell.json"
     ]
   }
 }
