@@ -150,6 +150,22 @@ npm run docs:sync                        # Sync documentation and changelog
 npm run git:ship                         # Full check + ship (PR ready + auto-merge)
 ```
 
+### Codebase Intelligence (Fallow)
+
+Static analysis for unused code, duplication, and complexity. Free layer, no install needed (npx). Config: `.fallowrc.json`.
+
+```bash
+npm run fallow            # Run all analyses (dead code + duplication + health)
+npm run fallow:dead       # Unused files, exports, deps, types, circular deps
+npm run fallow:dupes      # Duplicated code blocks across the codebase
+npm run fallow:health     # Complexity hotspots and refactor targets
+npm run fallow:audit      # Changed-files-only audit (scoped to origin/master diff)
+npm run fallow:fix        # Preview automatic dead-code removal (dry-run)
+```
+
+> All rules are set to `warn` (never blocks CI). Flip to `"error"` in `.fallowrc.json` once the backlog is clean.
+> CI runs automatically on every PR via `.github/workflows/fallow.yml` — posts a summary comment and inline annotations.
+
 ## Development Conventions
 
 - **Type Safety:** Strict TypeScript everywhere. All new code must be typed.
@@ -223,6 +239,9 @@ Number issues, letter options, recommended option first.
 ## Technical Debt & Known Issues
 
 See `docs/ISSUES.md` for full details and implementation plan.
+
+> Run `npm run fallow:dead` to surface unused exports/files across the DRY violations below.
+> Run `npm run fallow:health` to prioritise SRP god-files by complexity score.
 
 ### DRY Violations (Critical)
 
