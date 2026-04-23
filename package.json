@@ -75,6 +75,7 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vercel/og": "^0.8.6",
+    "@vercel/speed-insights": "2.0.0",
     "astro": "^6.0.3",
     "astro-icon": "^1.1.5",
     "astro-seo": "^0.8.4",
@@ -140,12 +141,12 @@
     "*.{js,jsx,ts,tsx,astro}": [
       "prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
       "eslint --fix --config ./config/eslint.config.js",
-      "cspell --no-progress --config ./config/cspell.json"
+      "cspell --no-progress --no-must-find-files --config ./config/cspell.json"
     ],
     "*.{md,mdx}": [
       "prettier --write --config ./config/.prettierrc --ignore-path ./config/.prettierignore",
       "textlint --fix --config ./config/.textlintrc.json",
-      "cspell --no-progress --config ./config/cspell.json"
+      "cspell --no-progress --no-must-find-files --config ./config/cspell.json"
     ]
   }
 }

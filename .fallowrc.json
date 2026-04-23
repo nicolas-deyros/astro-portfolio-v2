@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/pages/**/*.{astro,ts,js}",
+    "src/content/config.ts",
+    "src/middleware.ts",
+    "src/actions/index.ts",
+    "astro.config.mjs",
+    "db/config.ts",
+    "db/seed.ts",
+    "tools/*.ts",
+    "test/**/*.test.ts"
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    ".astro/**",
+    ".vercel/**",
+    "coverage/**",
+    "node_modules/**",
+    "public/**",
+    "**/*.generated.*"
+  ],
+  "rules": {
+    "unused-files": "warn",
+    "unused-exports": "warn",
+    "unused-dependencies": "warn",
+    "unused-types": "warn",
+    "circular-dependencies": "warn",
+    "duplication": "warn",
+    "complexity": "warn"
+  }
+}
