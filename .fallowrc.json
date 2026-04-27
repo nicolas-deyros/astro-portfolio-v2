@@ -41,6 +41,7 @@
     "astro-icon",
     "astro-seo",
     "@iconify-json/mdi",
+    "@iconify-json/meteocons",
     "@tailwindcss/typography",
     "@tailwindcss/vite",
     "@typescript-eslint/eslint-plugin",
