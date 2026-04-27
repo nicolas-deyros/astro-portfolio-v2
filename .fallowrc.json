@@ -39,7 +39,22 @@
     "@astrojs/sitemap",
     "@astrojs/vercel",
     "astro-icon",
-    "astro-seo"
+    "astro-seo",
+    "@tailwindcss/typography",
+    "@tailwindcss/vite",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "@textlint/markdown-to-ast",
+    "eslint-plugin-mdx",
+    "textlint-filter-rule-comments",
+    "textlint-rule-alex",
+    "textlint-rule-common-misspellings",
+    "textlint-rule-en-capitalization",
+    "textlint-rule-terminology",
+    "textlint-rule-write-good",
+    "lighthouse",
+    "react-email",
+    "web-vitals"
   ],
   "rules": {
     "unused-files": "warn",
