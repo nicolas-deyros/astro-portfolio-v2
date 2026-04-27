@@ -26,9 +26,4 @@ jobs:
           annotations: true           # inline annotations on PR diff (no Advanced Security needed)
           comment: true               # rich summary comment posted on PRs
           score: true                 # include health score (0-100 + letter grade) in comment
-
-      - uses: github/codeql-action/upload-sarif@v4
-        if: always()
-        with:
-          sarif_file: fallow-results.sarif
-          category: fallow
+          upload-sarif: true          # fallow@v2 handles the upload; no separate upload-sarif step needed
