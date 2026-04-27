@@ -18,6 +18,15 @@ jobs:
         with:
           fetch-depth: 0          # required for --changed-since / trend tracking
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+        # Required so Fallow can resolve tsconfig.json `extends: astro/tsconfigs/strict`
+        # and follow the full path-alias chain (@components/*, @lib/*, @/*, etc.)
+
       - uses: fallow-rs/fallow@v2
         with:
           format: sarif
