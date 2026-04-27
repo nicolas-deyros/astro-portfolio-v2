@@ -40,6 +40,8 @@
     "@astrojs/vercel",
     "astro-icon",
     "astro-seo",
+    "@iconify-json/ic",
+    "@iconify-json/jam",
     "@iconify-json/mdi",
     "@iconify-json/meteocons",
     "@tailwindcss/typography",
