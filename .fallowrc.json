@@ -40,6 +40,7 @@
     "@astrojs/vercel",
     "astro-icon",
     "astro-seo",
+    "@iconify-json/mdi",
     "@tailwindcss/typography",
     "@tailwindcss/vite",
     "@typescript-eslint/eslint-plugin",
