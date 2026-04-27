@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "entry": [
     "src/pages/**/*.{astro,ts,js}",
-    "src/content/config.ts",
+    "src/content.config.ts",
     "src/middleware.ts",
     "src/actions/index.ts",
     "astro.config.mjs",
@@ -19,6 +19,27 @@
     "node_modules/**",
     "public/**",
     "**/*.generated.*"
+  ],
+  "ignoreDependencies": [
+    "astro:actions",
+    "astro:assets",
+    "astro:content",
+    "astro:db",
+    "astro:middleware",
+    "astro:schema",
+    "astro:transitions",
+    "astro/config",
+    "astro/loaders",
+    "astro/types",
+    "@astrojs/db",
+    "@astrojs/mdx",
+    "@astrojs/partytown",
+    "@astrojs/react",
+    "@astrojs/rss",
+    "@astrojs/sitemap",
+    "@astrojs/vercel",
+    "astro-icon",
+    "astro-seo"
   ],
   "rules": {
     "unused-files": "warn",
