@@ -1,20 +1,20 @@
-import { render } from '@react-email/components'
-import type React from 'react'
 import { Resend } from 'resend'
 
-import { ContactEmail } from '@/components/Emails/ContactEmail'
 import { siteConfig } from '@/config/site.config'
 
 interface SendContactEmailParams {
 	name: string
 	email: string
 	message?: string
+	/** Pre-rendered HTML body for the user confirmation email */
+	htmlBody: string
 }
 
 export async function sendContactEmails({
 	name,
 	email,
 	message,
+	htmlBody,
 }: SendContactEmailParams) {
 	if (!import.meta.env.RESEND_API_KEY) {
 		throw new Error('RESEND_API_KEY is missing')
@@ -25,17 +25,12 @@ export async function sendContactEmails({
 	const fromEmail = import.meta.env.FROM_EMAIL || siteConfig.author.email
 	const adminEmail = import.meta.env.ADMIN_EMAIL || siteConfig.author.email
 
-	// Render React template to HTML
-	const emailHtml = await render(
-		ContactEmail({ name, message }) as React.ReactElement,
-	)
-
 	// 1. Send confirmation to user
 	const userEmailPromise = resend.emails.send({
 		from: fromEmail,
 		to: email,
 		subject: `${siteConfig.email.subjectPrefix} ${name}`,
-		html: emailHtml,
+		html: htmlBody,
 	})
 
 	// 2. Send notification to admin

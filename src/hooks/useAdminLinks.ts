@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { LinkData } from '../components/Admin/AdminLinksManager'
+import type { LinkData } from '@/schemas'
 
 interface FormData {
 	title: string

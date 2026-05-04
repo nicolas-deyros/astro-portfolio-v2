@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import type { LinkData } from '@/schemas'
+
 import { useAdminLinks } from '../../hooks/useAdminLinks'
 import { ConfirmModal } from './ConfirmModal'
 import { ErrorModal } from './ErrorModal'
@@ -7,13 +9,7 @@ import { LinkFilters } from './LinkFilters'
 import { LinkForm } from './LinkForm'
 import { LinkTable } from './LinkTable'
 
-export interface LinkData {
-	id: number
-	title: string
-	url: string
-	tags: string
-	date: string
-}
+export type { LinkData }
 
 export interface PaginationData {
 	page: number

@@ -1,7 +1,10 @@
+import { render } from '@react-email/components'
 import { ActionError, defineAction } from 'astro:actions'
 import { db, FormSubmissions } from 'astro:db'
 import { z } from 'astro:schema'
+import type React from 'react'
 
+import { ContactEmail } from '@/components/Emails/ContactEmail'
 import { sendContactEmails } from '@/lib/email'
 
 import { server as linkActions } from './links'
@@ -20,10 +23,15 @@ export const server = {
 		}),
 		handler: async ({ name, email, message }) => {
 			try {
+				const htmlBody = await render(
+					ContactEmail({ name, message }) as React.ReactElement,
+				)
+
 				const { data, error } = await sendContactEmails({
 					name,
 					email,
 					message,
+					htmlBody,
 				})
 
 				if (error) {

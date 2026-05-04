@@ -1,3 +1,11 @@
+export interface LinkData {
+	id: number
+	title: string
+	url: string
+	tags: string
+	date: string
+}
+
 export interface FormValues {
 	name: string
 	email: string
