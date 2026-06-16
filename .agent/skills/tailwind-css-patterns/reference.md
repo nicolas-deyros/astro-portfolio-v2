@@ -359,7 +359,7 @@ Using Tailwind's CSS functions for dynamic values and opacity adjustments.
 /* In arbitrary values */
 
 /* Source directive for additional content */
-@source "../node_modules/@my-company/ui-lib";
+@source '../node_modules/@my-company/ui-lib';
 
 /* Apply directive for inline utilities */
 .select2-dropdown {

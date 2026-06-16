@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write        # needed for PR comments
-      security-events: write      # needed for SARIF upload to Code Scanning
+      pull-requests: write # needed for PR comments
+      security-events: write # needed for SARIF upload to Code Scanning
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0          # required for --changed-since / trend tracking
+          fetch-depth: 0 # required for --changed-since / trend tracking
 
       - uses: actions/setup-node@v4
         with:
@@ -30,9 +30,9 @@ jobs:
       - uses: fallow-rs/fallow@v2
         with:
           format: sarif
-          fail-on-issues: false       # warn-first: never block merges at this stage
-          auto-changed-since: true    # PR-scoped by default; full scan on push to master
-          annotations: true           # inline annotations on PR diff (no Advanced Security needed)
-          comment: true               # rich summary comment posted on PRs
-          score: true                 # include health score (0-100 + letter grade) in comment
-          upload-sarif: true          # fallow@v2 handles the upload; no separate upload-sarif step needed
+          fail-on-issues: false # warn-first: never block merges at this stage
+          auto-changed-since: true # PR-scoped by default; full scan on push to master
+          annotations: true # inline annotations on PR diff (no Advanced Security needed)
+          comment: true # rich summary comment posted on PRs
+          score: true # include health score (0-100 + letter grade) in comment
+          upload-sarif: true # fallow@v2 handles the upload; no separate upload-sarif step needed

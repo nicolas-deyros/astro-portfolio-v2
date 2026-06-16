@@ -94,8 +94,8 @@ export function supportsAI(): boolean {
 
 		return Boolean(
 			hasAIObject &&
-				typeof aiObject === 'object' &&
-				(hasTranslator || hasSummarizer),
+			typeof aiObject === 'object' &&
+			(hasTranslator || hasSummarizer),
 		)
 	} catch {
 		return false
