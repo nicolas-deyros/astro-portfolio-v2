@@ -1,5 +1,30 @@
 # Changelog
 
+## [3.0.0] - 2026-06-18
+
+> Major release consolidating the large body of work accumulated since `2.8.0`.
+> The bump to `3.0.0` reflects breaking platform changes: **Astro 5 → 6**,
+> **Tailwind CSS 3 → 4**, and migration of the contact/email surface to **Astro
+> Actions** (legacy JSON endpoints removed). `package.json` version is also
+> realigned from a stale `0.0.1` placeholder to match this changelog.
+
+### 🧹 Dead-Code Cleanup (ponytail audit)
+
+- **Removed `src/actions/links.ts`** — 6 unused link actions (the admin UI uses the REST `/api/links.json` endpoint). Eliminates the dual-API-surface tech debt (ISSUE-25).
+- **Collapsed `HybridAudioPlayerWrapper.astro`** to its single used `client:visible` branch; dropped 4 dead client-directive branches and the `client` prop.
+- **Trimmed `src/lib/errors.ts`** — removed unused `ForbiddenError`, `NotFoundError`, `ConflictError`, `ExternalServiceError` subclasses.
+- Net ~485 lines removed across the three cuts.
+
+### 🐞 Build & Dependency Fixes
+
+- **Fixed the Tailwind/Vite/Rolldown build crash** — pinned `vite` to `^7.3.2` via `overrides` so the whole tree shares Astro's vite@7 instead of dragging in vite@8 + rolldown@1.0.3 (which crashed `@tailwindcss/vite` with `Missing field tsconfigPaths`).
+- **Dependency audit & cleanup** — removed stale `@types/puppeteer`, unpinned exact-version deps, upgraded Prettier; added Fallow codebase-intelligence config and CI workflow.
+
+### 🩹 Fixes & Tooling
+
+- **Accessibility**: fixed H1 → H3 heading-hierarchy skip in the "from-zero-to-ai-hero" blog post (section headings promoted to H2).
+- **Restored `fallow:*` npm scripts** in `package.json` (`fallow`, `fallow:dead`, `fallow:dupes`, `fallow:health`, `fallow:audit`, `fallow:fix`) to match the documented commands in CLAUDE.md.
+
 ## [Unreleased] - 2026-02-05
 
 ### 🚀 Astro 5.x & Agentic Features

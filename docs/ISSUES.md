@@ -262,14 +262,13 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 | **Fix**     | Use proper codes: 401 (auth), 400/422 (validation), 404 (not found), 204 (logout success), 415 (wrong content-type).                                                             |
 | **Effort**  | Medium (2 hours)                                                                                                                                                                 |
 
-### ISSUE-25: Dual API Surface for Same Resources
+### ~~ISSUE-25: Dual API Surface for Same Resources~~ (FIXED)
 
 |             |                                                                                                                                                                   |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | REST: `api/sendEmail.json.ts`, `api/links.json.ts` — Actions: `actions/index.ts`, `actions/links.ts`                                                              |
-| **Problem** | Both REST endpoints and Astro Actions manage the same resources (email, links) with different validation, auth, and response formats. Two code paths to maintain. |
-| **Fix**     | Consolidate on Astro Actions (type-safe, integrated) and deprecate REST endpoints, or share a service layer.                                                      |
-| **Effort**  | High (1 day, strategic decision)                                                                                                                                  |
+| **Files**   | ~~Actions: `actions/links.ts`~~ — links now served only via REST `api/links.json.ts`; email only via the `sendEmail` Action.                                     |
+| **Problem** | Both REST endpoints and Astro Actions managed the same resources (email, links) with different validation, auth, and response formats.                            |
+| **Fix**     | Removed the unused link Astro actions (`src/actions/links.ts`) entirely — they had zero consumers. Links are managed solely through the REST endpoint; the only remaining Action is `sendEmail`. (PR #65) |
 
 ---
 
@@ -368,4 +367,4 @@ ISSUE-07, 08, 09, 10, 11, 12 (clean code), ISSUE-15, 16, 17, 20 (error handling)
 
 ### Large Refactors (4-6 hours each)
 
-ISSUE-04, ~~05~~ (SRP), ISSUE-19 (w/ ~~ISSUE-01~~), ISSUE-25 (API consolidation), ISSUE-29 (structured data)
+ISSUE-04, ~~05~~ (SRP), ISSUE-19 (w/ ~~ISSUE-01~~), ~~ISSUE-25~~ (API consolidation — done, PR #65), ISSUE-29 (structured data)

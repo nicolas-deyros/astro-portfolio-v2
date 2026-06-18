@@ -1,7 +1,7 @@
 {
 	"name": "portfolio",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "3.0.0",
 	"scripts": {
 		"// === Development ===": "",
 		"dev": "astro dev --open",
@@ -56,6 +56,13 @@
 		"deps:upgrade": "npx @astrojs/upgrade && npm update",
 		"deps:scan": "socket scan create --report",
 		"deps:audit": "socket npm audit",
+		"// === Codebase Intelligence (Fallow) ===": "",
+		"fallow": "npm run fallow:dead && npm run fallow:dupes && npm run fallow:health",
+		"fallow:dead": "npx --yes fallow dead-code",
+		"fallow:dupes": "npx --yes fallow dupes",
+		"fallow:health": "npx --yes fallow health",
+		"fallow:audit": "npx --yes fallow audit",
+		"fallow:fix": "npx --yes fallow fix --dry-run",
 		"// === Database ===": "",
 		"db:seed": "npx astro db execute db/seed.ts --remote",
 		"db:studio": "astro db studio"

@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 5.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
+**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 6.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
 
 ## Tech Stack
 
-- **Framework:** Astro 5.x (with Astro Actions)
+- **Framework:** Astro 6.x (with Astro Actions)
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS 4.x (via Vite plugin)
 - **UI:** React 19 (islands)
@@ -251,8 +251,8 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ### SRP Violations
 
-- **`src/lib/audioPlayer.ts`** (892 lines, 39 methods) — God class handling: audio context, speech synthesis, HTML/Markdown parsing, visualization, progress tracking, state management.
-- **`src/pages/admin/links.astro`** (1325 lines) — Server logic + 3 modals + CRUD UI + all JS in one file.
+- ~~**`src/lib/audioPlayer.ts`** (892 lines)~~ — Largely addressed: now ~403 lines, with parsing/visualization/progress/chunking extracted into `contentFilter.ts`, `audioVisualization.ts`, `progressTracker.ts`, `textChunker.ts`.
+- ~~**`src/pages/admin/links.astro`** (1325 lines)~~ — Fixed: now ~149 lines; CRUD UI extracted into the `AdminLinksManager.tsx` React island.
 
 ### Boy Scout (Cleanup)
 
@@ -276,7 +276,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 - **Verb-based URL** — `POST /api/sendEmail.json` uses verb instead of resource noun.
 - **RPC-in-REST** — `auth.json.ts` routes 3 operations (login/logout/validate) via single POST with `action` body field.
 - **Wrong HTTP status codes** — Endpoints return `200 OK` for errors with `{success: false}` body instead of proper 4xx/5xx codes.
-- **Dual API surface** — Same resources (email, links) served via both REST endpoints and Astro Actions with different validation and auth.
+- ~~**Dual API surface**~~ — Resolved: the unused link Astro actions were removed (PR #65); links are served only via REST, email only via the `sendEmail` Action.
 - **Missing Content-Type validation** — `auth.json.ts` and `links.json.ts` don't validate JSON content type.
 
 ### SEO Issues
