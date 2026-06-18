@@ -9,7 +9,6 @@ export interface Props {
 	preload?: 'none' | 'metadata' | 'auto'
 	crossOrigin?: 'anonymous' | 'use-credentials'
 	loop?: boolean
-	client?: 'load' | 'idle' | 'visible' | 'media' | 'only'
 }
 
 const {
@@ -22,97 +21,24 @@ const {
 	preload = 'metadata',
 	crossOrigin,
 	loop = false,
-	client = 'visible',
 } = Astro.props
 
 import HybridAudioPlayer from './HybridAudioPlayer'
 ---
 
 <div class="hybrid-audio-player-wrapper">
-	{
-		client === 'load' && (
-			<HybridAudioPlayer
-				client:load
-				text={text}
-				audioSrc={audioSrc}
-				className={className}
-				enableVisualization={enableVisualization}
-				autoLoad={autoLoad}
-				mode={mode}
-				preload={preload}
-				crossOrigin={crossOrigin}
-				loop={loop}
-			/>
-		)
-	}
-
-	{
-		client === 'idle' && (
-			<HybridAudioPlayer
-				client:idle
-				text={text}
-				audioSrc={audioSrc}
-				className={className}
-				enableVisualization={enableVisualization}
-				autoLoad={autoLoad}
-				mode={mode}
-				preload={preload}
-				crossOrigin={crossOrigin}
-				loop={loop}
-			/>
-		)
-	}
-
-	{
-		client === 'visible' && (
-			<HybridAudioPlayer
-				client:visible
-				text={text}
-				audioSrc={audioSrc}
-				className={className}
-				enableVisualization={enableVisualization}
-				autoLoad={autoLoad}
-				mode={mode}
-				preload={preload}
-				crossOrigin={crossOrigin}
-				loop={loop}
-			/>
-		)
-	}
-
-	{
-		client === 'media' && (
-			<HybridAudioPlayer
-				client:media="(max-width: 768px)"
-				text={text}
-				audioSrc={audioSrc}
-				className={className}
-				enableVisualization={enableVisualization}
-				autoLoad={autoLoad}
-				mode={mode}
-				preload={preload}
-				crossOrigin={crossOrigin}
-				loop={loop}
-			/>
-		)
-	}
-
-	{
-		client === 'only' && (
-			<HybridAudioPlayer
-				client:only="react"
-				text={text}
-				audioSrc={audioSrc}
-				className={className}
-				enableVisualization={enableVisualization}
-				autoLoad={autoLoad}
-				mode={mode}
-				preload={preload}
-				crossOrigin={crossOrigin}
-				loop={loop}
-			/>
-		)
-	}
+	<HybridAudioPlayer
+		client:visible
+		text={text}
+		audioSrc={audioSrc}
+		className={className}
+		enableVisualization={enableVisualization}
+		autoLoad={autoLoad}
+		mode={mode}
+		preload={preload}
+		crossOrigin={crossOrigin}
+		loop={loop}
+	/>
 </div>
 
 <style>
