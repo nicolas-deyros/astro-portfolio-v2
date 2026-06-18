@@ -4,8 +4,6 @@ import { z } from 'astro:schema'
 
 import { sendContactEmails } from '@/lib/email'
 
-import { server as linkActions } from './links'
-
 export const server = {
 	sendEmail: defineAction({
 		accept: 'json',
@@ -52,6 +50,4 @@ export const server = {
 			}
 		},
 	}),
-
-	...linkActions,
 }
