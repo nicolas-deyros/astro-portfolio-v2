@@ -26,38 +26,10 @@ export class UnauthorizedError extends ApplicationError {
 	}
 }
 
-/** 403 — Authenticated but not permitted for this resource. */
-export class ForbiddenError extends ApplicationError {
-	constructor(message = 'Forbidden', options?: ErrorOptions) {
-		super(message, 403, 'FORBIDDEN', options)
-	}
-}
-
-/** 404 — Requested resource does not exist. */
-export class NotFoundError extends ApplicationError {
-	constructor(message = 'Not found', options?: ErrorOptions) {
-		super(message, 404, 'NOT_FOUND', options)
-	}
-}
-
-/** 409 — Request conflicts with current server state (e.g. duplicate). */
-export class ConflictError extends ApplicationError {
-	constructor(message = 'Conflict', options?: ErrorOptions) {
-		super(message, 409, 'CONFLICT', options)
-	}
-}
-
 /** 422 — Syntactically valid but semantically invalid input. */
 export class ValidationError extends ApplicationError {
 	constructor(message = 'Validation failed', options?: ErrorOptions) {
 		super(message, 422, 'VALIDATION_ERROR', options)
-	}
-}
-
-/** 503 — Downstream service (email, DB) failed. */
-export class ExternalServiceError extends ApplicationError {
-	constructor(message = 'External service error', options?: ErrorOptions) {
-		super(message, 503, 'EXTERNAL_SERVICE_ERROR', options)
 	}
 }
 
