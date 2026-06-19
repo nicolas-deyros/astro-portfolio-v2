@@ -243,11 +243,11 @@ See `docs/ISSUES.md` for full details and implementation plan.
 > Run `npm run fallow:dead` to surface unused exports/files across the DRY violations below.
 > Run `npm run fallow:health` to prioritise SRP god-files by complexity score.
 
-### DRY Violations (Critical)
+### DRY Violations (Critical) — RESOLVED
 
-- **Duplicate email logic** — `src/lib/email.ts` (React Email) vs `src/pages/api/sendEmail.json.ts` (inline HTML). Legacy endpoint needs cleanup.
-- **Triplicate auth** — 3 different strategies: Bearer tokens (`actions/links.ts`), cookies (`api/links.json.ts`), cookies+fingerprint (`lib/session.ts`). Unify on `session.ts`.
-- **Duplicate Zod schemas** — `createLink`/`updateLink` in `actions/links.ts` share identical schemas and tag-cleaning logic.
+- ~~**Duplicate email logic**~~ — Fixed: the legacy `api/sendEmail.json.ts` endpoint was removed; email is handled only by `src/lib/email.ts` via the `sendEmail` Action (ISSUE-01).
+- ~~**Triplicate auth**~~ — Fixed: auth unified on `lib/session.ts`; the Bearer-token path in `actions/links.ts` is gone (the file was removed entirely in PR #65) (ISSUE-02).
+- ~~**Duplicate Zod schemas**~~ — Fixed: removed with `actions/links.ts` (ISSUE-03).
 
 ### SRP Violations
 
@@ -264,8 +264,8 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ### Error Handling Patterns
 
-- **No custom error hierarchy** — All errors are generic `Error`. No way to distinguish auth/validation/not-found/service errors at catch sites.
-- **Stack traces destroyed** — `actions/links.ts` wraps errors losing original cause. Use ECMAScript 2022 Error `cause`.
+- ~~**No custom error hierarchy**~~ — Addressed: `src/lib/errors.ts` provides an `ApplicationError` hierarchy (`UnauthorizedError`, `ValidationError`) with `code`/`statusCode`, plus `toApplicationError` and standardized JSON response helpers, used by the API endpoints (ISSUE-14).
+- ~~**Stack traces destroyed**~~ — Moot: `actions/links.ts` was removed; `errors.ts` preserves the original via the ECMAScript 2022 `cause` option (ISSUE-15).
 - **Errors swallowed** — `actions/index.ts` catches and returns `{success: false}` hiding error type from callers.
 - **Middleware unprotected** — `middleware.ts` has zero try-catch. DB failure crashes with unhandled exception.
 - **Inconsistent API error formats** — 3 different error response shapes across endpoints.
