@@ -24,7 +24,7 @@ import AI_Orchestration from '../../assets/blog/ai-orchestration.png'
 
 The transition from "AI as a Chatbot" to "AI as an Engineering Agent" happens when you close the loop between reasoning and execution. In this technical deep dive, I’ll explain how I architected an autonomous engineering system using **Antigravity**, **Gemini CLI**, and a specialized stack of **Model Context Protocol (MCP)** servers.
 
-### 🛸 The Antigravity Orchestration Engine
+## 🛸 The Antigravity Orchestration Engine
 
 At the heart of my workflow is **Antigravity**—an autonomous agent designed to navigate complex codebases. Unlike standard LLMs, Antigravity operates as a "Pilot" that connects **Gemini's 1.5 Pro/Flash** reasoning models directly to my local filesystem and terminal.
 
@@ -34,7 +34,7 @@ The connection is established via a suite of automation tools in `tools/` that s
 - **`git:start`**: A programmatic bridge that initializes features, creates conventional branches, and uses the **GitHub CLI** to open Draft PRs automatically.
 - **`git:ship`**: The final delivery sequence—Antigravity runs a full validation suite (Lighthouse, Vitest, Playwright), pushes the code, and initiates an auto-merge via GitHub.
 
-### 🔌 Scaling Intelligence with MCP
+## 🔌 Scaling Intelligence with MCP
 
 The **Model Context Protocol (MCP)** is the "USB-C for AI." It allows Antigravity to plug into specialized intelligence silos. My current "Agentic Stack" includes:
 
@@ -44,7 +44,7 @@ The **Model Context Protocol (MCP)** is the "USB-C for AI." It allows Antigravit
 4.  **Chrome DevTools MCP**: Allows the agent to "see" into the browser during E2E testing, inspecting the DOM and console logs to debug hydration issues in real-time.
 5.  **ESLint & CSS MCPs**: Programmatic code quality gates that ensure every line Antigravity writes adheres to the project's strict styling and logic rules.
 
-### 🧠 The Hybrid AI Architecture
+## 🧠 The Hybrid AI Architecture
 
 For the blog's frontend features (like Summarization and Translation), I engineered a **Hybrid AI Strategy** designed for resilience:
 
@@ -65,11 +65,11 @@ graph TD
 - **Resilient Fallback**: If the experimental Chrome APIs fail (e.g., model download timeouts), the system transparently flips to a server-side endpoint powered by `gemini-1.5-flash`.
 - **Intelligent Caching**: We implemented an `AICache` table in **Astro DB**. By hashing the content, we ensure that we never pay for the same summary twice, significantly reducing API overhead and improving user response times.
 
-### 🛠️ Technical Resilience in Agentic Workflows
+## 🛠️ Technical Resilience in Agentic Workflows
 
 Building with autonomous agents requires "Defensive Engineering." Every tool Antigravity uses is wrapped in robust error handling. For instance, our **GitHub Automation** handles merge conflicts via the AI's own reasoning, while our **Grammar Checker** utility (`tools/grammar-checker.ts`) automatically cleans up residual metadata to keep the history clean.
 
-### 🎯 Conclusion: The Future of DevEx
+## 🎯 Conclusion: The Future of DevEx
 
 By combining Gemini's reasoning with the tool-using capabilities of Antigravity and the extensibility of MCP, I’ve moved from "coding" to "orchestrating." This setup allows me to maintain a **100 Lighthouse score** and 80%+ test coverage while focusing 100% on architecture rather than boilerplate.
 

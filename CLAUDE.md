@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 5.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
+**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 6.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
 
 ## Tech Stack
 
-- **Framework:** Astro 5.x (with Astro Actions)
+- **Framework:** Astro 6.x (with Astro Actions)
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS 4.x (via Vite plugin)
 - **UI:** React 19 (islands)
@@ -243,16 +243,16 @@ See `docs/ISSUES.md` for full details and implementation plan.
 > Run `npm run fallow:dead` to surface unused exports/files across the DRY violations below.
 > Run `npm run fallow:health` to prioritise SRP god-files by complexity score.
 
-### DRY Violations (Critical)
+### DRY Violations (Critical) — RESOLVED
 
-- **Duplicate email logic** — `src/lib/email.ts` (React Email) vs `src/pages/api/sendEmail.json.ts` (inline HTML). Legacy endpoint needs cleanup.
-- **Triplicate auth** — 3 different strategies: Bearer tokens (`actions/links.ts`), cookies (`api/links.json.ts`), cookies+fingerprint (`lib/session.ts`). Unify on `session.ts`.
-- **Duplicate Zod schemas** — `createLink`/`updateLink` in `actions/links.ts` share identical schemas and tag-cleaning logic.
+- ~~**Duplicate email logic**~~ — Fixed: the legacy `api/sendEmail.json.ts` endpoint was removed; email is handled only by `src/lib/email.ts` via the `sendEmail` Action (ISSUE-01).
+- ~~**Triplicate auth**~~ — Fixed: auth unified on `lib/session.ts`; the Bearer-token path in `actions/links.ts` is gone (the file was removed entirely in PR #65) (ISSUE-02).
+- ~~**Duplicate Zod schemas**~~ — Fixed: removed with `actions/links.ts` (ISSUE-03).
 
 ### SRP Violations
 
-- **`src/lib/audioPlayer.ts`** (892 lines, 39 methods) — God class handling: audio context, speech synthesis, HTML/Markdown parsing, visualization, progress tracking, state management.
-- **`src/pages/admin/links.astro`** (1325 lines) — Server logic + 3 modals + CRUD UI + all JS in one file.
+- ~~**`src/lib/audioPlayer.ts`** (892 lines)~~ — Largely addressed: now ~403 lines, with parsing/visualization/progress/chunking extracted into `contentFilter.ts`, `audioVisualization.ts`, `progressTracker.ts`, `textChunker.ts`.
+- ~~**`src/pages/admin/links.astro`** (1325 lines)~~ — Fixed: now ~149 lines; CRUD UI extracted into the `AdminLinksManager.tsx` React island.
 
 ### Boy Scout (Cleanup)
 
@@ -264,8 +264,8 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ### Error Handling Patterns
 
-- **No custom error hierarchy** — All errors are generic `Error`. No way to distinguish auth/validation/not-found/service errors at catch sites.
-- **Stack traces destroyed** — `actions/links.ts` wraps errors losing original cause. Use ECMAScript 2022 Error `cause`.
+- ~~**No custom error hierarchy**~~ — Addressed: `src/lib/errors.ts` provides an `ApplicationError` hierarchy (`UnauthorizedError`, `ValidationError`) with `code`/`statusCode`, plus `toApplicationError` and standardized JSON response helpers, used by the API endpoints (ISSUE-14).
+- ~~**Stack traces destroyed**~~ — Moot: `actions/links.ts` was removed; `errors.ts` preserves the original via the ECMAScript 2022 `cause` option (ISSUE-15).
 - **Errors swallowed** — `actions/index.ts` catches and returns `{success: false}` hiding error type from callers.
 - **Middleware unprotected** — `middleware.ts` has zero try-catch. DB failure crashes with unhandled exception.
 - **Inconsistent API error formats** — 3 different error response shapes across endpoints.
@@ -276,7 +276,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 - **Verb-based URL** — `POST /api/sendEmail.json` uses verb instead of resource noun.
 - **RPC-in-REST** — `auth.json.ts` routes 3 operations (login/logout/validate) via single POST with `action` body field.
 - **Wrong HTTP status codes** — Endpoints return `200 OK` for errors with `{success: false}` body instead of proper 4xx/5xx codes.
-- **Dual API surface** — Same resources (email, links) served via both REST endpoints and Astro Actions with different validation and auth.
+- ~~**Dual API surface**~~ — Resolved: the unused link Astro actions were removed (PR #65); links are served only via REST, email only via the `sendEmail` Action.
 - **Missing Content-Type validation** — `auth.json.ts` and `links.json.ts` don't validate JSON content type.
 
 ### SEO Issues

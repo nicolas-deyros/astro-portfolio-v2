@@ -153,23 +153,21 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ## 🔴 Critical — Error Handling
 
-### ISSUE-14: No Custom Error Hierarchy
+### ~~ISSUE-14: No Custom Error Hierarchy~~ (FIXED)
 
 |             |                                                                                                                                                               |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | `src/actions/links.ts`, `src/lib/email.ts`, all API endpoints                                                                                                 |
-| **Problem** | Every error is a generic `Error`. No way to distinguish auth, validation, not-found, or service errors at the catch site. Callers must parse message strings. |
-| **Fix**     | Create `ApplicationError` hierarchy: `UnauthorizedError`, `NotFoundError`, `ValidationError`, `ExternalServiceError` with code and statusCode.                |
-| **Effort**  | Medium (3-4 hours)                                                                                                                                            |
+| **Files**   | `src/lib/errors.ts`, API endpoints                                                                                                                           |
+| **Problem** | Every error was a generic `Error`. No way to distinguish auth, validation, not-found, or service errors at the catch site.                                    |
+| **Fix**     | Added `src/lib/errors.ts` with an `ApplicationError` hierarchy (`UnauthorizedError`, `ValidationError`) carrying `code`/`statusCode`, plus `toApplicationError` and `createSuccessResponse`/`createErrorResponse` helpers, used by the API endpoints. (Unused subclasses were trimmed in PR #65.) |
 
-### ISSUE-15: Error Context Destroyed by Wrapping
+### ~~ISSUE-15: Error Context Destroyed by Wrapping~~ (FIXED)
 
 |             |                                                                                                                                          |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **File**    | `src/actions/links.ts` (lines 208, 286, 322, 362)                                                                                        |
-| **Problem** | `throw new Error(\`Failed to create link: ${error.message}\`)` discards the original stack trace. Makes production debugging impossible. |
-| **Fix**     | Use ECMAScript 2022 Error `cause` option: `new ApplicationError('...', { cause: error })`.                                               |
-| **Effort**  | Low (30 minutes, after ISSUE-14)                                                                                                         |
+| **File**    | ~~`src/actions/links.ts`~~ (removed in PR #65)                                                                                            |
+| **Problem** | `throw new Error(\`Failed to create link: ${error.message}\`)` discarded the original stack trace.                                       |
+| **Fix**     | The offending file was deleted; `errors.ts` preserves the original error via the ECMAScript 2022 `cause` option in `toApplicationError`. |
 
 ### ISSUE-16: Errors Swallowed in Actions
 
@@ -262,14 +260,13 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 | **Fix**     | Use proper codes: 401 (auth), 400/422 (validation), 404 (not found), 204 (logout success), 415 (wrong content-type).                                                             |
 | **Effort**  | Medium (2 hours)                                                                                                                                                                 |
 
-### ISSUE-25: Dual API Surface for Same Resources
+### ~~ISSUE-25: Dual API Surface for Same Resources~~ (FIXED)
 
 |             |                                                                                                                                                                   |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | REST: `api/sendEmail.json.ts`, `api/links.json.ts` — Actions: `actions/index.ts`, `actions/links.ts`                                                              |
-| **Problem** | Both REST endpoints and Astro Actions manage the same resources (email, links) with different validation, auth, and response formats. Two code paths to maintain. |
-| **Fix**     | Consolidate on Astro Actions (type-safe, integrated) and deprecate REST endpoints, or share a service layer.                                                      |
-| **Effort**  | High (1 day, strategic decision)                                                                                                                                  |
+| **Files**   | ~~Actions: `actions/links.ts`~~ — links now served only via REST `api/links.json.ts`; email only via the `sendEmail` Action.                                     |
+| **Problem** | Both REST endpoints and Astro Actions managed the same resources (email, links) with different validation, auth, and response formats.                            |
+| **Fix**     | Removed the unused link Astro actions (`src/actions/links.ts`) entirely — they had zero consumers. Links are managed solely through the REST endpoint; the only remaining Action is `sendEmail`. (PR #65) |
 
 ---
 
@@ -360,12 +357,12 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### Quick Wins (≤2 hours total)
 
-ISSUE-07, 08, 09, 10, 11, 12 (clean code), ISSUE-15, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
+ISSUE-07, 08, 09, 10, 11, 12 (clean code), ~~ISSUE-15~~, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
 
 ### Medium Effort (2-4 hours each)
 
-~~ISSUE-01, 02, 03~~, 06 (clean code), ISSUE-14, 18, 21 (error handling), ISSUE-23, 24 (API design), ISSUE-30, 31 (SEO)
+~~ISSUE-01, 02, 03~~, 06 (clean code), ~~ISSUE-14~~, 18, 21 (error handling), ISSUE-23, 24 (API design), ISSUE-30, 31 (SEO)
 
 ### Large Refactors (4-6 hours each)
 
-ISSUE-04, ~~05~~ (SRP), ISSUE-19 (w/ ~~ISSUE-01~~), ISSUE-25 (API consolidation), ISSUE-29 (structured data)
+ISSUE-04, ~~05~~ (SRP), ISSUE-19 (w/ ~~ISSUE-01~~), ~~ISSUE-25~~ (API consolidation — done, PR #65), ISSUE-29 (structured data)
