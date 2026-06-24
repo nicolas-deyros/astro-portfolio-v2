@@ -8,15 +8,15 @@ The project emphasizes performance (Lighthouse 90+), accessibility, and develope
 
 ## 🛠️ Technology Stack
 
-- **Framework:** [Astro 5.x](https://astro.build) (with [Astro Actions](https://docs.astro.build/en/guides/actions/))
+- **Framework:** [Astro 7.x](https://astro.build) (with [Astro Actions](https://docs.astro.build/en/guides/actions/))
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS 4.x](https://tailwindcss.com/)
+- **Styling:** [Tailwind CSS 4.3.x](https://tailwindcss.com/)
 - **UI Libraries:** [React 19](https://react.dev/)
-- **Database:** [Astro DB](https://docs.astro.build/en/guides/astro-db/)
+- **Database:** [Drizzle ORM](https://orm.drizzle.team/) + [Turso](https://turso.tech/) (LibSQL — replaces Astro DB)
 - **Content:** MDX (Markdown + JSX)
 - **Testing:** Vitest, Puppeteer/Playwright
 - **AI Integration:** Chrome AI APIs (Web AI) & [AI Agent Skills](https://skills.sh) (Astro, Playwright, Browser-Use, Interface-Design, Brainstorming, SEO-Audit, Clean-Code)
-- **Deployment:** Vercel
+- **Deployment:** Vercel (with CDN edge caching via `@astrojs/vercel/cache`)
 
 ## 🏗️ Architecture
 

@@ -1,5 +1,8 @@
+import { db } from '@lib/db'
 import type { AstroCookies } from 'astro'
-import { AdminSessions, db, eq, lt } from 'astro:db'
+import { eq, lt } from 'drizzle-orm'
+
+import { adminSessions } from '@/db/schema'
 
 export const SESSION_DURATION_MS = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
 export const SESSION_DURATION_SECONDS = 2 * 60 * 60 // 2 hours in seconds
@@ -80,11 +83,11 @@ export async function validateSession(
 	}
 
 	try {
-		const session = await db
+		const [session] = await db
 			.select()
-			.from(AdminSessions)
-			.where(eq(AdminSessions.id, sessionId))
-			.get()
+			.from(adminSessions)
+			.where(eq(adminSessions.id, sessionId))
+			.limit(1)
 
 		if (
 			!session ||
@@ -92,7 +95,7 @@ export async function validateSession(
 			session.token !== token
 		) {
 			if (session) {
-				await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
+				await db.delete(adminSessions).where(eq(adminSessions.id, sessionId))
 			}
 
 			cookies.delete('admin_session', { path: '/' })
@@ -102,14 +105,14 @@ export async function validateSession(
 		}
 
 		await db
-			.update(AdminSessions)
-			.set({ lastActivity: new Date() })
-			.where(eq(AdminSessions.id, sessionId))
+			.update(adminSessions)
+			.set({ lastActivity: new Date().toISOString() })
+			.where(eq(adminSessions.id, sessionId))
 
 		return {
 			sessionId: session.id,
 			token: session.token,
-			expiresAt: session.expiresAt,
+			expiresAt: new Date(session.expiresAt),
 			deviceFingerprint: session.deviceFingerprint,
 		}
 	} catch (error) {
@@ -147,8 +150,8 @@ export async function requireAuthentication(
 
 	if (!isValidDevice) {
 		await db
-			.delete(AdminSessions)
-			.where(eq(AdminSessions.id, sessionInfo.sessionId))
+			.delete(adminSessions)
+			.where(eq(adminSessions.id, sessionInfo.sessionId))
 		cookies.delete('admin_session', { path: '/' })
 		cookies.delete('admin_token', { path: '/' })
 		return false
@@ -163,7 +166,7 @@ export async function requireAuthentication(
 export async function cleanExpiredSessions(): Promise<void> {
 	try {
 		const now = new Date()
-		await db.delete(AdminSessions).where(lt(AdminSessions.expiresAt, now))
+		await db.delete(adminSessions).where(lt(adminSessions.expiresAt, now.toISOString()))
 	} catch (error) {
 		console.error('Error cleaning expired sessions:', error)
 	}

@@ -1,6 +1,6 @@
 # 🚀 Nicolás Deyros Portfolio
 
-A modern, high-performance portfolio built with Astro, featuring comprehensive testing, SEO optimization, and enterprise-level admin functionality.
+A modern, high-performance portfolio built with **Astro 7**, featuring comprehensive testing, SEO optimization, and enterprise-level admin functionality.
 
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -59,11 +59,11 @@ npm run format       # Format code with Prettier
 
 ## 🛠️ Tech Stack
 
-**Core**: Astro 5.x, TypeScript, Tailwind CSS 4.x  
-**Database**: Astro DB (SQLite)  
+**Core**: Astro 7.x, TypeScript, Tailwind CSS 4.3.x  
+**Database**: Drizzle ORM + Turso (LibSQL)  
 **Testing**: Vitest, Puppeteer, Playwright  
 **AI**: Chrome AI APIs & [AI Agent Skills](https://skills.sh)  
-**Deployment**: Vercel
+**Deployment**: Vercel (with CDN edge caching)
 
 ## 📚 Documentation
 

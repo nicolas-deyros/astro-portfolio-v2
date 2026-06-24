@@ -1,11 +1,13 @@
 import rss from '@astrojs/rss'
+import { db } from '@lib/db'
 import type { APIRoute } from 'astro'
-import { db, Links } from 'astro:db'
+
+import { links as linksTable } from '@/db/schema'
 
 export const GET: APIRoute = async context => {
 	try {
 		// Fetch all links from the database
-		const links = await db.select().from(Links)
+		const links = await db.select().from(linksTable)
 
 		// Filter out future-dated links and get only live content
 		const today = new Date()

@@ -41,8 +41,11 @@ describe('Links API Endpoint Validation', () => {
 	const serverUrl = 'http://localhost:4321'
 
 	beforeAll(async () => {
+		// Use shell: true on Windows to avoid EINVAL when spawning .cmd files
 		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
-		server = spawn(cmd, ['astro', 'dev', '--port', '4321'])
+		server = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
+			shell: process.platform === 'win32',
+		})
 		await waitForServer(`${serverUrl}/api/links.json`)
 		const response = await fetch(`${serverUrl}/api/links.json`)
 		linksData = await response.json()

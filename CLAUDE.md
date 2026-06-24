@@ -2,20 +2,20 @@
 
 ## Project Overview
 
-**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 6.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
+**Nicolás Deyros Portfolio** — modern, high-performance portfolio built with **Astro 7.x**. Hybrid rendering (SSR + Static), comprehensive testing, SEO optimization, and enterprise-level admin panel. Uses **Astro Islands** architecture for optimal client-side hydration. Performance target: Lighthouse 90+.
 
 ## Tech Stack
 
-- **Framework:** Astro 6.x (with Astro Actions)
+- **Framework:** Astro 7.x (with Astro Actions)
 - **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS 4.x (via Vite plugin)
+- **Styling:** Tailwind CSS 4.3.x (via Vite plugin)
 - **UI:** React 19 (islands)
-- **Database:** Astro DB (SQLite) — 3 tables: `FormSubmissions`, `Links`, `AdminSessions`
+- **Database:** Drizzle ORM + Turso (LibSQL) — 3 tables: `FormSubmissions`, `Links`, `AdminSessions`
 - **Content:** MDX with Content Collections + Zod validation
 - **Testing:** Vitest, Puppeteer/Playwright
 - **Email:** React Email + Resend
 - **Analytics:** Google Analytics via Partytown (web worker, production only)
-- **Deployment:** Vercel (SSR adapter)
+- **Deployment:** Vercel (SSR adapter) with CDN edge caching
 - **AI Skills:** `.agent/skills/` — 18 skills including Astro, Playwright, Browser-Use, Interface-Design, Brainstorming, SEO-Audit, Clean-Code
 
 ## Architecture — Astro Specifics
@@ -92,10 +92,11 @@ Centralized in `src/middleware.ts`:
 ```bash
 npm run dev              # Start dev server (localhost:4321, opens browser)
 npm run dev:clean        # Start dev server without opening browser
-npm run build            # Build for production (--remote for Astro DB)
+npm run build            # Build for production
 npm run preview          # Preview production build
-npm run db:seed          # Seed the remote database
-npm run db:studio        # Open Astro DB Studio
+npm run db:push          # Push Drizzle schema to a NEW Turso DB (never run against production)
+npm run db:generate      # Generate SQL migration files (review before applying)
+npm run db:studio        # Open Astro DB Studio (legacy — use Drizzle Studio instead)
 ```
 
 ### Testing
@@ -243,11 +244,11 @@ See `docs/ISSUES.md` for full details and implementation plan.
 > Run `npm run fallow:dead` to surface unused exports/files across the DRY violations below.
 > Run `npm run fallow:health` to prioritise SRP god-files by complexity score.
 
-### DRY Violations (Critical) — RESOLVED
-
-- ~~**Duplicate email logic**~~ — Fixed: the legacy `api/sendEmail.json.ts` endpoint was removed; email is handled only by `src/lib/email.ts` via the `sendEmail` Action (ISSUE-01).
-- ~~**Triplicate auth**~~ — Fixed: auth unified on `lib/session.ts`; the Bearer-token path in `actions/links.ts` is gone (the file was removed entirely in PR #65) (ISSUE-02).
-- ~~**Duplicate Zod schemas**~~ — Fixed: removed with `actions/links.ts` (ISSUE-03).
+- **DRY Violations (Critical) — RESOLVED**
+- ~~**Duplicate email logic**~~ — Fixed
+- ~~**Triplicate auth**~~ — Fixed
+- ~~**Duplicate Zod schemas**~~ — Fixed
+- ~~**`@astrojs/db` removed in Astro 7**~~ — Migrated to Drizzle ORM + Turso (PR #67)
 
 ### SRP Violations
 

@@ -1,3 +1,4 @@
+import { db } from '@lib/db'
 import {
 	ApplicationError,
 	createErrorResponse,
@@ -7,7 +8,9 @@ import {
 } from '@lib/errors'
 import { validateSession } from '@lib/session'
 import type { APIRoute, AstroCookies } from 'astro'
-import { db, eq, Links } from 'astro:db'
+import { eq } from 'drizzle-orm'
+
+import { links as linksTable } from '@/db/schema'
 
 // Centralized authentication check using the new session utility
 async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
@@ -21,7 +24,7 @@ export const GET: APIRoute = async ({ cookies }) => {
 			throw new UnauthorizedError('Unauthorized access denied')
 		}
 
-		const links = await db.select().from(Links)
+		const links = await db.select().from(linksTable)
 		// Array can't be merged simply with { success: true }, so we wrap it
 		return createSuccessResponse({ data: links })
 	} catch (error) {
@@ -51,14 +54,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			throw new ValidationError('Title, URL, and date are required')
 		}
 
-		const result = await db.insert(Links).values({
+		const [result] = await db.insert(linksTable).values({
 			title,
 			url,
 			tags: tags || '',
 			date,
-		})
+		}).returning({ id: linksTable.id })
 
-		return createSuccessResponse({ id: Number(result.lastInsertRowid) }, 201)
+		return createSuccessResponse({ id: result.id }, 201)
 	} catch (error) {
 		console.error('Error creating link:', error)
 		return createErrorResponse(error)
@@ -96,14 +99,14 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 		const linkId = typeof id === 'string' ? parseInt(id) : id
 
 		await db
-			.update(Links)
+			.update(linksTable)
 			.set({
 				title,
 				url,
 				tags: tags || '',
 				date,
 			})
-			.where(eq(Links.id, linkId))
+			.where(eq(linksTable.id, linkId))
 
 		return createSuccessResponse({ message: 'Link updated successfully' })
 	} catch (error) {
@@ -132,7 +135,7 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 			throw new ValidationError('Invalid ID format')
 		}
 
-		await db.delete(Links).where(eq(Links.id, linkId))
+		await db.delete(linksTable).where(eq(linksTable.id, linkId))
 
 		return createSuccessResponse({
 			message: 'Link deleted successfully',

@@ -1,8 +1,13 @@
-// https://astro.build/db/seed
+// @astrojs/db has been removed in Astro 7.
+// To seed a NEW Turso database, run: npx tsx db/seed.ts
+// WARNING: Never run against production — data already exists.
+// Requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in .env
+import { formSubmissions, links } from '../src/db/schema'
+import { db } from '../src/lib/db'
+
 export default async function seed(): Promise<void> {
-	const { db, FormSubmissions, Links } = await import('astro:db')
 	// Insert form submission sample data
-	await db.insert(FormSubmissions).values({
+	await db.insert(formSubmissions).values({
 		fullName: 'John Doe',
 		email: 'johndoe@example.com',
 		message: 'This is a sample message.',
@@ -10,7 +15,7 @@ export default async function seed(): Promise<void> {
 	})
 
 	// Insert sample links data
-	await db.insert(Links).values([
+	await db.insert(links).values([
 		{
 			title: 'Context Engineering Framework',
 			url: 'https://www.linkedin.com/posts/ruben-hassid_context-engineering-is-the-new-prompting-activity-7351203962965979136-JWwu',

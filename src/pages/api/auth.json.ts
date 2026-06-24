@@ -1,3 +1,4 @@
+import { db } from '@lib/db'
 import {
 	ApplicationError,
 	createErrorResponse,
@@ -15,7 +16,9 @@ import {
 	validateSession,
 } from '@lib/session'
 import type { APIRoute } from 'astro'
-import { AdminSessions, db, eq } from 'astro:db'
+import { eq } from 'drizzle-orm'
+
+import { adminSessions } from '@/db/schema'
 
 export const prerender = false
 
@@ -54,15 +57,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				const expiresAt = new Date(now.getTime() + SESSION_DURATION_MS)
 
 				// Store session in database
-				await db.insert(AdminSessions).values({
+				await db.insert(adminSessions).values({
 					id: sessionId,
 					token,
 					deviceFingerprint: clientInfo.deviceFingerprint,
 					userAgent: clientInfo.userAgent,
 					ip: clientInfo.ip,
-					createdAt: now,
-					expiresAt,
-					lastActivity: now,
+					createdAt: now.toISOString(),
+					expiresAt: expiresAt.toISOString(),
+					lastActivity: now.toISOString(),
 				})
 
 				// Set secure cookies
@@ -94,7 +97,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 				if (sessionId) {
 					// Remove session from database
-					await db.delete(AdminSessions).where(eq(AdminSessions.id, sessionId))
+					await db.delete(adminSessions).where(eq(adminSessions.id, sessionId))
 				}
 
 				// Clear cookies
@@ -117,8 +120,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				if (sessionInfo.deviceFingerprint !== clientInfo.deviceFingerprint) {
 					// Suspicious activity - invalidate session
 					await db
-						.delete(AdminSessions)
-						.where(eq(AdminSessions.id, sessionInfo.sessionId))
+						.delete(adminSessions)
+						.where(eq(adminSessions.id, sessionInfo.sessionId))
 					cookies.delete('admin_session', { path: '/' })
 					cookies.delete('admin_token', { path: '/' })
 					throw new UnauthorizedError(

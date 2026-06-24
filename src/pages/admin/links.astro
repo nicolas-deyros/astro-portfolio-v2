@@ -1,7 +1,10 @@
 ---
 import AdminLinksManager from '@components/Admin/AdminLinksManager'
 import Layout from '@layouts/index.astro'
-import { count, db, like, Links as LinksTable, or, sql } from 'astro:db'
+import { db } from '@lib/db'
+import { count, desc, like, or } from 'drizzle-orm'
+
+import { links as LinksTable } from '@/db/schema'
 
 const { url } = Astro.request
 const searchParams = new URL(url).searchParams
@@ -81,7 +84,7 @@ try {
 	if (dir === 'asc') {
 		query = query.orderBy(orderColumn) as typeof query
 	} else {
-		query = query.orderBy(sql`${orderColumn} DESC`) as typeof query
+		query = query.orderBy(desc(orderColumn)) as typeof query
 	}
 
 	// Add pagination
