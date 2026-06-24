@@ -48,8 +48,4 @@ export default defineConfig({
 		icon(),
 		react(),
 	],
-
-	security: {
-		csp: true,
-	},
 })
