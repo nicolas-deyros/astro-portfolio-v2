@@ -1,6 +1,6 @@
-import { db } from '@lib/db'
 import { hashPassword } from '@lib/clientAuth'
-import { requireAuthentication } from '@lib/session'
+import { db } from '@lib/db'
+import { sendClientWelcomeEmail } from '@lib/email'
 import {
 	ApplicationError,
 	createErrorResponse,
@@ -8,6 +8,7 @@ import {
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { requireAuthentication } from '@lib/session'
 import type { APIRoute } from 'astro'
 import { eq } from 'drizzle-orm'
 
@@ -84,7 +85,19 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				createdAt: clients.createdAt,
 			})
 
-		return createSuccessResponse({ client: inserted })
+		// Email the client their portal URL + credentials.
+		// Non-fatal: the client exists even if the email fails; surface the
+		// outcome so the admin knows whether to share credentials manually.
+		let emailSent = false
+		try {
+			const loginUrl = `${new URL(request.url).origin}/client/login`
+			await sendClientWelcomeEmail({ name, email: inserted.email, password, loginUrl })
+			emailSent = true
+		} catch (emailError) {
+			console.error('[admin-clients] welcome email failed:', emailError)
+		}
+
+		return createSuccessResponse({ client: inserted, emailSent })
 	} catch (error) {
 		console.error('[admin-clients] POST error:', error)
 		return createErrorResponse(error)

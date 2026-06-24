@@ -64,6 +64,18 @@ const isLoggedIn = !!session
 			/>
 		))
 	}
+	<!-- Admin Dashboard Link (Desktop) - Only render if logged in -->
+	{
+		isLoggedIn && (
+			<NavList
+				href="/admin"
+				icon="mdi:shield-account"
+				text="Admin"
+				title="Admin Dashboard"
+				data-navLink
+			/>
+		)
+	}
 	<!-- Admin Logout Button (Desktop) - Only render if logged in -->
 	{
 		isLoggedIn && (
@@ -139,6 +151,20 @@ const isLoggedIn = !!session
 					<span class="font-medium">{item.text}</span>
 				</a>
 			))
+		}
+		<!-- Admin Dashboard Link (Mobile) - Only render if logged in -->
+		{
+			isLoggedIn && (
+				<a
+					href="/admin"
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+					data-navLink>
+					<span class="text-xl">
+						<Icon name="mdi:shield-account" class="h-5" />
+					</span>
+					<span class="font-medium">Admin</span>
+				</a>
+			)
 		}
 		<!-- Admin Logout Button (Mobile) - Only render if logged in -->
 		{

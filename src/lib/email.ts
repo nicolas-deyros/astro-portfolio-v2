@@ -53,3 +53,55 @@ export async function sendContactEmails({
 	const [userResult] = await Promise.all([userEmailPromise, adminEmailPromise])
 	return userResult
 }
+
+function escapeHtml(value: string): string {
+	return value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+}
+
+interface SendClientWelcomeEmailParams {
+	name: string
+	email: string
+	password: string
+	loginUrl: string
+}
+
+// Sends a new client their portal URL and credentials.
+// ponytail: inline HTML instead of a React Email template — one transactional
+// email doesn't need a component. Switch to a set-password link if emailing
+// plaintext passwords becomes a concern.
+export async function sendClientWelcomeEmail({
+	name,
+	email,
+	password,
+	loginUrl,
+}: SendClientWelcomeEmailParams) {
+	if (!import.meta.env.RESEND_API_KEY) {
+		throw new Error('RESEND_API_KEY is missing')
+	}
+
+	const resend = new Resend(import.meta.env.RESEND_API_KEY)
+	const fromEmail = import.meta.env.FROM_EMAIL || siteConfig.author.email
+
+	const html = `
+	<div style="font-family: system-ui, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; color: #111;">
+		<h2 style="margin-bottom: 8px;">Welcome to your client portal, ${escapeHtml(name)}</h2>
+		<p>${escapeHtml(siteConfig.author.name)} has created a portal account for you. Use the credentials below to sign in and access your files and documents.</p>
+		<table style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
+			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Portal</td><td><a href="${loginUrl}">${loginUrl}</a></td></tr>
+			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Email</td><td>${escapeHtml(email)}</td></tr>
+			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Password</td><td><code>${escapeHtml(password)}</code></td></tr>
+		</table>
+		<p style="font-size: 13px; color: #555;">Please sign in and keep this email private. If you weren't expecting this, you can safely ignore it.</p>
+	</div>`
+
+	return resend.emails.send({
+		from: fromEmail,
+		to: email,
+		subject: `Your ${siteConfig.author.name} client portal access`,
+		html,
+	})
+}

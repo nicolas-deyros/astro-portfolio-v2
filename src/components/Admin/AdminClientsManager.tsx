@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect,useState } from 'react'
 
 interface Client {
 	id: number
@@ -117,6 +117,11 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			setCreateEmail('')
 			setCreatePassword('')
 			setCreateSlug('')
+			if (json.emailSent === false) {
+				setError(
+					'Client created, but the welcome email could not be sent — share the portal link and password manually.',
+				)
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
 		} finally {

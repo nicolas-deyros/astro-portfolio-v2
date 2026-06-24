@@ -123,8 +123,9 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 
 ### 🧭 Navigation
 
-- **Dashboard-Centric**: Admin sub-pages (Links, CRM, Clients) are reached from the `/admin` dashboard cards. When authenticated, the global header shows only a **Logout** action — the public nav (Home/Blog/Links/Contact) stays uncluttered.
+- **Dashboard-Centric**: Admin sub-pages (Links, CRM, Clients) are reached from the `/admin` dashboard cards. When authenticated, the global header shows an **Admin** link (→ `/admin`) and a **Logout** action — both admin-only — keeping the public nav (Home/Blog/Links/Contact) uncluttered.
 - **Consistent Back-Link**: Each admin sub-page (`/admin/links`, `/admin/crm`, `/admin/clients`) has a `← Admin` link beside its title to return to the dashboard.
+- **Single Logout**: Logout lives only in the global header (per-page logout buttons removed) to avoid duplication.
 
 ### 📄 Data Management
 
@@ -133,6 +134,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **Full-Text Search**: Search across content with tag filtering
 - **Type-Safe Operations**: CRUD operations with Zod schemas
 - **Real-Time Feedback**: Interactive forms with immediate validation
+- **Client Onboarding Email**: Creating a client emails them their portal URL (`/client/login`) and credentials via Resend; the admin UI flags if the email fails to send.
 
 ### 🛡️ Validation & Security
 
