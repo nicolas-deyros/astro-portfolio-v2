@@ -46,6 +46,44 @@ if (!import.meta.env.TURSO_DATABASE_URL) {
 			lastActivity TEXT NOT NULL
 		)`,
 	)
+	await client.execute(
+		`CREATE TABLE IF NOT EXISTS Clients (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			slug TEXT NOT NULL UNIQUE,
+			name TEXT NOT NULL,
+			email TEXT NOT NULL UNIQUE,
+			passwordHash TEXT NOT NULL,
+			isActive INTEGER NOT NULL DEFAULT 1,
+			createdAt TEXT NOT NULL
+		)`,
+	)
+	await client.execute(
+		`CREATE TABLE IF NOT EXISTS ClientSessions (
+			id TEXT PRIMARY KEY,
+			clientId INTEGER NOT NULL REFERENCES Clients(id),
+			token TEXT NOT NULL UNIQUE,
+			deviceFingerprint TEXT NOT NULL,
+			userAgent TEXT NOT NULL,
+			ip TEXT NOT NULL,
+			createdAt TEXT NOT NULL,
+			expiresAt TEXT NOT NULL,
+			lastActivity TEXT NOT NULL
+		)`,
+	)
+	await client.execute(
+		`CREATE TABLE IF NOT EXISTS ClientNodes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			clientId INTEGER NOT NULL REFERENCES Clients(id),
+			parentId INTEGER,
+			name TEXT NOT NULL,
+			type TEXT NOT NULL,
+			blobKey TEXT,
+			mimeType TEXT,
+			size INTEGER,
+			pageSlug TEXT,
+			createdAt TEXT NOT NULL
+		)`,
+	)
 	// Seed a few links if the table is empty (dev/test convenience)
 	const existing = await client.execute('SELECT COUNT(*) as count FROM Links')
 	if ((existing.rows[0]?.count as number) === 0) {
