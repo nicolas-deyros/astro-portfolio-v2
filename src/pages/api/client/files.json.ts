@@ -48,7 +48,9 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 
 		// Generate a short-lived signed URL via Vercel Blob
 		const blobInfo = await head(node.blobKey, {
-			token: process.env.BLOB_READ_WRITE_TOKEN,
+			token: import.meta.env.BLOB_READ_WRITE_TOKEN,
+			oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
+			storeId: import.meta.env.BLOB_STORE_ID,
 		})
 
 		// The URL from head() is already the public URL; for signed/private blobs

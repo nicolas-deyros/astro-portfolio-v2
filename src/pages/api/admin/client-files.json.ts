@@ -46,10 +46,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			const blobKey = `clients/${clientId}/${Date.now()}-${file.name}`
 			const blob = await put(blobKey, file, {
 				access: 'public',
-				token: process.env.BLOB_READ_WRITE_TOKEN,
-				addRandomSuffix: false,
-			})
-
+					token: import.meta.env.BLOB_READ_WRITE_TOKEN,
+					oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
+					storeId: import.meta.env.BLOB_STORE_ID,
 			const [inserted] = await db
 				.insert(clientNodes)
 				.values({
@@ -150,8 +149,11 @@ async function deleteNodeRecursive(nodeId: number): Promise<void> {
 	}
 
 	if (node.type === 'file' && node.blobKey) {
-		await del(node.blobKey, { token: process.env.BLOB_READ_WRITE_TOKEN })
-	}
+			await del(node.blobKey, {
+				token: import.meta.env.BLOB_READ_WRITE_TOKEN,
+				oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
+				storeId: import.meta.env.BLOB_STORE_ID,
+			})
 
 	await db.delete(clientNodes).where(eq(clientNodes.id, nodeId))
 }
