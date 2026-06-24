@@ -121,6 +121,11 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **Activity Tracking**: Last activity updated on each authenticated request
 - **Cross-Tab Sync**: Logout in one tab affects all tabs
 
+### 🧭 Navigation
+
+- **Dashboard-Centric**: Admin sub-pages (Links, CRM, Clients) are reached from the `/admin` dashboard cards. When authenticated, the global header shows only a **Logout** action — the public nav (Home/Blog/Links/Contact) stays uncluttered.
+- **Consistent Back-Link**: Each admin sub-page (`/admin/links`, `/admin/crm`, `/admin/clients`) has a `← Admin` link beside its title to return to the dashboard.
+
 ### 📄 Data Management
 
 - **Advanced Pagination**: Configurable page sizes (10/20/50/100 items per page)

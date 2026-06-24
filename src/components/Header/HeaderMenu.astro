@@ -1,6 +1,6 @@
 ---
 import NavList from '@components/List/NavList.astro'
-import navData, { adminNavData } from '@data/navData'
+import navData from '@data/navData'
 import { validateSession } from '@lib/session'
 import { Icon } from 'astro-icon/components'
 
@@ -8,13 +8,6 @@ type NavItem = {
 	path: string
 	icon: string
 	text: string
-}
-
-type AdminNavItem = {
-	path: string
-	icon: string
-	text: string
-	title: string
 }
 
 // Check authentication state server-side
@@ -70,20 +63,6 @@ const isLoggedIn = !!session
 				data-navLink
 			/>
 		))
-	}
-	<!-- Admin Menu Items (Desktop) - Only render if logged in -->
-	{
-		isLoggedIn &&
-			adminNavData.map((item: AdminNavItem) => (
-				<NavList
-					href={item.path}
-					icon={item.icon}
-					text={item.text}
-					title={item.title}
-					class="admin-menu-item"
-					data-navLink
-				/>
-			))
 	}
 	<!-- Admin Logout Button (Desktop) - Only render if logged in -->
 	{
@@ -160,21 +139,6 @@ const isLoggedIn = !!session
 					<span class="font-medium">{item.text}</span>
 				</a>
 			))
-		}
-		<!-- Admin Menu Items (Mobile) - Only render if logged in -->
-		{
-			isLoggedIn &&
-				adminNavData.map((item: AdminNavItem) => (
-					<a
-						href={item.path}
-						class="admin-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
-						data-navLink>
-						<span class="text-xl">
-							<Icon name={item.icon} class="h-5" />
-						</span>
-						<span class="font-medium">{item.text}</span>
-					</a>
-				))
 		}
 		<!-- Admin Logout Button (Mobile) - Only render if logged in -->
 		{

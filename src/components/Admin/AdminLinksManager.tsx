@@ -82,9 +82,16 @@ export default function AdminLinksManager({
 			)}
 
 			<div className="mb-8">
-				<h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-					Link Management
-				</h2>
+				<div className="flex items-center gap-3">
+					<a
+						href="/admin"
+						className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+						← Admin
+					</a>
+					<h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+						Link Management
+					</h2>
+				</div>
 				<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 					Manage your social links and external resources.
 				</p>
