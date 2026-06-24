@@ -1,4 +1,5 @@
 import { requireAuthentication } from '@lib/session'
+import { requireClientAccess, requireClientSession } from '@lib/clientSession'
 import { defineMiddleware } from 'astro:middleware'
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -16,6 +17,43 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		} catch (error) {
 			console.error('[middleware] Auth check failed:', error)
 			return redirect('/admin/login', 302)
+		}
+	}
+
+	// 🔒 CLIENT PORTAL — FILE BROWSER
+	// Protect /client/* except /client/login
+	if (pathname.startsWith('/client/') && pathname !== '/client/login') {
+		try {
+			const session = await requireClientSession(cookies, request)
+			if (!session) {
+				return redirect('/client/login', 302)
+			}
+		} catch (error) {
+			console.error('[middleware] Client auth check failed:', error)
+			return redirect('/client/login', 302)
+		}
+	}
+
+	// 🔒 CLIENT PORTAL — CUSTOM PAGES
+	// Protect /clients/[slug]/* — verify the session's slug matches the URL slug
+	if (pathname.startsWith('/clients/')) {
+		const slugMatch = pathname.match(/^\/clients\/([^/]+)/)
+		if (slugMatch) {
+			const urlSlug = slugMatch[1]
+			try {
+				const session = await requireClientAccess(cookies, request, urlSlug)
+				if (!session) {
+					// Logged in as a different client → redirect to their own space
+					const currentSession = await requireClientSession(cookies, request)
+					if (currentSession) {
+						return redirect('/client/', 302)
+					}
+					return redirect('/client/login', 302)
+				}
+			} catch (error) {
+				console.error('[middleware] Client access check failed:', error)
+				return redirect('/client/login', 302)
+			}
 		}
 	}
 
