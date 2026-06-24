@@ -1,4 +1,5 @@
 import { requireAuthentication } from '@lib/session'
+import { requireClientSession, requireClientAccess } from '@lib/clientSession'
 import { defineMiddleware } from 'astro:middleware'
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -19,6 +20,44 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		}
 	}
 
+	// 🔒 CLIENT PORTAL — FILE BROWSER
+	// Protect /client/* except /client/login
+	if (pathname.startsWith('/client/') && pathname !== '/client/login') {
+		try {
+			const session = await requireClientSession(cookies, request)
+			if (!session) {
+				return redirect('/client/login', 302)
+			}
+		} catch (error) {
+			console.error('[middleware] Client auth check failed:', error)
+			return redirect('/client/login', 302)
+		}
+	}
+
+	// 🔒 CLIENT PORTAL — CUSTOM PAGES
+	// Protect /clients/[slug]/* — also verify the session belongs to that slug
+	if (pathname.startsWith('/clients/')) {
+		const slugMatch = pathname.match(/^\/clients\/([^/]+)/)
+		if (slugMatch) {
+			const urlSlug = slugMatch[1]
+			try {
+				const session = await requireClientAccess(cookies, request, urlSlug)
+				if (!session) {
+					// Either not logged in or accessing another client's pages
+					const currentSession = await requireClientSession(cookies, request)
+					if (currentSession) {
+						// Logged in as a different client — redirect to their own space
+						return redirect(`/client/`, 302)
+					}
+					return redirect('/client/login', 302)
+				}
+			} catch (error) {
+				console.error('[middleware] Client access check failed:', error)
+				return redirect('/client/login', 302)
+			}
+		}
+	}
+
 	const response = await next()
 
 	// Security Headers
@@ -32,7 +71,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	)
 	response.headers.set(
 		'Content-Security-Policy',
-		"default-src 'self'; script-src 'self' 'unsafe-inline' data: https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'; upgrade-insecure-requests;",
+		"default-src 'self'; script-src 'self' 'unsafe-inline' data: https://va.vercel-scripts.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-src https://vercel.live; frame-ancestors 'none'; upgrade-insecure-requests;",
 	)
 	response.headers.set(
 		'Permissions-Policy',
