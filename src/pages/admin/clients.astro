@@ -1,0 +1,66 @@
+---
+import Layout from '@layouts/index.astro'
+import AdminClientsManager from '@components/Admin/AdminClientsManager'
+import { db } from '@lib/db'
+import { clients } from '@/db/schema'
+
+const allClients = await db
+	.select({
+		id: clients.id,
+		slug: clients.slug,
+		name: clients.name,
+		email: clients.email,
+		isActive: clients.isActive,
+		createdAt: clients.createdAt,
+	})
+	.from(clients)
+	.orderBy(clients.name)
+---
+
+<Layout title="Admin — Clients">
+	<div class="min-h-screen bg-white dark:bg-gray-900">
+		<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<div class="mb-8 flex items-center justify-between">
+				<div>
+					<div class="flex items-center gap-3">
+						<a
+							href="/admin"
+							class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+							← Admin
+						</a>
+						<h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+							Clients
+						</h1>
+					</div>
+					<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+						Manage client accounts, files, and portal access
+					</p>
+				</div>
+				<button
+					id="logout-btn"
+					class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+					Logout
+				</button>
+			</div>
+
+			<AdminClientsManager initialClients={allClients} client:load />
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('astro:page-load', () => {
+			document.getElementById('logout-btn')?.addEventListener('click', async () => {
+				try {
+					await fetch('/api/auth.json', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ action: 'logout' }),
+						credentials: 'include',
+					})
+				} finally {
+					window.location.href = '/admin/login'
+				}
+			})
+		})
+	</script>
+</Layout>

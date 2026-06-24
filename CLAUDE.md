@@ -10,7 +10,8 @@
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS 4.3.x (via Vite plugin)
 - **UI:** React 19 (islands)
-- **Database:** Drizzle ORM + Turso (LibSQL) — 3 tables: `FormSubmissions`, `Links`, `AdminSessions`
+- **Database:** Drizzle ORM + Turso (LibSQL) — 6 tables: `FormSubmissions`, `Links`, `AdminSessions`, `Clients`, `ClientSessions`, `ClientNodes`
+- **File Storage:** Vercel Blob — private client files with signed download URLs
 - **Content:** MDX with Content Collections + Zod validation
 - **Testing:** Vitest, Puppeteer/Playwright
 - **Email:** React Email + Resend
@@ -62,6 +63,8 @@ Single `blog` collection in `src/content/config.ts` with Zod schema:
 Centralized in `src/middleware.ts`:
 
 - Admin auth: Protects `/admin/*` (except `/admin/login`)
+- Client portal auth: Protects `/client/*` (except `/client/login`) — validates `client_session` + `client_token` cookies
+- Client page isolation: Protects `/clients/[slug]/*` — verifies the session's client slug matches the URL slug
 - Security headers: HSTS, CSP, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
 
 ### Integrations
@@ -75,7 +78,7 @@ Centralized in `src/middleware.ts`:
 - `src/components/` — Reusable UI components (Islands, Atomic Design)
 - `src/content/` — Type-safe MDX blog collection
 - `src/layouts/` — Single layout wrapper (with ClientRouter)
-- `src/lib/` — Business logic: `email.ts`, `session.ts`, `blogPostUtils.ts`, `audioPlayer.ts`, `browserDetection.ts`
+- `src/lib/` — Business logic: `email.ts`, `session.ts`, `clientSession.ts`, `clientAuth.ts`, `blogPostUtils.ts`, `audioPlayer.ts`, `browserDetection.ts`
 - `src/utils/` — Shared utilities
 - `db/` — Astro DB schema (3 tables) and seed data
 - `test/` — Comprehensive test suites
@@ -96,6 +99,7 @@ npm run build            # Build for production
 npm run preview          # Preview production build
 npm run db:push          # Push Drizzle schema to a NEW Turso DB (never run against production)
 npm run db:generate      # Generate SQL migration files (review before applying)
+npm run db:migrate       # Apply migration files to the connected Turso DB (review SQL first)
 npm run db:studio        # Open Astro DB Studio (legacy — use Drizzle Studio instead)
 ```
 

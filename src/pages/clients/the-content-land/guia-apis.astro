@@ -1,0 +1,32 @@
+---
+import Layout from '@layouts/index.astro'
+import ClientLayout from '@components/clients/ClientLayout.astro'
+import { requireClientAccess, requireClientSession } from '@lib/clientSession'
+import { db } from '@lib/db'
+import { clients } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+import GuiaApis from '@components/clients/the-content-land/GuiaApis'
+
+const session = await requireClientAccess(
+	Astro.cookies,
+	Astro.request,
+	'the-content-land',
+)
+if (!session) {
+	const current = await requireClientSession(Astro.cookies, Astro.request)
+	if (current) return Astro.redirect('/client/', 302)
+	return Astro.redirect('/client/login', 302)
+}
+
+const [client] = await db
+	.select({ name: clients.name })
+	.from(clients)
+	.where(eq(clients.id, session.clientId))
+	.limit(1)
+---
+
+<Layout title="Guía de APIs — The Content Land">
+	<ClientLayout clientName={client?.name ?? 'The Content Land'} title="Guía de APIs">
+		<GuiaApis client:load />
+	</ClientLayout>
+</Layout>
