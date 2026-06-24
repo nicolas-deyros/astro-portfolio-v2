@@ -70,7 +70,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	)
 	response.headers.set(
 		'Content-Security-Policy',
-		"default-src 'self'; script-src 'self' 'unsafe-inline' data: https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'; upgrade-insecure-requests;",
+		"default-src 'self'; script-src 'self' 'unsafe-inline' data: https://va.vercel-scripts.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-src https://vercel.live; frame-ancestors 'none'; upgrade-insecure-requests;",
 	)
 	response.headers.set(
 		'Permissions-Policy',
