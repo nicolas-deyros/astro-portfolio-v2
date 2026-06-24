@@ -1,5 +1,5 @@
 import { requireAuthentication } from '@lib/session'
-import { requireClientSession, requireClientAccess } from '@lib/clientSession'
+import { requireClientAccess, requireClientSession } from '@lib/clientSession'
 import { defineMiddleware } from 'astro:middleware'
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -35,7 +35,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	}
 
 	// 🔒 CLIENT PORTAL — CUSTOM PAGES
-	// Protect /clients/[slug]/* — also verify the session belongs to that slug
+	// Protect /clients/[slug]/* — verify the session's slug matches the URL slug
 	if (pathname.startsWith('/clients/')) {
 		const slugMatch = pathname.match(/^\/clients\/([^/]+)/)
 		if (slugMatch) {
@@ -43,11 +43,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
 			try {
 				const session = await requireClientAccess(cookies, request, urlSlug)
 				if (!session) {
-					// Either not logged in or accessing another client's pages
+					// Logged in as a different client → redirect to their own space
 					const currentSession = await requireClientSession(cookies, request)
 					if (currentSession) {
-						// Logged in as a different client — redirect to their own space
-						return redirect(`/client/`, 302)
+						return redirect('/client/', 302)
 					}
 					return redirect('/client/login', 302)
 				}

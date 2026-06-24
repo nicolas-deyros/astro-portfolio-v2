@@ -1,0 +1,68 @@
+---
+import Layout from '@layouts/index.astro'
+import ClientLayout from '@components/clients/ClientLayout.astro'
+import FileBrowser from '@components/Client/FileBrowser'
+import { requireClientSession } from '@lib/clientSession'
+import { db } from '@lib/db'
+import { clientNodes, clients } from '@/db/schema'
+import { and, eq, isNull } from 'drizzle-orm'
+
+const session = await requireClientSession(Astro.cookies, Astro.request)
+if (!session) return Astro.redirect('/client/login', 302)
+
+// Resolve folder param (null = root)
+const folderParam = Astro.url.searchParams.get('folder')
+const parentId = folderParam ? parseInt(folderParam, 10) : null
+
+// Fetch this client's nodes at the requested level
+const nodes = await db
+	.select()
+	.from(clientNodes)
+	.where(
+		and(
+			eq(clientNodes.clientId, session.clientId),
+			parentId !== null
+				? eq(clientNodes.parentId, parentId)
+				: isNull(clientNodes.parentId),
+		),
+	)
+	.orderBy(clientNodes.type, clientNodes.name)
+
+// Build breadcrumb by walking up the parent chain
+const breadcrumb: { id: number | null; name: string }[] = [
+	{ id: null, name: 'Home' },
+]
+if (parentId !== null) {
+	const trail: { id: number | null; name: string }[] = []
+	let currentId: number | null = parentId
+	while (currentId !== null) {
+		const [node] = await db
+			.select()
+			.from(clientNodes)
+			.where(eq(clientNodes.id, currentId))
+			.limit(1)
+		if (!node) break
+		trail.unshift({ id: node.id, name: node.name })
+		currentId = node.parentId
+	}
+	breadcrumb.push(...trail)
+}
+
+// Get the client's display name
+const [client] = await db
+	.select({ name: clients.name, slug: clients.slug })
+	.from(clients)
+	.where(eq(clients.id, session.clientId))
+	.limit(1)
+---
+
+<Layout title={`${client?.name ?? 'Client'} — Portal`}>
+	<ClientLayout clientName={client?.name ?? 'Client'}>
+		<FileBrowser
+			nodes={nodes}
+			breadcrumb={breadcrumb}
+			clientSlug={session.clientSlug}
+			client:load
+		/>
+	</ClientLayout>
+</Layout>

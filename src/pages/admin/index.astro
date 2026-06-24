@@ -26,7 +26,7 @@ import Layout from '@layouts/index.astro'
 			</div>
 
 			<!-- Dashboard CTAs -->
-			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 				<!-- Links Management CTA -->
 				<div
 					class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -104,6 +104,48 @@ import Layout from '@layouts/index.astro'
 								href="/admin/crm"
 								class="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
 								View CRM Data
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Clients Management CTA -->
+				<div
+					class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+					<div class="flex items-center">
+						<div class="flex-shrink-0">
+							<svg
+								class="h-8 w-8 text-purple-600 dark:text-purple-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+								</path>
+							</svg>
+						</div>
+						<div class="ml-5 w-0 flex-1">
+							<dl>
+								<dt
+									class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
+									Client Portal
+								</dt>
+								<dd class="text-lg font-medium text-gray-900 dark:text-white">
+									Manage clients & files
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="mt-5">
+						<div class="rounded-md shadow">
+							<a
+								href="/admin/clients"
+								data-astro-reload
+								class="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-base font-medium text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
+								Manage Clients
 							</a>
 						</div>
 					</div>

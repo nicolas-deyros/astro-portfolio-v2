@@ -231,10 +231,19 @@ CREATE INDEX idx_links_date ON Links(date);
 
 #### Authentication Security
 
-- **Password Hashing**: bcrypt with salt for password storage
-- **Session Security**: Secure session management with expiration
-- **Device Fingerprinting**: Additional security layer
-- **Token Validation**: JWT-like token validation
+- **Admin auth**: Single shared secret key, 2-hour sessions, device fingerprinting, `admin_session` + `admin_token` httpOnly cookies
+- **Client auth**: Per-client email + password (PBKDF2 via `crypto.subtle`, 100k iterations), same session/cookie pattern as admin (`client_session` + `client_token`)
+- **Password Hashing**: PBKDF2 with salt via Web Crypto — no external deps, edge-compatible
+- **Session Security**: Secure session management with expiration and activity tracking
+- **Device Fingerprinting**: User-Agent + IP hash stored in DB, validated on every request
+- **Token Validation**: 32-byte random token + timestamp suffix, matched against DB
+
+#### Client Portal Isolation
+
+- **URL-level isolation**: Middleware verifies session `clientSlug` matches URL slug for `/clients/[slug]/*`
+- **DB-level isolation**: All `ClientNodes` queries include `WHERE clientId = session.clientId`
+- **File-level isolation**: Vercel Blob files stored under `clients/{clientId}/...`, never exposed publicly
+- **Download security**: Files served via signed URLs generated server-side after session validation
 
 #### Infrastructure Security
 
@@ -242,6 +251,59 @@ CREATE INDEX idx_links_date ON Links(date);
 - **Security Headers**: Comprehensive security headers
 - **Content Security Policy**: CSP for XSS protection
 - **Environment Isolation**: Separate environments for dev/staging/prod
+
+## 🗂️ Client Portal Architecture
+
+### Overview
+
+A per-client file-sharing portal with isolated content, custom interactive pages, and admin management. Built as an extension of the existing admin pattern.
+
+### URL Structure
+
+| Pattern | Purpose |
+|---|---|
+| `/client/login` | Client login page |
+| `/client/` | File browser (identity from session, `?folder=X` for navigation) |
+| `/client/?folder=<id>` | Subfolder view |
+| `/clients/[slug]/[page]` | Custom interactive Astro/React pages per client |
+
+### Database Tables
+
+```
+Clients         — id, slug, name, email, passwordHash, isActive, createdAt
+ClientSessions  — id, clientId (FK), token, deviceFingerprint, userAgent, ip, createdAt, expiresAt, lastActivity
+ClientNodes     — id, clientId (FK), parentId (self-ref), name, type, blobKey, mimeType, size, pageSlug, createdAt
+```
+
+`ClientNodes.type` values:
+- `folder` — folder container, parentId chains build the tree
+- `file` — Vercel Blob file; `blobKey` is the blob URL, `mimeType`/`size` set
+- `page` — custom Astro page; `pageSlug` maps to `src/pages/clients/[slug]/[pageSlug].astro`
+
+### Auth Flow
+
+```
+POST /api/client/auth.json { action: 'login', email, password }
+  → lookup Clients by email
+  → verifyPassword (PBKDF2)
+  → reject if isActive = 0
+  → createClientSession → set client_session + client_token cookies
+  → return { clientSlug }
+```
+
+### Middleware Guards
+
+1. `/client/*` (except `/client/login`) — `requireClientSession` → session + device fingerprint validation
+2. `/clients/[slug]/*` — `requireClientAccess` — session validation + slug ownership check
+
+### Adding a New Client Page (Developer Workflow)
+
+1. Create `src/pages/clients/[clientSlug]/my-page.astro`
+2. Import and render the React component: `<MyComponent client:load />`
+3. Place the React component at `src/components/clients/[clientSlug]/MyComponent.jsx`
+4. `npm run dev` — verify at `localhost:4321/clients/[slug]/my-page`
+5. Admin: `/admin/clients` → client row → file manager → "Add page reference" → `pageSlug: my-page`
+6. Client dashboard shows the new page card automatically
 
 ## 🧪 Testing Architecture
 

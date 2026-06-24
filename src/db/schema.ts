@@ -28,3 +28,48 @@ export const adminSessions = sqliteTable('AdminSessions', {
 	expiresAt: text('expiresAt').notNull(),
 	lastActivity: text('lastActivity').notNull(),
 })
+
+// --- Client Portal ---
+
+export const clients = sqliteTable('Clients', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	slug: text('slug').notNull().unique(),
+	name: text('name').notNull(),
+	email: text('email').notNull().unique(),
+	passwordHash: text('passwordHash').notNull(),
+	isActive: integer('isActive').notNull().default(1),
+	createdAt: text('createdAt').notNull(),
+})
+
+export const clientSessions = sqliteTable('ClientSessions', {
+	id: text('id').primaryKey(),
+	clientId: integer('clientId')
+		.notNull()
+		.references(() => clients.id),
+	token: text('token').notNull().unique(),
+	deviceFingerprint: text('deviceFingerprint').notNull(),
+	userAgent: text('userAgent').notNull(),
+	ip: text('ip').notNull(),
+	createdAt: text('createdAt').notNull(),
+	expiresAt: text('expiresAt').notNull(),
+	lastActivity: text('lastActivity').notNull(),
+})
+
+// type: 'folder' | 'file' | 'page'
+// - file nodes: blobKey holds the Vercel Blob key; mimeType and size are set
+// - page nodes: pageSlug holds the Astro route slug (e.g. 'guia-apis'); blobKey is null
+// - folder nodes: blobKey, pageSlug, mimeType, size are all null
+export const clientNodes = sqliteTable('ClientNodes', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	clientId: integer('clientId')
+		.notNull()
+		.references(() => clients.id),
+	parentId: integer('parentId'),
+	name: text('name').notNull(),
+	type: text('type').notNull(),
+	blobKey: text('blobKey'),
+	mimeType: text('mimeType'),
+	size: integer('size'),
+	pageSlug: text('pageSlug'),
+	createdAt: text('createdAt').notNull(),
+})
