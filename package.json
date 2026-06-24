@@ -4,7 +4,7 @@
 	"version": "4.0.0",
 	"scripts": {
 		"// === Development ===": "",
-		"postinstall": "patch-package",
+		"postinstall": "node -e \"const{readFileSync}=require('fs');try{const c=readFileSync('node_modules/vite/dist/node/chunks/config.js','utf8');if(c.includes('rolldownOptions?.input')){console.log('[patch] Vite patch already applied.')}else{require('child_process').execSync('patch-package',{stdio:'inherit'})}}catch(e){console.warn('[patch] Skipped:',e.message)}\"",
 		"dev": "astro dev --open",
 		"dev:clean": "astro dev --port 4321",
 		"dev:test": "astro dev --port 4321",
@@ -67,6 +67,9 @@
 		"fallow:audit": "npx --yes fallow audit",
 		"fallow:fix": "npx --yes fallow fix --dry-run",
 		"// === Database ===": "",
+		"db:push": "drizzle-kit push",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
 		"db:seed": "npx astro db execute db/seed.ts --remote",
 		"db:studio": "astro db studio"
 	},
@@ -85,6 +88,7 @@
 		"@tailwindcss/vite": "^4.3.1",
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
+		"@vercel/blob": "^2.4.1",
 		"@vercel/og": "^0.8.6",
 		"@vercel/speed-insights": "^2.0.0",
 		"astro": "^7.0.2",
