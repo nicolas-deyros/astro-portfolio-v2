@@ -1,7 +1,8 @@
+import { db } from '@lib/db'
 import { ActionError, defineAction } from 'astro:actions'
-import { db, FormSubmissions } from 'astro:db'
-import { z } from 'astro:schema'
+import { z } from 'zod'
 
+import { formSubmissions } from '@/db/schema'
 import { sendContactEmails } from '@/lib/email'
 
 export const server = {
@@ -28,7 +29,7 @@ export const server = {
 					throw error
 				}
 
-				await db.insert(FormSubmissions).values({
+				await db.insert(formSubmissions).values({
 					fullName: name,
 					email,
 					message: message || '',

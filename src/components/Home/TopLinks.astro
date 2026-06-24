@@ -1,7 +1,8 @@
 ---
-import { db, Links } from 'astro:db'
+import { db } from '@lib/db'
 
 import Link from '@/components/Link/Link.astro'
+import { links } from '@/db/schema'
 
 import Section from '../Section.astro'
 
@@ -16,7 +17,7 @@ interface LinkData {
 // Directly query the database during SSR instead of going through the API
 let linksData: LinkData[] = []
 try {
-	const dbResults = await db.select().from(Links)
+	const dbResults = await db.select().from(links)
 	linksData = dbResults
 } catch (error) {
 	console.error('Error fetching links from database:', error)

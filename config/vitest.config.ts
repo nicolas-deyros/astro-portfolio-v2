@@ -4,7 +4,18 @@ import { configDefaults } from 'vitest/config'
 
 export default defineConfig({
 	test: {
-		exclude: [...configDefaults.exclude, 'db/**', 'testsprite_tests/**'],
+		exclude: [
+			...configDefaults.exclude,
+			'db/**',
+			'testsprite_tests/**',
+			// These tests spawn their own dev server process, which conflicts with
+			// the already-running dev server on Windows. The same functionality is
+			// covered by test/back-to-top.test.ts (which uses the running server).
+			'test/back-to-top-isolated.test.ts',
+			'test/back-to-top-optimized.test.ts',
+			'test/date-filtering.test.ts',
+			'test/e2e/links.test.ts',
+		],
 		fileParallelism: false,
 		maxWorkers: 1,
 		pool: 'forks',

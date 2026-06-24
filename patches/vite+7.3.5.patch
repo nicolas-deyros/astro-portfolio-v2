@@ -1,0 +1,31 @@
+diff --git a/node_modules/vite/dist/node/chunks/config.js b/node_modules/vite/dist/node/chunks/config.js
+index 9a45043..01a50c6 100644
+--- a/node_modules/vite/dist/node/chunks/config.js
++++ b/node_modules/vite/dist/node/chunks/config.js
+@@ -33528,7 +33528,7 @@ function resolveRollupOptions(environment) {
+ 	const { logger } = environment;
+ 	const ssr = environment.config.consumer === "server";
+ 	const resolve$4 = (p) => path.resolve(root, p);
+-	const input = libOptions ? options$1.rollupOptions.input || (typeof libOptions.entry === "string" ? resolve$4(libOptions.entry) : Array.isArray(libOptions.entry) ? libOptions.entry.map(resolve$4) : Object.fromEntries(Object.entries(libOptions.entry).map(([alias$2, file]) => [alias$2, resolve$4(file)]))) : typeof options$1.ssr === "string" ? resolve$4(options$1.ssr) : options$1.rollupOptions.input || resolve$4("index.html");
++	const input = libOptions ? options$1.rollupOptions.input || (typeof libOptions.entry === "string" ? resolve$4(libOptions.entry) : Array.isArray(libOptions.entry) ? libOptions.entry.map(resolve$4) : Object.fromEntries(Object.entries(libOptions.entry).map(([alias$2, file]) => [alias$2, resolve$4(file)]))) : typeof options$1.ssr === "string" ? resolve$4(options$1.ssr) : options$1.rolldownOptions?.input || options$1.rollupOptions.input || resolve$4("index.html");
+ 	if (ssr && typeof input === "string" && input.endsWith(".html")) throw new Error("rollupOptions.input should not be an html file when building for SSR. Please specify a dedicated SSR entry.");
+ 	if (options$1.cssCodeSplit === false) {
+ 		if ((typeof input === "string" ? [input] : Array.isArray(input) ? input : Object.values(input)).some((input$1) => input$1.endsWith(".css"))) throw new Error(`When "build.cssCodeSplit: false" is set, "rollupOptions.input" should not include CSS files.`);
+@@ -33539,7 +33539,7 @@ function resolveRollupOptions(environment) {
+ 		preserveEntrySignatures: ssr ? "allow-extension" : libOptions ? "strict" : false,
+ 		cache: options$1.watch ? void 0 : false,
+ 		...options$1.rollupOptions,
+-		output: options$1.rollupOptions.output,
++		output: options$1.rolldownOptions?.output ? { ...options$1.rolldownOptions.output, ...options$1.rollupOptions.output } : options$1.rollupOptions.output,
+ 		input,
+ 		plugins: plugins$1,
+ 		external: options$1.rollupOptions.external,
+@@ -33569,7 +33569,7 @@ function resolveRollupOptions(environment) {
+ 			...output
+ 		};
+ 	};
+-	const outputs = resolveBuildOutputs(options$1.rollupOptions.output, libOptions, logger);
++	const outputs = resolveBuildOutputs(options$1.rolldownOptions?.output ? { ...options$1.rolldownOptions.output, ...options$1.rollupOptions.output } : options$1.rollupOptions.output, libOptions, logger);
+ 	if (Array.isArray(outputs)) rollupOptions.output = outputs.map(buildOutputOptions);
+ 	else rollupOptions.output = buildOutputOptions(outputs);
+ 	return rollupOptions;

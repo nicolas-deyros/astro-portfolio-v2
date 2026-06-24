@@ -82,7 +82,7 @@ describe('Security Hardening Validation', () => {
 			}, baseUrl)
 
 			expect(response.status).toBe(401)
-			expect(response.data.message).toBe('Unauthorized access denied')
+			expect(response.data.error?.message).toBe('Unauthorized access denied')
 		})
 
 		test('POST requests to Links API should deny unauthorized access', async () => {
@@ -104,7 +104,7 @@ describe('Security Hardening Validation', () => {
 			}, baseUrl)
 
 			expect(response.status).toBe(401)
-			expect(response.data.error).toBe('Unauthorized')
+			expect(response.data.error?.code).toBe('UNAUTHORIZED')
 		})
 	})
 
@@ -150,6 +150,8 @@ describe('Security Hardening Validation', () => {
 		})
 
 		test('Session validation should use server-side checks', async () => {
+			// Clear any session cookies leftover from previous tests
+			await page.deleteCookie({ name: 'admin_session' }, { name: 'admin_token' })
 			// Try to validate a non-existent session
 			const response = await page.evaluate(async () => {
 				const res = await fetch('/api/auth.json', {
@@ -169,6 +171,8 @@ describe('Security Hardening Validation', () => {
 
 	describe('🚨 Client-Side Security Bypass Prevention', () => {
 		test('Disabling JavaScript should not grant access to admin content', async () => {
+			// Clear any session cookies leftover from previous tests
+			await page.deleteCookie({ name: 'admin_session' }, { name: 'admin_token' })
 			// Disable JavaScript
 			await page.setJavaScriptEnabled(false)
 

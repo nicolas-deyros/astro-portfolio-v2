@@ -139,7 +139,7 @@ describe('Enhanced Authentication System', () => {
 			}, authApiUrl)
 
 			expect(response.status).toBe(401)
-			expect(response.data.message).toBe('Invalid credentials')
+			expect(response.data.error?.message).toBe('Invalid credentials')
 		})
 
 		it('should create session with valid credentials', async () => {
@@ -330,7 +330,7 @@ describe('Enhanced Authentication System', () => {
 
 			// Should be rejected due to device mismatch
 			expect(validateResponse.status).toBe(401)
-			expect(validateResponse.data.message).toBe(
+			expect(validateResponse.data.error?.message).toBe(
 				'Device mismatch detected. Please login again.',
 			)
 		})
@@ -425,7 +425,7 @@ describe('Enhanced Authentication System', () => {
 
 			// Should be rejected - no more cross-device session sharing
 			expect(mobileValidation.status).toBe(401)
-			expect(mobileValidation.data.message).toBe(
+			expect(mobileValidation.data.error?.message).toBe(
 				'Device mismatch detected. Please login again.',
 			)
 		})

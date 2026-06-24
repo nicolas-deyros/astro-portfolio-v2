@@ -15,6 +15,9 @@ partytown
 iconify
 formik
 resend
+turso
+libsql
+drizzle
 SEO
 seo
 

@@ -1,6 +1,8 @@
 ---
 import Layout from '@layouts/index.astro'
-import { db, FormSubmissions } from 'astro:db'
+import { db } from '@lib/db'
+
+import { formSubmissions } from '@/db/schema'
 
 interface FormSubmissionData {
 	id: number
@@ -18,7 +20,7 @@ const resend = new Resend(import.meta.env.RESEND_API_KEY)
 let submissions: FormSubmissionData[] = []
 try {
 	// Astro DB select returns all columns by default
-	const dbSubmissions = await db.select().from(FormSubmissions)
+	const dbSubmissions = await db.select().from(formSubmissions)
 
 	submissions = await Promise.all(
 		dbSubmissions.map(async (submission: FormSubmissionData) => {
