@@ -43,7 +43,7 @@ const allClients = await db
 				</button>
 			</div>
 
-			<AdminClientsManager initialClients={allClients} client:load />
+			<AdminClientsManager initialClients={allClients} client:only="react" />
 		</div>
 	</div>
 

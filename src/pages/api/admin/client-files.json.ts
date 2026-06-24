@@ -8,7 +8,7 @@ import {
 	ValidationError,
 } from '@lib/errors'
 import type { APIRoute } from 'astro'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { del, put } from '@vercel/blob'
 
 import { clientNodes } from '@/db/schema'
@@ -18,6 +18,38 @@ export const prerender = false
 async function assertAdmin(cookies: Parameters<APIRoute>[0]['cookies'], request: Request) {
 	const ok = await requireAuthentication(cookies, request)
 	if (!ok) throw new UnauthorizedError('Admin authentication required')
+}
+
+export const GET: APIRoute = async ({ cookies, request, url }) => {
+	try {
+		await assertAdmin(cookies, request)
+
+		const clientIdParam = url.searchParams.get('clientId')
+		const parentIdParam = url.searchParams.get('parentId')
+
+		if (!clientIdParam) throw new ValidationError('clientId is required')
+		const clientId = parseInt(clientIdParam, 10)
+		if (isNaN(clientId)) throw new ValidationError('Invalid clientId')
+
+		const parentId = parentIdParam ? parseInt(parentIdParam, 10) : null
+
+		const nodes = await db
+			.select()
+			.from(clientNodes)
+			.where(
+				and(
+					eq(clientNodes.clientId, clientId),
+					parentId !== null
+						? eq(clientNodes.parentId, parentId)
+						: isNull(clientNodes.parentId),
+				),
+			)
+			.orderBy(clientNodes.type, clientNodes.name)
+
+		return createSuccessResponse({ nodes })
+	} catch (error) {
+		return createErrorResponse(error)
+	}
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {

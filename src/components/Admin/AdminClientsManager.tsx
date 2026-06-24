@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Client {
 	id: number
@@ -364,8 +364,8 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 		}
 	}
 
-	// Load on mount and when folder changes
-	useState(() => { loadNodes(null) })
+	// Load nodes on mount
+	useEffect(() => { loadNodes(null) }, [])
 
 	async function navigateTo(folderId: number | null, name: string) {
 		setCurrentParent(folderId)
