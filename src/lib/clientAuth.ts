@@ -2,6 +2,31 @@ const ITERATIONS = 100_000
 const KEY_BITS = 256
 const HASH_ALG = 'SHA-256'
 const SALT_BYTES = 16
+const SETUP_TOKEN_BYTES = 32
+
+/**
+ * Generate a high-entropy, URL-safe setup token (raw value emailed to the
+ * client). Only its SHA-256 hash is stored — see `hashToken`.
+ */
+export function generateSetupToken(): string {
+	const array = new Uint8Array(SETUP_TOKEN_BYTES)
+	crypto.getRandomValues(array)
+	return btoa(String.fromCharCode(...array))
+		.replace(/\+/g, '-')
+		.replace(/\//g, '_')
+		.replace(/=/g, '')
+}
+
+/**
+ * SHA-256 hash of a high-entropy token, hex-encoded. No salt needed: the token
+ * itself is random, so this only prevents a DB leak from exposing usable links.
+ */
+export async function hashToken(raw: string): Promise<string> {
+	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw))
+	return Array.from(new Uint8Array(digest))
+		.map(b => b.toString(16).padStart(2, '0'))
+		.join('')
+}
 
 /**
  * Hash a plain-text password using PBKDF2 via Web Crypto (crypto.subtle).

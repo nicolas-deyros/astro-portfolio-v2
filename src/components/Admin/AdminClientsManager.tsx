@@ -85,7 +85,6 @@ export default function AdminClientsManager({ initialClients }: Props) {
 	// Create form state
 	const [createName, setCreateName] = useState('')
 	const [createEmail, setCreateEmail] = useState('')
-	const [createPassword, setCreatePassword] = useState('')
 	const [createSlug, setCreateSlug] = useState('')
 
 	// Edit form state
@@ -105,7 +104,6 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				body: JSON.stringify({
 					name: createName,
 					email: createEmail,
-					password: createPassword,
 					slug: createSlug,
 				}),
 			})
@@ -115,11 +113,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			setShowCreate(false)
 			setCreateName('')
 			setCreateEmail('')
-			setCreatePassword('')
 			setCreateSlug('')
 			if (json.emailSent === false) {
 				setError(
-					'Client created, but the welcome email could not be sent — share the portal link and password manually.',
+					'Client created, but the setup email could not be sent — the client cannot set a password until they receive a link.',
 				)
 			}
 		} catch (err) {
@@ -299,8 +296,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 					<form onSubmit={handleCreate}>
 						<Field label="Company / Client Name" id="c-name" value={createName} onChange={v => { setCreateName(v); setCreateSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) }} required />
 						<Field label="Email" id="c-email" type="email" value={createEmail} onChange={setCreateEmail} required />
-						<Field label="Password" id="c-password" type="password" value={createPassword} onChange={setCreatePassword} required />
 						<Field label="Slug (URL identifier)" id="c-slug" value={createSlug} onChange={setCreateSlug} placeholder="auto-generated" />
+						<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+							The client receives an email with a one-time link to set their own password.
+						</p>
 						<div className="flex justify-end gap-3 pt-2">
 							<button type="button" onClick={() => setShowCreate(false)} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
 							<button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">

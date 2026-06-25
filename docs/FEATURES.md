@@ -134,7 +134,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **Full-Text Search**: Search across content with tag filtering
 - **Type-Safe Operations**: CRUD operations with Zod schemas
 - **Real-Time Feedback**: Interactive forms with immediate validation
-- **Client Onboarding Email**: Creating a client emails them their portal URL (`/client/login`) and credentials via Resend; the admin UI flags if the email fails to send.
+- **Secure Client Onboarding**: Creating a client emails them a one-time, expiring link (`/client/set-password`) to set their own password — no password is ever entered by the admin or sent over email. The token is stored only as a SHA-256 hash, is single-use (cleared once redeemed), and expires after 7 days. The admin UI flags if the setup email fails to send.
 
 ### 🛡️ Validation & Security
 

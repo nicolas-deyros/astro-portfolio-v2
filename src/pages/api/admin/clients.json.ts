@@ -1,4 +1,4 @@
-import { hashPassword } from '@lib/clientAuth'
+import { generateSetupToken, hashPassword, hashToken } from '@lib/clientAuth'
 import { db } from '@lib/db'
 import { sendClientWelcomeEmail } from '@lib/email'
 import {
@@ -15,6 +15,8 @@ import { eq } from 'drizzle-orm'
 import { clients } from '@/db/schema'
 
 export const prerender = false
+
+const SETUP_TOKEN_TTL_DAYS = 7
 
 async function assertAdmin(cookies: Parameters<APIRoute>[0]['cookies'], request: Request) {
 	const ok = await requireAuthentication(cookies, request)
@@ -58,13 +60,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
 		}
 
-		const { name, email, password, slug: rawSlug } = await request.json()
-		if (!name || !email || !password) {
-			throw new ValidationError('name, email, and password are required')
+		const { name, email, slug: rawSlug } = await request.json()
+		if (!name || !email) {
+			throw new ValidationError('name and email are required')
 		}
 
 		const slug = rawSlug ? slugify(rawSlug) : slugify(name)
-		const passwordHash = await hashPassword(password)
+
+		// No password is set here — the client sets their own via a one-time
+		// link. Store an empty hash (login is impossible until they do) plus the
+		// hashed setup token and its expiry.
+		const setupToken = generateSetupToken()
+		const setupTokenHash = await hashToken(setupToken)
+		const expiresAt = new Date(
+			Date.now() + SETUP_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
+		)
 
 		const [inserted] = await db
 			.insert(clients)
@@ -72,9 +82,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				slug,
 				name,
 				email: email.toLowerCase().trim(),
-				passwordHash,
+				passwordHash: '',
 				isActive: 1,
 				createdAt: new Date().toISOString(),
+				setupTokenHash,
+				setupTokenExpiresAt: expiresAt.toISOString(),
 			})
 			.returning({
 				id: clients.id,
@@ -85,13 +97,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				createdAt: clients.createdAt,
 			})
 
-		// Email the client their portal URL + credentials.
+		// Email the client a one-time link to set their password.
 		// Non-fatal: the client exists even if the email fails; surface the
-		// outcome so the admin knows whether to share credentials manually.
+		// outcome so the admin knows whether to share the setup link manually.
 		let emailSent = false
 		try {
-			const loginUrl = `${new URL(request.url).origin}/client/login`
-			await sendClientWelcomeEmail({ name, email: inserted.email, password, loginUrl })
+			const setupUrl = `${new URL(request.url).origin}/client/set-password?token=${setupToken}`
+			await sendClientWelcomeEmail({
+				name,
+				email: inserted.email,
+				setupUrl,
+				expiresInDays: SETUP_TOKEN_TTL_DAYS,
+			})
 			emailSent = true
 		} catch (emailError) {
 			console.error('[admin-clients] welcome email failed:', emailError)

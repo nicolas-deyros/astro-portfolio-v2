@@ -65,19 +65,19 @@ function escapeHtml(value: string): string {
 interface SendClientWelcomeEmailParams {
 	name: string
 	email: string
-	password: string
-	loginUrl: string
+	setupUrl: string
+	expiresInDays: number
 }
 
-// Sends a new client their portal URL and credentials.
+// Emails a new client a one-time link to set their own password. No password
+// is ever sent — the link carries a high-entropy token whose hash is stored.
 // ponytail: inline HTML instead of a React Email template — one transactional
-// email doesn't need a component. Switch to a set-password link if emailing
-// plaintext passwords becomes a concern.
+// email doesn't need a component.
 export async function sendClientWelcomeEmail({
 	name,
 	email,
-	password,
-	loginUrl,
+	setupUrl,
+	expiresInDays,
 }: SendClientWelcomeEmailParams) {
 	if (!import.meta.env.RESEND_API_KEY) {
 		throw new Error('RESEND_API_KEY is missing')
@@ -89,19 +89,18 @@ export async function sendClientWelcomeEmail({
 	const html = `
 	<div style="font-family: system-ui, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; color: #111;">
 		<h2 style="margin-bottom: 8px;">Welcome to your client portal, ${escapeHtml(name)}</h2>
-		<p>${escapeHtml(siteConfig.author.name)} has created a portal account for you. Use the credentials below to sign in and access your files and documents.</p>
-		<table style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
-			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Portal</td><td><a href="${loginUrl}">${loginUrl}</a></td></tr>
-			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Email</td><td>${escapeHtml(email)}</td></tr>
-			<tr><td style="padding: 4px 16px 4px 0; color: #555;">Password</td><td><code>${escapeHtml(password)}</code></td></tr>
-		</table>
-		<p style="font-size: 13px; color: #555;">Please sign in and keep this email private. If you weren't expecting this, you can safely ignore it.</p>
+		<p>${escapeHtml(siteConfig.author.name)} has created a portal account for you. Click below to set your password and access your files and documents.</p>
+		<p style="margin: 24px 0;">
+			<a href="${setupUrl}" style="display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-size: 14px;">Set your password</a>
+		</p>
+		<p style="font-size: 13px; color: #555;">This link is for ${escapeHtml(email)} and expires in ${expiresInDays} days. If the button doesn't work, copy this URL into your browser:<br><a href="${setupUrl}">${setupUrl}</a></p>
+		<p style="font-size: 13px; color: #555;">If you weren't expecting this, you can safely ignore this email.</p>
 	</div>`
 
 	return resend.emails.send({
 		from: fromEmail,
 		to: email,
-		subject: `Your ${siteConfig.author.name} client portal access`,
+		subject: `Set up your ${siteConfig.author.name} client portal access`,
 		html,
 	})
 }

@@ -72,4 +72,23 @@ for (const { name, sql } of tables) {
   await client.execute(sql)
   console.log(`✓ ${name}`)
 }
+
+// Idempotent column additions (SQLite has no ADD COLUMN IF NOT EXISTS).
+const addColumns = [
+  'ALTER TABLE Clients ADD COLUMN setupTokenHash TEXT',
+  'ALTER TABLE Clients ADD COLUMN setupTokenExpiresAt TEXT',
+]
+for (const sql of addColumns) {
+  try {
+    await client.execute(sql)
+    console.log(`✓ ${sql}`)
+  } catch (err) {
+    if (/duplicate column name/i.test(err.message)) {
+      console.log(`• skip (exists): ${sql}`)
+    } else {
+      throw err
+    }
+  }
+}
+
 console.log('Migration complete')
