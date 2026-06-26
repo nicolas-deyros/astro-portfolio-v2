@@ -1,14 +1,14 @@
-import { db } from '@lib/db'
 import { requireClientSession } from '@lib/clientSession'
+import { db } from '@lib/db'
 import {
 	createErrorResponse,
 	createSuccessResponse,
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { head, issueSignedToken, presignUrl } from '@vercel/blob'
 import type { APIRoute } from 'astro'
 import { and, eq } from 'drizzle-orm'
-import { head } from '@vercel/blob'
 
 import { clientNodes } from '@/db/schema'
 
@@ -46,16 +46,29 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 			throw new ValidationError('Node is not a downloadable file')
 		}
 
-		// Generate a short-lived signed URL via Vercel Blob
-		const blobInfo = await head(node.blobKey, {
+		// The store is private, so the blob URL isn't directly accessible.
+		// Issue a short-lived (1h) presigned GET URL scoped to this one file.
+		const blobAuth = {
 			token: import.meta.env.BLOB_READ_WRITE_TOKEN,
 			oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
 			storeId: import.meta.env.BLOB_STORE_ID,
+		}
+
+		const { pathname } = await head(node.blobKey, blobAuth)
+
+		const signedToken = await issueSignedToken({
+			...blobAuth,
+			pathname,
+			operations: ['get'],
+			validUntil: Date.now() + 60 * 60 * 1000,
+		})
+		const { presignedUrl } = await presignUrl(signedToken, {
+			operation: 'get',
+			pathname,
+			access: 'private',
 		})
 
-		// The URL from head() is already the public URL; for signed/private blobs
-		// we return it directly — Vercel Blob private access is enforced via the token
-		return createSuccessResponse({ url: blobInfo.url, name: node.name })
+		return createSuccessResponse({ url: presignedUrl, name: node.name })
 	} catch (error) {
 		console.error('[client-files] error:', error)
 		return createErrorResponse(error)
