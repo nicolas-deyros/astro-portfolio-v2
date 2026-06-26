@@ -1,5 +1,5 @@
+import { deleteNodeRecursive } from '@lib/clientFiles'
 import { db } from '@lib/db'
-import { requireAuthentication } from '@lib/session'
 import {
 	ApplicationError,
 	createErrorResponse,
@@ -7,9 +7,10 @@ import {
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { requireAuthentication } from '@lib/session'
+import { put } from '@vercel/blob'
 import type { APIRoute } from 'astro'
 import { and, eq, isNull } from 'drizzle-orm'
-import { del, put } from '@vercel/blob'
 
 import { clientNodes } from '@/db/schema'
 
@@ -83,6 +84,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				storeId: import.meta.env.BLOB_STORE_ID,
 				addRandomSuffix: false,
 			})
+
+			const [inserted] = await db
 				.insert(clientNodes)
 				.values({
 					clientId,
@@ -159,35 +162,4 @@ export const DELETE: APIRoute = async ({ request, cookies, url }) => {
 		console.error('[admin-client-files] DELETE error:', error)
 		return createErrorResponse(error)
 	}
-}
-
-async function deleteNodeRecursive(nodeId: number): Promise<void> {
-	const [node] = await db
-		.select()
-		.from(clientNodes)
-		.where(eq(clientNodes.id, nodeId))
-		.limit(1)
-
-	if (!node) return
-
-	if (node.type === 'folder') {
-		const children = await db
-			.select({ id: clientNodes.id })
-			.from(clientNodes)
-			.where(eq(clientNodes.parentId, nodeId))
-
-		for (const child of children) {
-			await deleteNodeRecursive(child.id)
-		}
-	}
-
-	if (node.type === 'file' && node.blobKey) {
-		await del(node.blobKey, {
-			token: import.meta.env.BLOB_READ_WRITE_TOKEN,
-			oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
-			storeId: import.meta.env.BLOB_STORE_ID,
-		})
-	}
-
-	await db.delete(clientNodes).where(eq(clientNodes.id, nodeId))
 }

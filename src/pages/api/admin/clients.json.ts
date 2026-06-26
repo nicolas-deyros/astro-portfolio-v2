@@ -1,4 +1,6 @@
-import { generateSetupToken, hashPassword, hashToken } from '@lib/clientAuth'
+import { hashPassword } from '@lib/clientAuth'
+import { deleteAllClientFiles } from '@lib/clientFiles'
+import { issueSetupLink, SETUP_TOKEN_TTL_DAYS } from '@lib/clientOnboarding'
 import { db } from '@lib/db'
 import { sendClientWelcomeEmail } from '@lib/email'
 import {
@@ -12,11 +14,9 @@ import { requireAuthentication } from '@lib/session'
 import type { APIRoute } from 'astro'
 import { eq } from 'drizzle-orm'
 
-import { clients } from '@/db/schema'
+import { clients, clientSessions } from '@/db/schema'
 
 export const prerender = false
-
-const SETUP_TOKEN_TTL_DAYS = 7
 
 async function assertAdmin(cookies: Parameters<APIRoute>[0]['cookies'], request: Request) {
 	const ok = await requireAuthentication(cookies, request)
@@ -68,14 +68,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		const slug = rawSlug ? slugify(rawSlug) : slugify(name)
 
 		// No password is set here — the client sets their own via a one-time
-		// link. Store an empty hash (login is impossible until they do) plus the
-		// hashed setup token and its expiry.
-		const setupToken = generateSetupToken()
-		const setupTokenHash = await hashToken(setupToken)
-		const expiresAt = new Date(
-			Date.now() + SETUP_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
-		)
-
+		// link. passwordHash stays empty (login is impossible until they do).
 		const [inserted] = await db
 			.insert(clients)
 			.values({
@@ -85,8 +78,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				passwordHash: '',
 				isActive: 1,
 				createdAt: new Date().toISOString(),
-				setupTokenHash,
-				setupTokenExpiresAt: expiresAt.toISOString(),
 			})
 			.returning({
 				id: clients.id,
@@ -97,11 +88,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				createdAt: clients.createdAt,
 			})
 
+		const setupUrl = await issueSetupLink(
+			inserted.id,
+			new URL(request.url).origin,
+		)
+
 		// Email the client a one-time link to set their password.
 		// Non-fatal: the client exists even if the email fails; the setupUrl is
 		// returned to the trusted admin so they can share it manually (and so
 		// the flow is testable locally without a working mailer).
-		const setupUrl = `${new URL(request.url).origin}/client/set-password?token=${setupToken}`
 		let emailSent = false
 		try {
 			await sendClientWelcomeEmail({
@@ -131,8 +126,38 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 			throw new ApplicationError('Content-Type must be application/json', 415, 'UNSUPPORTED_MEDIA_TYPE')
 		}
 
-		const { id, name, email, password, isActive } = await request.json()
+		const { id, name, email, password, isActive, regenerateSetupToken } =
+			await request.json()
 		if (!id) throw new ValidationError('id is required')
+
+		// Admin "resend invite": issue a fresh setup link and email it. Returns
+		// the URL so the admin can also share it manually.
+		if (regenerateSetupToken) {
+			const [client] = await db
+				.select({ id: clients.id, name: clients.name, email: clients.email })
+				.from(clients)
+				.where(eq(clients.id, id))
+				.limit(1)
+			if (!client) throw new ValidationError('Client not found')
+
+			const setupUrl = await issueSetupLink(
+				client.id,
+				new URL(request.url).origin,
+			)
+			let emailSent = false
+			try {
+				await sendClientWelcomeEmail({
+					name: client.name,
+					email: client.email,
+					setupUrl,
+					expiresInDays: SETUP_TOKEN_TTL_DAYS,
+				})
+				emailSent = true
+			} catch (emailError) {
+				console.error('[admin-clients] resend invite email failed:', emailError)
+			}
+			return createSuccessResponse({ emailSent, setupUrl })
+		}
 
 		const updates: Record<string, unknown> = {}
 		if (name !== undefined) updates.name = name
@@ -160,6 +185,35 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 		return createSuccessResponse({ client: updated })
 	} catch (error) {
 		console.error('[admin-clients] PUT error:', error)
+		return createErrorResponse(error)
+	}
+}
+
+// Hard delete: removes the client's Blob files, sessions, and row. Irreversible.
+export const DELETE: APIRoute = async ({ request, cookies, url }) => {
+	try {
+		await assertAdmin(cookies, request)
+
+		const idParam = url.searchParams.get('id')
+		if (!idParam) throw new ValidationError('id is required')
+		const id = parseInt(idParam, 10)
+		if (isNaN(id)) throw new ValidationError('Invalid id')
+
+		const [client] = await db
+			.select({ id: clients.id })
+			.from(clients)
+			.where(eq(clients.id, id))
+			.limit(1)
+		if (!client) throw new ValidationError('Client not found')
+
+		// Order matters: files (rows + blobs) and sessions reference the client.
+		await deleteAllClientFiles(id)
+		await db.delete(clientSessions).where(eq(clientSessions.clientId, id))
+		await db.delete(clients).where(eq(clients.id, id))
+
+		return createSuccessResponse({ deleted: id })
+	} catch (error) {
+		console.error('[admin-clients] DELETE error:', error)
 		return createErrorResponse(error)
 	}
 }

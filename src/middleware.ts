@@ -22,7 +22,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 	// 🔒 CLIENT PORTAL — FILE BROWSER
 	// Protect /client/* except the public login and set-password pages
-	const clientPublicPaths = ['/client/login', '/client/set-password']
+	const clientPublicPaths = [
+		'/client/login',
+		'/client/set-password',
+		'/client/forgot-password',
+	]
 	if (
 		pathname.startsWith('/client/') &&
 		!clientPublicPaths.includes(pathname)
