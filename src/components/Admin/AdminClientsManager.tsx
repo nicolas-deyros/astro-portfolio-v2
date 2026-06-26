@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect,useState } from 'react'
 
 interface Client {
 	id: number
@@ -80,12 +80,14 @@ export default function AdminClientsManager({ initialClients }: Props) {
 	const [editTarget, setEditTarget] = useState<Client | null>(null)
 	const [selectedClient, setSelectedClient] = useState<Client | null>(null)
 	const [error, setError] = useState<string | null>(null)
+	const [setupNotice, setSetupNotice] = useState<{ url: string; emailSent: boolean } | null>(null)
+	const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
+	const [deleteConfirm, setDeleteConfirm] = useState('')
 	const [saving, setSaving] = useState(false)
 
 	// Create form state
 	const [createName, setCreateName] = useState('')
 	const [createEmail, setCreateEmail] = useState('')
-	const [createPassword, setCreatePassword] = useState('')
 	const [createSlug, setCreateSlug] = useState('')
 
 	// Edit form state
@@ -97,6 +99,7 @@ export default function AdminClientsManager({ initialClients }: Props) {
 		e.preventDefault()
 		setSaving(true)
 		setError(null)
+		setSetupNotice(null)
 		try {
 			const res = await fetch('/api/admin/clients.json', {
 				method: 'POST',
@@ -105,7 +108,6 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				body: JSON.stringify({
 					name: createName,
 					email: createEmail,
-					password: createPassword,
 					slug: createSlug,
 				}),
 			})
@@ -115,8 +117,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			setShowCreate(false)
 			setCreateName('')
 			setCreateEmail('')
-			setCreatePassword('')
 			setCreateSlug('')
+			if (json.setupUrl) {
+				setSetupNotice({ url: json.setupUrl, emailSent: json.emailSent === true })
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
 		} finally {
@@ -178,11 +182,79 @@ export default function AdminClientsManager({ initialClients }: Props) {
 		}
 	}
 
+	async function resendInvite(client: Client) {
+		setError(null)
+		setSetupNotice(null)
+		try {
+			const res = await fetch('/api/admin/clients.json', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ id: client.id, regenerateSetupToken: true }),
+			})
+			const json = await res.json()
+			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to resend')
+			setSetupNotice({ url: json.setupUrl, emailSent: json.emailSent === true })
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Error')
+		}
+	}
+
+	async function confirmDelete() {
+		if (!deleteTarget) return
+		setSaving(true)
+		setError(null)
+		try {
+			const res = await fetch(`/api/admin/clients.json?id=${deleteTarget.id}`, {
+				method: 'DELETE',
+				credentials: 'include',
+			})
+			const json = await res.json()
+			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to delete client')
+			setClientList(prev => prev.filter(c => c.id !== deleteTarget.id))
+			setDeleteTarget(null)
+			setDeleteConfirm('')
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Error')
+		} finally {
+			setSaving(false)
+		}
+	}
+
 	return (
 		<div>
 			{error && (
 				<div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
 					{error}
+				</div>
+			)}
+
+			{setupNotice && (
+				<div className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:text-green-300">
+					<p className="mb-2 font-medium">
+						Client created.{' '}
+						{setupNotice.emailSent
+							? 'A set-password link was emailed to them.'
+							: 'The setup email could not be sent — share this link manually:'}
+					</p>
+					<div className="flex items-center gap-2">
+						<input
+							readOnly
+							value={setupNotice.url}
+							onFocus={e => e.currentTarget.select()}
+							className="flex-1 rounded border border-green-300 bg-white px-2 py-1 text-xs text-gray-800 dark:border-green-700 dark:bg-gray-800 dark:text-gray-200"
+						/>
+						<button
+							onClick={() => navigator.clipboard?.writeText(setupNotice.url)}
+							className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700">
+							Copy
+						</button>
+						<button
+							onClick={() => setSetupNotice(null)}
+							className="text-xs text-green-700 hover:underline dark:text-green-400">
+							Dismiss
+						</button>
+					</div>
 				</div>
 			)}
 
@@ -256,6 +328,16 @@ export default function AdminClientsManager({ initialClients }: Props) {
 											className="text-xs text-gray-600 hover:underline dark:text-gray-400">
 											Preview
 										</a>
+										<button
+											onClick={() => resendInvite(client)}
+											className="text-xs text-gray-600 hover:underline dark:text-gray-400">
+											Resend invite
+										</button>
+										<button
+											onClick={() => { setDeleteTarget(client); setDeleteConfirm('') }}
+											className="text-xs text-red-600 hover:underline dark:text-red-400">
+											Delete
+										</button>
 									</div>
 								</td>
 							</tr>
@@ -294,8 +376,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 					<form onSubmit={handleCreate}>
 						<Field label="Company / Client Name" id="c-name" value={createName} onChange={v => { setCreateName(v); setCreateSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) }} required />
 						<Field label="Email" id="c-email" type="email" value={createEmail} onChange={setCreateEmail} required />
-						<Field label="Password" id="c-password" type="password" value={createPassword} onChange={setCreatePassword} required />
 						<Field label="Slug (URL identifier)" id="c-slug" value={createSlug} onChange={setCreateSlug} placeholder="auto-generated" />
+						<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+							The client receives an email with a one-time link to set their own password.
+						</p>
 						<div className="flex justify-end gap-3 pt-2">
 							<button type="button" onClick={() => setShowCreate(false)} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
 							<button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">
@@ -320,6 +404,35 @@ export default function AdminClientsManager({ initialClients }: Props) {
 							</button>
 						</div>
 					</form>
+				</Modal>
+			)}
+
+			{/* Delete modal — type-the-name confirmation (irreversible) */}
+			{deleteTarget && (
+				<Modal title="Delete client" onClose={() => { setDeleteTarget(null); setDeleteConfirm('') }}>
+					<p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+						This permanently deletes <strong>{deleteTarget.name}</strong>, their portal
+						access, and <strong>all their files</strong>. This cannot be undone.
+					</p>
+					<p className="mb-2 text-sm text-gray-600 dark:text-gray-300">
+						Type <code className="rounded bg-gray-100 px-1 dark:bg-gray-700">{deleteTarget.name}</code> to confirm:
+					</p>
+					<input
+						value={deleteConfirm}
+						onChange={e => setDeleteConfirm(e.target.value)}
+						className="mb-4 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-500 focus:ring-red-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+						placeholder={deleteTarget.name}
+					/>
+					<div className="flex justify-end gap-3 pt-1">
+						<button type="button" onClick={() => { setDeleteTarget(null); setDeleteConfirm('') }} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
+						<button
+							type="button"
+							onClick={confirmDelete}
+							disabled={saving || deleteConfirm !== deleteTarget.name}
+							className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50">
+							{saving ? 'Deleting…' : 'Delete permanently'}
+						</button>
+					</div>
 				</Modal>
 			)}
 		</div>

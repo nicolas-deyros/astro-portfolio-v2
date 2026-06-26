@@ -57,6 +57,18 @@ if (!import.meta.env.TURSO_DATABASE_URL) {
 			createdAt TEXT NOT NULL
 		)`,
 	)
+	// Add onboarding-token columns to pre-existing local Clients tables.
+	// SQLite has no ADD COLUMN IF NOT EXISTS, so ignore "duplicate column".
+	for (const col of [
+		'ALTER TABLE Clients ADD COLUMN setupTokenHash TEXT',
+		'ALTER TABLE Clients ADD COLUMN setupTokenExpiresAt TEXT',
+	]) {
+		try {
+			await client.execute(col)
+		} catch (err) {
+			if (!/duplicate column name/i.test(String(err))) throw err
+		}
+	}
 	await client.execute(
 		`CREATE TABLE IF NOT EXISTS ClientSessions (
 			id TEXT PRIMARY KEY,

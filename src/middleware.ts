@@ -1,5 +1,5 @@
-import { requireAuthentication } from '@lib/session'
 import { requireClientAccess, requireClientSession } from '@lib/clientSession'
+import { requireAuthentication } from '@lib/session'
 import { defineMiddleware } from 'astro:middleware'
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -21,8 +21,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	}
 
 	// 🔒 CLIENT PORTAL — FILE BROWSER
-	// Protect /client/* except /client/login
-	if (pathname.startsWith('/client/') && pathname !== '/client/login') {
+	// Protect /client/* except the public login and set-password pages
+	const clientPublicPaths = [
+		'/client/login',
+		'/client/set-password',
+		'/client/forgot-password',
+	]
+	if (
+		pathname.startsWith('/client/') &&
+		!clientPublicPaths.includes(pathname)
+	) {
 		try {
 			const session = await requireClientSession(cookies, request)
 			if (!session) {

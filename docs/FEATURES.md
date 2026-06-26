@@ -121,6 +121,12 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **Activity Tracking**: Last activity updated on each authenticated request
 - **Cross-Tab Sync**: Logout in one tab affects all tabs
 
+### 🧭 Navigation
+
+- **Dashboard-Centric**: Admin sub-pages (Links, CRM, Clients) are reached from the `/admin` dashboard cards. When authenticated, the global header shows an **Admin** link (→ `/admin`) and a **Logout** action — both admin-only — keeping the public nav (Home/Blog/Links/Contact) uncluttered.
+- **Consistent Back-Link**: Each admin sub-page (`/admin/links`, `/admin/crm`, `/admin/clients`) has a `← Admin` link beside its title to return to the dashboard.
+- **Single Logout**: Logout lives only in the global header (per-page logout buttons removed) to avoid duplication.
+
 ### 📄 Data Management
 
 - **Advanced Pagination**: Configurable page sizes (10/20/50/100 items per page)
@@ -128,6 +134,10 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **Full-Text Search**: Search across content with tag filtering
 - **Type-Safe Operations**: CRUD operations with Zod schemas
 - **Real-Time Feedback**: Interactive forms with immediate validation
+- **Secure Client Onboarding**: Creating a client emails them a one-time, expiring link (`/client/set-password`) to set their own password — no password is ever entered by the admin or sent over email. The token is stored only as a SHA-256 hash, is single-use (cleared once redeemed), and expires after 7 days. The admin UI shows the link (with a copy button) as a manual-share fallback and flags if the setup email fails to send.
+- **Forgot Password**: Clients can self-serve a reset from `/client/forgot-password` — it emails the same kind of one-time set-password link. The endpoint always returns a generic confirmation (no account enumeration) and only mails active clients.
+- **Resend Invite**: Admins can re-issue a fresh setup link from the clients table (e.g. when the original expired or the email bounced).
+- **Pause vs Delete Clients**: Toggling a client **inactive** blocks their login and invalidates active sessions immediately, while the admin can still browse their files. **Delete** is a hard, irreversible removal (client row, sessions, and all their Blob files) guarded by a type-the-name confirmation.
 
 ### 🛡️ Validation & Security
 

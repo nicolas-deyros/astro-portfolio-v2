@@ -36,9 +36,15 @@ export const clients = sqliteTable('Clients', {
 	slug: text('slug').notNull().unique(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
+	// Empty until the client sets their own password via the setup link.
 	passwordHash: text('passwordHash').notNull(),
 	isActive: integer('isActive').notNull().default(1),
 	createdAt: text('createdAt').notNull(),
+	// One-time, single-use onboarding token (SHA-256 hash of the emailed token).
+	// Cleared once the client sets a password. Null for clients onboarded before
+	// this flow or who have already set a password.
+	setupTokenHash: text('setupTokenHash'),
+	setupTokenExpiresAt: text('setupTokenExpiresAt'),
 })
 
 export const clientSessions = sqliteTable('ClientSessions', {

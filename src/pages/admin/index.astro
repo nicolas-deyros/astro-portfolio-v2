@@ -16,13 +16,6 @@ import Layout from '@layouts/index.astro'
 						Welcome to the admin panel. Choose an option below to get started.
 					</p>
 				</div>
-
-				<!-- Logout Button -->
-				<button
-					id="logout-btn"
-					class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-gray-800">
-					Logout
-				</button>
 			</div>
 
 			<!-- Dashboard CTAs -->
@@ -154,28 +147,9 @@ import Layout from '@layouts/index.astro'
 		</div>
 	</div>
 
-	<!-- Secure client-side functionality - only for logout and periodic validation -->
+	<!-- Secure client-side functionality - periodic session validation -->
 	<script>
 		document.addEventListener('astro:page-load', () => {
-			const logoutBtn = document.getElementById('logout-btn')
-
-			// Handle logout
-			logoutBtn?.addEventListener('click', async () => {
-				try {
-					await fetch('/api/auth.json', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ action: 'logout' }),
-						credentials: 'include',
-					})
-				} catch (error) {
-					console.error('Logout error:', error)
-				} finally {
-					// Always redirect to login page
-					window.location.href = '/admin/login'
-				}
-			})
-
 			// Periodic session validation (every 2 minutes)
 			// This provides better UX by detecting session expiration
 			setInterval(
