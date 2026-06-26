@@ -80,6 +80,7 @@ export default function AdminClientsManager({ initialClients }: Props) {
 	const [editTarget, setEditTarget] = useState<Client | null>(null)
 	const [selectedClient, setSelectedClient] = useState<Client | null>(null)
 	const [error, setError] = useState<string | null>(null)
+	const [setupNotice, setSetupNotice] = useState<{ url: string; emailSent: boolean } | null>(null)
 	const [saving, setSaving] = useState(false)
 
 	// Create form state
@@ -96,6 +97,7 @@ export default function AdminClientsManager({ initialClients }: Props) {
 		e.preventDefault()
 		setSaving(true)
 		setError(null)
+		setSetupNotice(null)
 		try {
 			const res = await fetch('/api/admin/clients.json', {
 				method: 'POST',
@@ -114,10 +116,8 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			setCreateName('')
 			setCreateEmail('')
 			setCreateSlug('')
-			if (json.emailSent === false) {
-				setError(
-					'Client created, but the setup email could not be sent — the client cannot set a password until they receive a link.',
-				)
+			if (json.setupUrl) {
+				setSetupNotice({ url: json.setupUrl, emailSent: json.emailSent === true })
 			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
@@ -185,6 +185,35 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			{error && (
 				<div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
 					{error}
+				</div>
+			)}
+
+			{setupNotice && (
+				<div className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:text-green-300">
+					<p className="mb-2 font-medium">
+						Client created.{' '}
+						{setupNotice.emailSent
+							? 'A set-password link was emailed to them.'
+							: 'The setup email could not be sent — share this link manually:'}
+					</p>
+					<div className="flex items-center gap-2">
+						<input
+							readOnly
+							value={setupNotice.url}
+							onFocus={e => e.currentTarget.select()}
+							className="flex-1 rounded border border-green-300 bg-white px-2 py-1 text-xs text-gray-800 dark:border-green-700 dark:bg-gray-800 dark:text-gray-200"
+						/>
+						<button
+							onClick={() => navigator.clipboard?.writeText(setupNotice.url)}
+							className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700">
+							Copy
+						</button>
+						<button
+							onClick={() => setSetupNotice(null)}
+							className="text-xs text-green-700 hover:underline dark:text-green-400">
+							Dismiss
+						</button>
+					</div>
 				</div>
 			)}
 

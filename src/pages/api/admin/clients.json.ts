@@ -98,11 +98,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			})
 
 		// Email the client a one-time link to set their password.
-		// Non-fatal: the client exists even if the email fails; surface the
-		// outcome so the admin knows whether to share the setup link manually.
+		// Non-fatal: the client exists even if the email fails; the setupUrl is
+		// returned to the trusted admin so they can share it manually (and so
+		// the flow is testable locally without a working mailer).
+		const setupUrl = `${new URL(request.url).origin}/client/set-password?token=${setupToken}`
 		let emailSent = false
 		try {
-			const setupUrl = `${new URL(request.url).origin}/client/set-password?token=${setupToken}`
 			await sendClientWelcomeEmail({
 				name,
 				email: inserted.email,
@@ -114,7 +115,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			console.error('[admin-clients] welcome email failed:', emailError)
 		}
 
-		return createSuccessResponse({ client: inserted, emailSent })
+		return createSuccessResponse({ client: inserted, emailSent, setupUrl })
 	} catch (error) {
 		console.error('[admin-clients] POST error:', error)
 		return createErrorResponse(error)
