@@ -1,22 +1,15 @@
+import { blobAuth } from '@lib/blob'
 import { db } from '@lib/db'
 import { del } from '@vercel/blob'
 import { and, eq } from 'drizzle-orm'
 
 import { clientNodes } from '@/db/schema'
 
-function blobOptions() {
-	return {
-		token: import.meta.env.BLOB_READ_WRITE_TOKEN,
-		oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
-		storeId: import.meta.env.BLOB_STORE_ID,
-	}
-}
-
 // Best-effort blob deletion: a storage failure must not orphan DB rows, so we
 // log and continue rather than throw.
 async function deleteBlob(blobKey: string): Promise<void> {
 	try {
-		await del(blobKey, blobOptions())
+		await del(blobKey, blobAuth())
 	} catch (error) {
 		console.error('[clientFiles] blob delete failed:', blobKey, error)
 	}
