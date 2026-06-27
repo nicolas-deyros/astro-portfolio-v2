@@ -1,3 +1,4 @@
+import { blobAuth } from '@lib/blob'
 import { deleteNodeRecursive } from '@lib/clientFiles'
 import { db } from '@lib/db'
 import {
@@ -81,9 +82,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				// Private: client documents are confidential. Downloads are served
 				// via short-lived presigned URLs (see api/client/files.json.ts).
 				access: 'private',
-				token: import.meta.env.BLOB_READ_WRITE_TOKEN,
-				oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
-				storeId: import.meta.env.BLOB_STORE_ID,
+				...blobAuth(),
 				addRandomSuffix: false,
 			})
 

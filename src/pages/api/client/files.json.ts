@@ -1,3 +1,4 @@
+import { blobAuth } from '@lib/blob'
 import { requireClientSession } from '@lib/clientSession'
 import { db } from '@lib/db'
 import {
@@ -48,16 +49,12 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 
 		// The store is private, so the blob URL isn't directly accessible.
 		// Issue a short-lived (1h) presigned GET URL scoped to this one file.
-		const blobAuth = {
-			token: import.meta.env.BLOB_READ_WRITE_TOKEN,
-			oidcToken: import.meta.env.VERCEL_OIDC_TOKEN,
-			storeId: import.meta.env.BLOB_STORE_ID,
-		}
+		const auth = blobAuth()
 
-		const { pathname } = await head(node.blobKey, blobAuth)
+		const { pathname } = await head(node.blobKey, auth)
 
 		const signedToken = await issueSignedToken({
-			...blobAuth,
+			...auth,
 			pathname,
 			operations: ['get'],
 			validUntil: Date.now() + 60 * 60 * 1000,
