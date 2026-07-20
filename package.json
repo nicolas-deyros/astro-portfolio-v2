@@ -67,17 +67,15 @@
 		"fallow:audit": "npx --yes fallow audit",
 		"fallow:fix": "npx --yes fallow fix --dry-run",
 		"// === Database ===": "",
-		"db:push": "drizzle-kit push",
-		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:seed": "npx astro db execute db/seed.ts --remote",
 		"db:studio": "astro db studio"
 	},
 	"dependencies": {
 		"@astrojs/db": "^0.21.3",
-		"@astrojs/mdx": "^7.0.0",
+		"@astrojs/mdx": "^7.0.3",
 		"@astrojs/partytown": "^2.1.7",
-		"@astrojs/react": "^6.0.0",
+		"@astrojs/react": "^6.0.1",
 		"@astrojs/rss": "^4.0.18",
 		"@astrojs/sitemap": "^3.7.3",
 		"@astrojs/vercel": "^11.0.0",
@@ -91,7 +89,7 @@
 		"@vercel/blob": "^2.4.1",
 		"@vercel/og": "^0.8.6",
 		"@vercel/speed-insights": "^2.0.0",
-		"astro": "^7.0.2",
+		"astro": "^7.1.2",
 		"astro-icon": "^1.1.5",
 		"astro-seo": "^0.8.4",
 		"drizzle-orm": "^0.45.2",
@@ -151,7 +149,8 @@
 		"web-vitals": "^5.0.3"
 	},
 	"overrides": {
-		"vite": "^7.3.2"
+		"vite": "^7.3.2",
+		"neotraverse": "^1.0.1"
 	},
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx,astro}": [
