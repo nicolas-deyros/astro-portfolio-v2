@@ -1,4 +1,3 @@
-import { db } from '@lib/db'
 import { verifyPassword } from '@lib/clientAuth'
 import {
 	cleanExpiredClientSessions,
@@ -6,6 +5,7 @@ import {
 	destroyClientSession,
 	validateClientSession,
 } from '@lib/clientSession'
+import { db } from '@lib/db'
 import {
 	ApplicationError,
 	createErrorResponse,

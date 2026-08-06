@@ -108,6 +108,8 @@ if (info) {
 	</div>
 
 	<script>
+		import { toClientMessage } from '@/lib/clientErrorMessage'
+
 		document.addEventListener('astro:page-load', () => {
 			const form = document.getElementById('login-form') as HTMLFormElement
 			const errorBox = document.getElementById('login-error')
@@ -140,8 +142,10 @@ if (info) {
 					} else {
 						errorBox?.classList.remove('hidden')
 						if (errorText) {
-							errorText.textContent =
-								json.error?.message ?? 'Invalid email or password.'
+							errorText.textContent = toClientMessage(
+								json.error?.message,
+								'Invalid email or password.',
+							)
 						}
 						form.reset()
 					}

@@ -70,11 +70,17 @@ const audioText = markdown
 	<div class="relative">
 		<div
 			id="progress-bar"
+			role="progressbar"
+			aria-label="Reading progress"
+			aria-valuemin="0"
+			aria-valuemax="100"
+			aria-valuenow="0"
 			class="fixed top-0 left-0 z-50 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300 dark:from-cyan-400 dark:to-blue-400"
 			style="width: 0%;">
 		</div>
 		<div
 			id="progress-percent"
+			aria-hidden="true"
 			class="fixed top-0 left-4 z-51 rounded-b-md border-r border-b border-l border-gray-200 bg-white px-3 py-1 text-sm font-bold text-cyan-600 shadow-lg md:right-4 md:left-auto dark:border-gray-600 dark:bg-gray-800 dark:text-cyan-400">
 			0%
 		</div>
@@ -103,7 +109,8 @@ const audioText = markdown
 					<time
 						datetime={typeof date === 'string' ? date : date.toISOString()}
 						class="flex items-center gap-1">
-						<span>📅</span>
+						<span aria-hidden="true">📅</span>
+						<span class="sr-only">Published:</span>
 						{
 							new Date(date).toLocaleDateString('en-us', {
 								year: 'numeric',
@@ -114,12 +121,14 @@ const audioText = markdown
 					</time>
 
 					<span class="flex items-center gap-1">
-						<span>👤</span>
+						<span aria-hidden="true">👤</span>
+						<span class="sr-only">Author:</span>
 						{author}
 					</span>
 
 					<span class="flex items-center gap-1">
-						<span>⏱️</span>
+						<span aria-hidden="true">⏱️</span>
+						<span class="sr-only">Reading time:</span>
 						{readingTime} min read
 					</span>
 				</div>
@@ -138,7 +147,7 @@ const audioText = markdown
 
 			<div
 				id="blog-content"
-				class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl max-w-none">
+				class="prose prose-gray dark:prose-invert prose-base md:prose-lg lg:prose-xl">
 				<Content />
 			</div>
 		</div>

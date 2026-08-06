@@ -1,11 +1,10 @@
-import { describe, expect, it } from 'vitest'
-
 import {
 	generateSetupToken,
 	hashPassword,
 	hashToken,
 	verifyPassword,
 } from '@lib/clientAuth'
+import { describe, expect, it } from 'vitest'
 
 // Security path: the onboarding flow stores only the SHA-256 hash of a
 // high-entropy token and never the raw token or a plaintext password.

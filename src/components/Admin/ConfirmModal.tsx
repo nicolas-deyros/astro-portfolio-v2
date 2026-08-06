@@ -1,9 +1,19 @@
+import { useState } from 'react'
+
 type ConfirmModalVariant = 'delete' | 'update'
 
 interface ConfirmModalProps {
 	variant: ConfirmModalVariant
 	onConfirm: () => void
 	onCancel: () => void
+	/** Overrides the variant's default message (e.g. "Are you sure you want to delete this link?"). */
+	message?: string
+	/** Overrides the variant's default confirm-button label. */
+	confirmLabel?: string
+	/** When set, the confirm button stays disabled until the user types this exact value. */
+	requireTypedConfirmation?: string
+	/** Shows "Deleting…"/disables buttons while a request is in flight. */
+	pending?: boolean
 }
 
 const config = {
@@ -35,8 +45,17 @@ export function ConfirmModal({
 	variant,
 	onConfirm,
 	onCancel,
+	message,
+	confirmLabel,
+	requireTypedConfirmation,
+	pending,
 }: ConfirmModalProps) {
 	const c = config[variant]
+	const [typedValue, setTypedValue] = useState('')
+	const isLocked =
+		requireTypedConfirmation !== undefined &&
+		typedValue !== requireTypedConfirmation
+
 	return (
 		<div
 			id={c.id}
@@ -61,16 +80,37 @@ export function ConfirmModal({
 						</span>
 					</div>
 					<p className="mb-6 text-center text-base text-slate-700 dark:text-slate-300">
-						{c.message}
+						{message ?? c.message}
 					</p>
+					{requireTypedConfirmation !== undefined && (
+						<div className="mb-6 w-full">
+							<p className="mb-2 text-sm text-slate-600 dark:text-slate-300">
+								Type{' '}
+								<code className="rounded bg-slate-100 px-1 dark:bg-slate-700">
+									{requireTypedConfirmation}
+								</code>{' '}
+								to confirm:
+							</p>
+							<input
+								value={typedValue}
+								onChange={e => setTypedValue(e.target.value)}
+								placeholder={requireTypedConfirmation}
+								className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-red-500 focus:ring-red-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+							/>
+						</div>
+					)}
 					<div className="flex gap-4">
 						<button
 							onClick={onCancel}
-							className="rounded-md bg-gray-200 px-6 py-2 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-offset-slate-900">
+							disabled={pending}
+							className="rounded-md bg-gray-200 px-6 py-2 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-offset-slate-900">
 							Cancel
 						</button>
-						<button onClick={onConfirm} className={c.confirmClass}>
-							{c.confirmLabel}
+						<button
+							onClick={onConfirm}
+							disabled={isLocked || pending}
+							className={`${c.confirmClass} disabled:cursor-not-allowed disabled:opacity-50`}>
+							{pending ? 'Deleting…' : (confirmLabel ?? c.confirmLabel)}
 						</button>
 					</div>
 				</div>

@@ -1,11 +1,12 @@
 ---
-import Layout from '@layouts/index.astro'
-import ClientLayout from '@components/clients/ClientLayout.astro'
 import FileBrowser from '@components/Client/FileBrowser'
+import ClientLayout from '@components/clients/ClientLayout.astro'
+import Layout from '@layouts/index.astro'
 import { requireClientSession } from '@lib/clientSession'
 import { db } from '@lib/db'
-import { clientNodes, clients } from '@/db/schema'
 import { and, eq, isNull } from 'drizzle-orm'
+
+import { clientNodes, clients } from '@/db/schema'
 
 const session = await requireClientSession(Astro.cookies, Astro.request)
 if (!session) return Astro.redirect('/client/login', 302)

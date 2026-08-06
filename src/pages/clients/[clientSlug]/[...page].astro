@@ -1,10 +1,11 @@
 ---
-import Layout from '@layouts/index.astro'
 import ClientLayout from '@components/clients/ClientLayout.astro'
+import Layout from '@layouts/index.astro'
 import { requireClientAccess, requireClientSession } from '@lib/clientSession'
 import { db } from '@lib/db'
-import { clientNodes, clients } from '@/db/schema'
 import { and, eq } from 'drizzle-orm'
+
+import { clientNodes, clients } from '@/db/schema'
 
 const { clientSlug, page } = Astro.params
 

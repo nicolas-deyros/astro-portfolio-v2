@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { toClientMessage } from '@/lib/clientErrorMessage'
+
 type NodeType = 'folder' | 'file' | 'page'
 
 interface ClientNode {
@@ -74,6 +76,7 @@ function NodeIcon({ type, mimeType }: { type: string; mimeType?: string | null }
 
 export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 	const [downloading, setDownloading] = useState<number | null>(null)
+	const [downloadStarted, setDownloadStarted] = useState<number | null>(null)
 	const [error, setError] = useState<string | null>(null)
 
 	async function handleFileClick(node: ClientNode) {
@@ -87,15 +90,27 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 			)
 			if (!res.ok) {
 				const json = await res.json().catch(() => ({}))
-				throw new Error(json.error?.message ?? 'Download failed')
+				throw new Error(
+					toClientMessage(json.error?.message, 'Download failed'),
+				)
 			}
 			const { url } = await res.json()
 			const a = document.createElement('a')
 			a.href = url
 			a.download = node.name
 			a.click()
+			// a.click() returns immediately; it does not track transfer progress.
+			// Show a brief "started" confirmation instead of a stuck "Downloading…" state.
+			setDownloading(null)
+			setDownloadStarted(node.id)
+			window.setTimeout(() => setDownloadStarted(null), 2000)
+			return
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Download failed')
+			setError(
+				err instanceof Error
+					? toClientMessage(err.message, 'Download failed')
+					: 'Download failed',
+			)
 		} finally {
 			setDownloading(null)
 		}
@@ -135,7 +150,9 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 
 			{/* Error banner */}
 			{error && (
-				<div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+				<div
+					role="alert"
+					className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
 					{error}
 				</div>
 			)}
@@ -165,7 +182,11 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 						</span>
 						{node.type === 'file' && node.size !== null && (
 							<span className="text-xs text-gray-400">
-								{downloading === node.id ? 'Downloading…' : formatBytes(node.size)}
+								{downloading === node.id
+									? 'Starting download…'
+									: downloadStarted === node.id
+										? 'Download started'
+										: formatBytes(node.size)}
 							</span>
 						)}
 						{node.type === 'page' && (
