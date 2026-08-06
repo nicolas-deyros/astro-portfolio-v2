@@ -2,7 +2,7 @@
 
 ## Core Framework & Language
 
-- **Framework:** [Astro 5.x](https://astro.build/) - Utilizing Islands Architecture for optimal performance and hybrid rendering (SSR + SSG).
+- **Framework:** [Astro 7.x](https://astro.build/) - Utilizing Islands Architecture for optimal performance and hybrid rendering (SSR + Static).
 - **UI Library:** [React 19](https://react.dev/) - Powering complex interactive components ("islands") such as the contact form and AI features.
 - **Language:** [TypeScript](https://www.typescriptlang.org/) - Ensuring type safety across the entire codebase.
 

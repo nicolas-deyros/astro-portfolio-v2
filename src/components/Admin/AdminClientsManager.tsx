@@ -1,5 +1,7 @@
 import { useEffect,useState } from 'react'
 
+import { ConfirmModal } from './ConfirmModal'
+
 interface Client {
 	id: number
 	slug: string
@@ -82,7 +84,6 @@ export default function AdminClientsManager({ initialClients }: Props) {
 	const [error, setError] = useState<string | null>(null)
 	const [setupNotice, setSetupNotice] = useState<{ url: string; emailSent: boolean } | null>(null)
 	const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
-	const [deleteConfirm, setDeleteConfirm] = useState('')
 	const [saving, setSaving] = useState(false)
 
 	// Create form state
@@ -213,7 +214,6 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to delete client')
 			setClientList(prev => prev.filter(c => c.id !== deleteTarget.id))
 			setDeleteTarget(null)
-			setDeleteConfirm('')
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
 		} finally {
@@ -334,7 +334,7 @@ export default function AdminClientsManager({ initialClients }: Props) {
 											Resend invite
 										</button>
 										<button
-											onClick={() => { setDeleteTarget(client); setDeleteConfirm('') }}
+											onClick={() => setDeleteTarget(client)}
 											className="text-xs text-red-600 hover:underline dark:text-red-400">
 											Delete
 										</button>
@@ -409,31 +409,15 @@ export default function AdminClientsManager({ initialClients }: Props) {
 
 			{/* Delete modal — type-the-name confirmation (irreversible) */}
 			{deleteTarget && (
-				<Modal title="Delete client" onClose={() => { setDeleteTarget(null); setDeleteConfirm('') }}>
-					<p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-						This permanently deletes <strong>{deleteTarget.name}</strong>, their portal
-						access, and <strong>all their files</strong>. This cannot be undone.
-					</p>
-					<p className="mb-2 text-sm text-gray-600 dark:text-gray-300">
-						Type <code className="rounded bg-gray-100 px-1 dark:bg-gray-700">{deleteTarget.name}</code> to confirm:
-					</p>
-					<input
-						value={deleteConfirm}
-						onChange={e => setDeleteConfirm(e.target.value)}
-						className="mb-4 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-500 focus:ring-red-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-						placeholder={deleteTarget.name}
-					/>
-					<div className="flex justify-end gap-3 pt-1">
-						<button type="button" onClick={() => { setDeleteTarget(null); setDeleteConfirm('') }} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
-						<button
-							type="button"
-							onClick={confirmDelete}
-							disabled={saving || deleteConfirm !== deleteTarget.name}
-							className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50">
-							{saving ? 'Deleting…' : 'Delete permanently'}
-						</button>
-					</div>
-				</Modal>
+				<ConfirmModal
+					variant="delete"
+					message={`This permanently deletes ${deleteTarget.name}, their portal access, and all their files. This cannot be undone.`}
+					confirmLabel="Delete permanently"
+					requireTypedConfirmation={deleteTarget.name}
+					pending={saving}
+					onCancel={() => setDeleteTarget(null)}
+					onConfirm={confirmDelete}
+				/>
 			)}
 		</div>
 	)
@@ -461,6 +445,8 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 	const [pageName, setPageName] = useState('')
 	const [pageSlug, setPageSlug] = useState('')
 	const [error, setError] = useState<string | null>(null)
+	const [deleteNodeId, setDeleteNodeId] = useState<number | null>(null)
+	const [deletingNode, setDeletingNode] = useState(false)
 
 	async function loadNodes(parentId: number | null) {
 		setLoading(true)
@@ -558,10 +544,11 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 		}
 	}
 
-	async function handleDelete(nodeId: number) {
-		if (!confirm('Delete this item? This cannot be undone.')) return
+	async function confirmDeleteNode() {
+		if (deleteNodeId === null) return
+		setDeletingNode(true)
 		try {
-			const res = await fetch(`/api/admin/client-files.json?nodeId=${nodeId}`, {
+			const res = await fetch(`/api/admin/client-files.json?nodeId=${deleteNodeId}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			})
@@ -570,6 +557,9 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 			await loadNodes(currentParent)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
+		} finally {
+			setDeletingNode(false)
+			setDeleteNodeId(null)
 		}
 	}
 
@@ -697,7 +687,7 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 								</td>
 								<td className="px-3 py-2 text-right">
 									<button
-										onClick={() => handleDelete(node.id)}
+										onClick={() => setDeleteNodeId(node.id)}
 										className="text-xs text-red-500 hover:underline">
 										Delete
 									</button>
@@ -706,6 +696,16 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 						))}
 					</tbody>
 				</table>
+			)}
+
+			{deleteNodeId !== null && (
+				<ConfirmModal
+					variant="delete"
+					message="Delete this item? This cannot be undone."
+					pending={deletingNode}
+					onCancel={() => setDeleteNodeId(null)}
+					onConfirm={confirmDeleteNode}
+				/>
 			)}
 		</div>
 	)

@@ -21,6 +21,8 @@ interface StatusBannerProps {
 function StatusBanner({ variant, message }: StatusBannerProps) {
 	return (
 		<div
+			role="status"
+			aria-live="polite"
 			className={`mb-4 rounded-lg border p-4 text-center transition-all duration-300 ${STATUS_STYLES[variant]}`}>
 			<h3 className="text-lg font-semibold">{message}</h3>
 		</div>

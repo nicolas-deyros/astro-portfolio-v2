@@ -23,16 +23,26 @@ const TextArea = ({
 		hasError ? 'text-red-700' : 'text-slate-700 dark:text-slate-200'
 	}`
 
+	const fieldId = props.id || props.name
+	const errorId = `${fieldId}-error`
+
 	return (
 		<div className={className}>
-			<label htmlFor={props.id || props.name} className={labelClasses}>
+			<label htmlFor={fieldId} className={labelClasses}>
 				{label}
 			</label>
 			<div className={hasError ? 'animate-shake' : ''}>
-				<textarea className={`${baseClasses} ${stateClasses}`} {...props} />
+				<textarea
+					className={`${baseClasses} ${stateClasses}`}
+					aria-invalid={hasError ? true : undefined}
+					aria-describedby={hasError ? errorId : undefined}
+					{...props}
+				/>
 			</div>
 			{hasError && (
-				<span className="mt-1 block text-sm font-medium text-red-600 transition-opacity duration-300">
+				<span
+					id={errorId}
+					className="mt-1 block text-sm font-medium text-red-600 transition-opacity duration-300">
 					{error}
 				</span>
 			)}

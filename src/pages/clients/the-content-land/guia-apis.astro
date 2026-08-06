@@ -1,11 +1,12 @@
 ---
-import Layout from '@layouts/index.astro'
 import ClientLayout from '@components/clients/ClientLayout.astro'
+import GuiaApis from '@components/clients/the-content-land/GuiaApis'
+import Layout from '@layouts/index.astro'
 import { requireClientAccess, requireClientSession } from '@lib/clientSession'
 import { db } from '@lib/db'
-import { clients } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import GuiaApis from '@components/clients/the-content-land/GuiaApis'
+
+import { clients } from '@/db/schema'
 
 const session = await requireClientAccess(
 	Astro.cookies,
