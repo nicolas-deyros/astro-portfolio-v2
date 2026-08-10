@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-08-10
+
+### 🚀 Astro 7.2 Upgrade
+
+- **Upgraded `astro` 7.1.2 → 7.2.0** and all `@astrojs/*` integrations (`mdx` 7.0.3→7.0.5, `react` 6.0.1→6.0.2, `vercel` 11.0.0→11.0.5, `rss` 4.0.18→4.0.19, `check` 0.9.9→0.9.10) via `npx @astrojs/upgrade`.
+- **Enabled `experimental.incrementalBuild: true`** — skips regenerating unchanged prerendered pages (blog `[slug]`, `[...page]`, tags, categories) using content digest + `getStaticPaths()` cache keys. Reduces rebuild time as blog content grows.
+- **Enabled `session: false`** — tree-shakes the unused Astro sessions runtime (`unstorage`) out of the SSR bundle. No `Astro.session` usage in this codebase.
+- **`overrides.vite: ^7.3.2` kept** — no Vite/rolldown changes in this release range; the existing bridge patch (see 4.0.0 entry below) is still required.
+- **`overrides.neotraverse: ^1.0.1` kept** — already deduped to a single version across the tree post-upgrade; low-risk to leave in place.
+
 ## [4.0.0] - 2026-06-23
 
 > Major platform upgrade: **Astro 6 → 7**, **Tailwind CSS 4.1 → 4.3**, and

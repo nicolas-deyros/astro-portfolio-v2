@@ -14,6 +14,11 @@ export default defineConfig({
 
 	output: 'server',
 	adapter: vercel(),
+	session: false,
+
+	experimental: {
+		incrementalBuild: true,
+	},
 
 	routeRules: {
 		'/': { maxAge: 60, swr: 300 },
