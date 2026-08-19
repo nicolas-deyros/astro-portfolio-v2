@@ -17,7 +17,7 @@
 - **Email:** React Email + Resend
 - **Analytics:** Google Analytics via Partytown (web worker, production only)
 - **Deployment:** Vercel (SSR adapter) with CDN edge caching
-- **AI Skills:** `.agent/skills/` — 18 skills including Astro, Playwright, Browser-Use, Interface-Design, Brainstorming, SEO-Audit, Clean-Code
+- **AI Skills:** `.agents/skills/` — 18 skills including Astro, Playwright, Browser-Use, Interface-Design, Brainstorming, SEO-Audit, Clean-Code
 
 ## Architecture — Astro Specifics
 
@@ -84,7 +84,7 @@ Centralized in `src/middleware.ts`:
 - `test/` — Comprehensive test suites
 - `docs/` — Technical documentation
 - `config/` — ESLint, Prettier, Vitest, CSpell, textlint configs
-- `.agent/` — Workflow definitions and skill symlinks
+- `.agents/` — Skill definitions
 - `tools/` — Custom CLI scripts (git-start, session-init, docs-sync, git-flow)
 - `conductor/` — Workflow orchestration
 
