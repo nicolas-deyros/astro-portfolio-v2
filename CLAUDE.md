@@ -86,7 +86,6 @@ Centralized in `src/middleware.ts`:
 - `config/` — ESLint, Prettier, Vitest, CSpell, textlint configs
 - `.agents/` — Skill definitions
 - `tools/` — Custom CLI scripts (git-start, session-init, docs-sync, git-flow)
-- `conductor/` — Workflow orchestration
 
 ## Commands
 
