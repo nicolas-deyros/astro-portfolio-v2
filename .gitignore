@@ -46,6 +46,8 @@ testsprite_tests/
 
 # Agent tool symlinks (local junctions, not source)
 .claude/skills/
+.agents/skills/
+skills-lock.json
 .continue/
 
 # Generated/scratch output
