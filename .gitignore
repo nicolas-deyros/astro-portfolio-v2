@@ -48,4 +48,8 @@ testsprite_tests/
 .claude/skills/
 .continue/
 
+# Generated/scratch output
+graphify-out/
+.design-scratch/
+
 local.db
