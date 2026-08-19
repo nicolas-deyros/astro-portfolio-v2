@@ -81,7 +81,7 @@ npm run format
 
 ### Git Workflow & Quality Gates
 
-The project uses a highly automated workflow. All feature development must follow the protocols defined in `conductor/workflow.md`.
+The project uses a highly automated workflow. All feature development must follow the protocols defined in `CLAUDE.md`.
 
 #### Automation Scripts
 
