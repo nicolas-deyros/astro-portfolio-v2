@@ -37,6 +37,38 @@ The following security vulnerabilities were identified and patched as part of a 
 
 ---
 
+## Client Portal Authentication (September 2026)
+
+A separate, per-client file portal (`/client/*`, `/clients/[slug]/*`) exists alongside the admin panel, with its own auth stack:
+
+### 🔑 Password Storage
+
+- **PBKDF2**: 100,000 iterations, SHA-256, 256-bit derived key, 16-byte random salt per password (`src/lib/clientAuth.ts` `hashPassword`)
+- **Constant-time comparison** on verify (`verifyPassword`) to prevent timing attacks
+
+### ✉️ Onboarding & Password Reset
+
+- Single-use setup/reset tokens: 32 bytes of `crypto.getRandomValues` entropy, URL-safe base64 (`generateSetupToken`)
+- Only the **SHA-256 hash** of the token is stored on the `Clients` row (`setupTokenHash`, `setupTokenExpiresAt`); the raw token only ever appears in the emailed link
+- 7-day expiry (`SETUP_TOKEN_TTL_DAYS`, `src/lib/clientOnboarding.ts`)
+- Initial invite, admin "resend invite," and client-initiated "forgot password" all issue tokens through the same `issueSetupLink` helper and redeem through one single-use `/client/set-password` endpoint
+
+### 🍪 Sessions
+
+- DB-backed (`ClientSessions` table), **2-hour expiry**, same duration constant `CLIENT_SESSION_DURATION_MS` used for cookie `maxAge` (`src/lib/clientSession.ts`)
+- Cookies: `httpOnly`, `secure` in production, `sameSite: 'strict'` — strict SameSite gives CSRF protection without a separate token
+- **Device fingerprinting**: hash of User-Agent + IP; a session used from a different fingerprint is deleted and the request rejected (`requireClientSession`)
+- **Per-client page isolation**: `requireClientAccess` additionally checks the session's `clientSlug` matches the `[slug]` in the URL, so client A cannot reach client B's pages even with a valid session
+- Expired sessions are swept by `cleanExpiredClientSessions`
+
+### 📎 Private File Delivery
+
+- Client files live in **Vercel Blob** as private objects; the app only ever hands out short-lived **signed download URLs**, never a public blob URL
+
+**Known gap:** no rate limiting yet on `/api/client/auth.json` (login) or `/api/client/forgot-password.json` — tracked as the top-priority item in [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md).
+
+---
+
 ## Enhanced Admin Authentication System
 
 This portfolio implements a robust, multi-layered authentication system for admin functionality with the following security features:
@@ -147,7 +179,7 @@ Returns current authentication status and updates session activity.
 2. **HTTPS**: Always use HTTPS in production for secure cookie transmission
 3. **Regular Cleanup**: Expired sessions are automatically cleaned up
 4. **Session Monitoring**: Monitor AdminSessions table for suspicious activity
-5. **Rate Limiting**: Consider adding rate limiting to auth endpoints
+5. **Rate Limiting**: Not yet implemented on admin or client auth endpoints — see [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md) item 1
 
 ## Environment Variables
 
