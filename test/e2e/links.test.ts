@@ -7,6 +7,9 @@ interface Link {
 	url: string
 	tags: string
 	date: string
+	description: string | null
+	image: string | null
+	likes: number
 }
 
 // Helper function to wait for server to be ready
@@ -58,6 +61,15 @@ describe('Links API Endpoint Validation', () => {
 	it('should fetch a valid JSON array of links', () => {
 		expect(Array.isArray(linksData)).toBe(true)
 		expect(linksData.length).toBeGreaterThan(0)
+	})
+
+	it('should have description/image/likes fields (even if null/0)', () => {
+		linksData.forEach(link => {
+			expect(link).toHaveProperty('description')
+			expect(link).toHaveProperty('image')
+			expect(link).toHaveProperty('likes')
+			expect(typeof link.likes).toBe('number')
+		})
 	})
 
 	it('should have valid link data', () => {

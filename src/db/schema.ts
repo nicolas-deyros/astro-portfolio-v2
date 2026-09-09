@@ -14,6 +14,9 @@ export const links = sqliteTable('Links', {
 	url: text('url').notNull(),
 	tags: text('tags').notNull(),
 	date: text('date').notNull(),
+	description: text('description'),
+	image: text('image'),
+	likes: integer('likes').notNull().default(0),
 })
 
 // Astro DB stored column.date() as ISO 8601 text strings in LibSQL.

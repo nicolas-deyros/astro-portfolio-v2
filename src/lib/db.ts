@@ -34,6 +34,19 @@ if (!import.meta.env.TURSO_DATABASE_URL) {
 			date TEXT NOT NULL
 		)`,
 	)
+	// Add description/image/likes columns to pre-existing local Links tables.
+	// SQLite has no ADD COLUMN IF NOT EXISTS, so ignore "duplicate column".
+	for (const col of [
+		'ALTER TABLE Links ADD COLUMN description TEXT',
+		'ALTER TABLE Links ADD COLUMN image TEXT',
+		'ALTER TABLE Links ADD COLUMN likes INTEGER NOT NULL DEFAULT 0',
+	]) {
+		try {
+			await client.execute(col)
+		} catch (err) {
+			if (!/duplicate column name/i.test(String(err))) throw err
+		}
+	}
 	await client.execute(
 		`CREATE TABLE IF NOT EXISTS AdminSessions (
 			id TEXT PRIMARY KEY,

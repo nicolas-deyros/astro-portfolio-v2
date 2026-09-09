@@ -5,6 +5,7 @@ import { db } from '@lib/db'
 import { count, desc, like, or } from 'drizzle-orm'
 
 import { links as LinksTable } from '@/db/schema'
+import type { LinkData } from '@/types/links'
 
 const { url } = Astro.request
 const searchParams = new URL(url).searchParams
@@ -24,14 +25,6 @@ const dir = (searchParams.get('dir') || 'desc') as 'asc' | 'desc'
 // Filter parameters
 const search = searchParams.get('search') || ''
 const tag = searchParams.get('tag') || ''
-
-interface LinkData {
-	id: number
-	title: string
-	url: string
-	tags: string
-	date: string
-}
 
 interface PaginationData {
 	page: number
@@ -104,6 +97,9 @@ try {
 		url: link.url,
 		tags: link.tags,
 		date: link.date,
+		description: link.description,
+		image: link.image,
+		likes: link.likes,
 	}))
 
 	const total = totalResult[0]?.count || 0
