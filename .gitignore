@@ -34,10 +34,8 @@ pnpm-debug.log*
 .next/
 .output/
 .temp/
-# Gemini & MCP Configuration
+# MCP Configuration
 .mcp.json
-
-.gemini/settings.json
 
 # Test Artifacts
 coverage/
