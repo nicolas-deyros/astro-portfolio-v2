@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "src/components/Links/LinkCard.astro"
+        ],
+        "createdAt": "2026-09-09T18:01:36.311Z",
+        "reason": "false positive: hover:bg-rose-50/hover:bg-blue-50 and hover:text-rose-600/hover:text-blue-600 are the same Tailwind hover pseudo-class, so gray text never actually renders on the colored background"
+      }
+    ]
+  }
+}

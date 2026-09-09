@@ -194,7 +194,7 @@ const getTagColor = (tag: string) => {
 		</aside>
 
 		<!-- Desktop Layout with Sidebar -->
-		<div class="flex w-full gap-6">
+		<div class="mx-auto flex w-full max-w-5xl gap-6">
 			<!-- Main Content Area -->
 			<section class="min-w-0 flex-1">
 				<div
@@ -234,7 +234,8 @@ const getTagColor = (tag: string) => {
 
 			<!-- Sidebar with all tags (not filtered by pagination) -->
 			<aside class="hidden w-64 flex-shrink-0 lg:block">
-				<div class="sticky top-6">
+				<div
+					class="sticky top-6 rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800/50">
 					<div class="mb-4 flex items-center justify-between">
 						<h4
 							class="text-sm font-semibold text-slate-900 dark:text-slate-100">
