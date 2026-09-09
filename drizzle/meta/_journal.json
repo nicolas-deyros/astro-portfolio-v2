@@ -15,6 +15,13 @@
       "when": 1782421294531,
       "tag": "0001_small_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788973513634,
+      "tag": "0002_loose_toad_men",
+      "breakpoints": true
     }
   ]
 }

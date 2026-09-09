@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import type { LinkData } from '@/types/links'
+
 import { useAdminLinks } from '../../hooks/useAdminLinks'
 import { ConfirmModal } from './ConfirmModal'
 import { ErrorModal } from './ErrorModal'
@@ -7,13 +9,7 @@ import { LinkFilters } from './LinkFilters'
 import { LinkForm } from './LinkForm'
 import { LinkTable } from './LinkTable'
 
-export interface LinkData {
-	id: number
-	title: string
-	url: string
-	tags: string
-	date: string
-}
+export type { LinkData }
 
 export interface PaginationData {
 	page: number
@@ -47,6 +43,8 @@ export default function AdminLinksManager({
 	const {
 		links,
 		formData,
+		imageFile,
+		removeImage,
 		formErrors,
 		formSuccess,
 		editMode,
@@ -99,11 +97,15 @@ export default function AdminLinksManager({
 
 			<LinkForm
 				formData={formData}
+				imageFile={imageFile}
+				removeImage={removeImage}
 				formErrors={formErrors}
 				formSuccess={formSuccess}
 				editMode={editMode}
 				isSubmitting={isSubmitting}
 				onInputChange={handlers.handleInputChange}
+				onImageChange={handlers.handleImageChange}
+				onRemoveImageToggle={handlers.handleRemoveImageToggle}
 				onSubmit={handlers.handleSubmit}
 				onCancelEdit={handlers.resetForm}
 			/>

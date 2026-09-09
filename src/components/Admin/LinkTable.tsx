@@ -1,4 +1,6 @@
-import type { LinkData, PaginationData } from './AdminLinksManager'
+import type { LinkData } from '@/types/links'
+
+import type { PaginationData } from './AdminLinksManager'
 
 interface LinkTableProps {
 	links: LinkData[]
@@ -115,8 +117,25 @@ export function LinkTable({
 											key={link.id}
 											className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
 											<td className="px-4 py-4">
-												<div className="font-medium break-words text-slate-900 dark:text-slate-100">
-													{link.title}
+												<div className="flex items-start gap-3">
+													{link.image && (
+														<img
+															src={link.image}
+															alt=""
+															className="h-10 w-10 flex-shrink-0 rounded-md object-cover"
+														/>
+													)}
+													<div className="min-w-0">
+														<div className="font-medium break-words text-slate-900 dark:text-slate-100">
+															{link.title}
+														</div>
+														{link.description && (
+															<div className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
+																{link.description.slice(0, 60)}
+																{link.description.length > 60 ? '…' : ''}
+															</div>
+														)}
+													</div>
 												</div>
 												<div className="mt-1 text-sm text-slate-500 md:hidden dark:text-slate-400">
 													<div className="mb-1">

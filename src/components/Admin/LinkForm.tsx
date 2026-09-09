@@ -5,28 +5,38 @@ interface FormData {
 	url: string
 	tags: string
 	date: string
+	description: string
+	image: string | null
 }
 
 interface LinkFormProps {
 	formData: FormData
+	imageFile: File | null
+	removeImage: boolean
 	formErrors: string[]
 	formSuccess: string
 	editMode: boolean
 	isSubmitting: boolean
 	onInputChange: (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
 	) => void
+	onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+	onRemoveImageToggle: (checked: boolean) => void
 	onSubmit: (e: React.FormEvent) => void
 	onCancelEdit: () => void
 }
 
 export function LinkForm({
 	formData,
+	imageFile,
+	removeImage,
 	formErrors,
 	formSuccess,
 	editMode,
 	isSubmitting,
 	onInputChange,
+	onImageChange,
+	onRemoveImageToggle,
 	onSubmit,
 	onCancelEdit,
 }: LinkFormProps) {
@@ -170,6 +180,54 @@ export function LinkForm({
 							onChange={onInputChange}
 							required
 							className={inputClass}
+						/>
+					</div>
+					<div className="sm:col-span-2">
+						<label
+							htmlFor="description"
+							className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+							Description <span className="text-slate-400">(optional)</span>
+						</label>
+						<textarea
+							id="description"
+							name="description"
+							value={formData.description}
+							onChange={onInputChange}
+							rows={3}
+							className={inputClass}
+							placeholder="A short blurb shown under the link on the public page"
+						/>
+					</div>
+					<div className="sm:col-span-2">
+						<label
+							htmlFor="image"
+							className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+							Image <span className="text-slate-400">(optional)</span>
+						</label>
+						{formData.image && !imageFile && !removeImage && (
+							<div className="mt-2 flex items-center gap-3">
+								<img
+									src={formData.image}
+									alt=""
+									className="h-16 w-16 rounded-md object-cover"
+								/>
+								<label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+									<input
+										type="checkbox"
+										checked={removeImage}
+										onChange={e => onRemoveImageToggle(e.target.checked)}
+									/>
+									Remove image
+								</label>
+							</div>
+						)}
+						<input
+							type="file"
+							id="image"
+							name="image"
+							accept="image/*"
+							onChange={onImageChange}
+							className={`${inputClass} file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-blue-700 dark:file:bg-blue-400/10 dark:file:text-blue-400`}
 						/>
 					</div>
 				</div>

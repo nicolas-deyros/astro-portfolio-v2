@@ -1,12 +1,14 @@
 import { useState } from 'react'
 
-import type { LinkData } from '../components/Admin/AdminLinksManager'
+import type { LinkData } from '@/types/links'
 
 interface FormData {
 	title: string
 	url: string
 	tags: string
 	date: string
+	description: string
+	image: string | null
 }
 
 const defaultFormData = (): FormData => ({
@@ -14,6 +16,8 @@ const defaultFormData = (): FormData => ({
 	url: '',
 	tags: '',
 	date: new Date().toISOString().split('T')[0],
+	description: '',
+	image: null,
 })
 
 export function useAdminLinks(initialLinks: LinkData[]) {
@@ -22,6 +26,8 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 
 	// Form state
 	const [formData, setFormData] = useState<FormData>(defaultFormData())
+	const [imageFile, setImageFile] = useState<File | null>(null)
+	const [removeImage, setRemoveImage] = useState(false)
 	const [formErrors, setFormErrors] = useState<string[]>([])
 	const [formSuccess, setFormSuccess] = useState<string>('')
 	const [editMode, setEditMode] = useState(false)
@@ -38,10 +44,21 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 	const [showUpdateModal, setShowUpdateModal] = useState(false)
 
 	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
 	) => {
 		const { name, value } = e.target
 		setFormData(prev => ({ ...prev, [name]: value }))
+	}
+
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0] ?? null
+		setImageFile(file)
+		if (file) setRemoveImage(false)
+	}
+
+	const handleRemoveImageToggle = (checked: boolean) => {
+		setRemoveImage(checked)
+		if (checked) setImageFile(null)
 	}
 
 	const handleEditClick = (link: LinkData) => {
@@ -52,7 +69,11 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 			url: link.url,
 			tags: link.tags,
 			date: link.date,
+			description: link.description ?? '',
+			image: link.image ?? null,
 		})
+		setImageFile(null)
+		setRemoveImage(false)
 		window.scrollTo({ top: 0, behavior: 'smooth' })
 	}
 
@@ -60,6 +81,8 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 		setEditMode(false)
 		setEditingLinkId(null)
 		setFormData(defaultFormData())
+		setImageFile(null)
+		setRemoveImage(false)
 		setFormErrors([])
 		setFormSuccess('')
 	}
@@ -93,13 +116,31 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 	const submitLinkData = async (method: 'POST' | 'PUT') => {
 		setIsSubmitting(true)
 		try {
-			const payload =
-				method === 'PUT' ? { id: editingLinkId, ...formData } : formData
-			const response = await fetch('/api/links.json', {
-				method,
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
-			})
+			let response: Response
+
+			if (imageFile || removeImage) {
+				const form = new FormData()
+				if (method === 'PUT' && editingLinkId) {
+					form.append('id', String(editingLinkId))
+				}
+				form.append('title', formData.title)
+				form.append('url', formData.url)
+				form.append('tags', formData.tags)
+				form.append('date', formData.date)
+				form.append('description', formData.description)
+				if (imageFile) form.append('image', imageFile)
+				if (removeImage) form.append('removeImage', 'true')
+
+				response = await fetch('/api/links.json', { method, body: form })
+			} else {
+				const payload =
+					method === 'PUT' ? { id: editingLinkId, ...formData } : formData
+				response = await fetch('/api/links.json', {
+					method,
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				})
+			}
 
 			const result = await response.json()
 
@@ -191,6 +232,8 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 	return {
 		links,
 		formData,
+		imageFile,
+		removeImage,
 		formErrors,
 		formSuccess,
 		editMode,
@@ -201,6 +244,8 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 		showUpdateModal,
 		handlers: {
 			handleInputChange,
+			handleImageChange,
+			handleRemoveImageToggle,
 			handleEditClick,
 			handleSubmit,
 			handleDeleteClick,

@@ -1,3 +1,4 @@
+import { blobAuth } from '@lib/blob'
 import { db } from '@lib/db'
 import {
 	ApplicationError,
@@ -7,6 +8,7 @@ import {
 	ValidationError,
 } from '@lib/errors'
 import { validateSession } from '@lib/session'
+import { put } from '@vercel/blob'
 import type { APIRoute, AstroCookies } from 'astro'
 import { eq } from 'drizzle-orm'
 
@@ -16,6 +18,16 @@ import { links as linksTable } from '@/db/schema'
 async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
 	const sessionInfo = await validateSession(cookies)
 	return sessionInfo !== null
+}
+
+async function uploadLinkImage(file: File): Promise<string> {
+	const blobKey = `links/${Date.now()}-${file.name}`
+	const blob = await put(blobKey, file, {
+		access: 'public',
+		...blobAuth(),
+		addRandomSuffix: true,
+	})
+	return blob.url
 }
 
 export const GET: APIRoute = async ({ cookies }) => {
@@ -40,26 +52,48 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		}
 
 		const contentType = request.headers.get('content-type') ?? ''
-		if (!contentType.includes('application/json')) {
+
+		let title: string, url: string, tags: string, date: string
+		let description: string | null = null
+		let image: string | null = null
+
+		if (contentType.includes('multipart/form-data')) {
+			const form = await request.formData()
+			title = form.get('title') as string
+			url = form.get('url') as string
+			tags = (form.get('tags') as string) ?? ''
+			date = form.get('date') as string
+			description = (form.get('description') as string) || null
+			const file = form.get('image') as File | null
+			if (file && file.size > 0) {
+				image = await uploadLinkImage(file)
+			}
+		} else if (contentType.includes('application/json')) {
+			const body = await request.json()
+			;({ title, url, tags, date, description = null, image = null } = body)
+		} else {
 			throw new ApplicationError(
-				'Content-Type must be application/json',
+				'Content-Type must be application/json or multipart/form-data',
 				415,
 				'UNSUPPORTED_MEDIA_TYPE',
 			)
 		}
 
-		const { title, url, tags, date } = await request.json()
-
 		if (!title || !url || !date) {
 			throw new ValidationError('Title, URL, and date are required')
 		}
 
-		const [result] = await db.insert(linksTable).values({
-			title,
-			url,
-			tags: tags || '',
-			date,
-		}).returning({ id: linksTable.id })
+		const [result] = await db
+			.insert(linksTable)
+			.values({
+				title,
+				url,
+				tags: tags || '',
+				date,
+				description,
+				image,
+			})
+			.returning({ id: linksTable.id })
 
 		return createSuccessResponse({ id: result.id }, 201)
 	} catch (error) {
@@ -75,16 +109,40 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 		}
 
 		const contentType = request.headers.get('content-type') ?? ''
-		if (!contentType.includes('application/json')) {
+
+		let id: string | number,
+			title: string,
+			url: string,
+			tags: string,
+			date: string
+		let description: string | null = null
+		let image: string | null | undefined = undefined
+
+		if (contentType.includes('multipart/form-data')) {
+			const form = await request.formData()
+			id = form.get('id') as string
+			title = form.get('title') as string
+			url = form.get('url') as string
+			tags = (form.get('tags') as string) ?? ''
+			date = form.get('date') as string
+			description = (form.get('description') as string) || null
+			const removeImage = form.get('removeImage') === 'true'
+			const file = form.get('image') as File | null
+			if (file && file.size > 0) {
+				image = await uploadLinkImage(file)
+			} else if (removeImage) {
+				image = null
+			}
+		} else if (contentType.includes('application/json')) {
+			const body = await request.json()
+			;({ id, title, url, tags, date, description = null, image } = body)
+		} else {
 			throw new ApplicationError(
-				'Content-Type must be application/json',
+				'Content-Type must be application/json or multipart/form-data',
 				415,
 				'UNSUPPORTED_MEDIA_TYPE',
 			)
 		}
-
-		const body = await request.json()
-		const { id, title, url, tags, date } = body
 
 		if (!id || !title || !url || !date) {
 			console.error('Missing required fields:', {
@@ -98,15 +156,20 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 
 		const linkId = typeof id === 'string' ? parseInt(id) : id
 
-		await db
-			.update(linksTable)
-			.set({
-				title,
-				url,
-				tags: tags || '',
-				date,
-			})
-			.where(eq(linksTable.id, linkId))
+		const updateValues: Partial<typeof linksTable.$inferInsert> = {
+			title,
+			url,
+			tags: tags || '',
+			date,
+			description,
+		}
+		// Only touch `image` when the caller actually supplied one (new upload,
+		// explicit null from removeImage, or an explicit value in the JSON body).
+		if (image !== undefined) {
+			updateValues.image = image
+		}
+
+		await db.update(linksTable).set(updateValues).where(eq(linksTable.id, linkId))
 
 		return createSuccessResponse({ message: 'Link updated successfully' })
 	} catch (error) {
