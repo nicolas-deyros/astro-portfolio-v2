@@ -138,8 +138,6 @@ src/
 
 test/               # Test suites (Unit, E2E, Performance)
 docs/               # Detailed project documentation
-.gemini/            # Agent "Brain" (Context, Session, Artifacts)
-.agent/             # Agent workflows and skill links
 .agents/            # Agent skill repository
 ```
 
