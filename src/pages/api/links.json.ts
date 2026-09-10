@@ -1,4 +1,5 @@
 import { blobAuth } from '@lib/blob'
+import { deleteBlob } from '@lib/clientFiles'
 import { db } from '@lib/db'
 import {
 	ApplicationError,
@@ -167,6 +168,17 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 		// explicit null from removeImage, or an explicit value in the JSON body).
 		if (image !== undefined) {
 			updateValues.image = image
+
+			// Replacing or clearing the image orphans the old blob unless we
+			// delete it — best-effort, mirrors clientFiles.ts.
+			const [existing] = await db
+				.select({ image: linksTable.image })
+				.from(linksTable)
+				.where(eq(linksTable.id, linkId))
+				.limit(1)
+			if (existing?.image && existing.image !== image) {
+				await deleteBlob(existing.image)
+			}
 		}
 
 		await db.update(linksTable).set(updateValues).where(eq(linksTable.id, linkId))
@@ -196,6 +208,15 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 		if (isNaN(linkId)) {
 			console.error('Invalid ID format:', idParam)
 			throw new ValidationError('Invalid ID format')
+		}
+
+		const [existing] = await db
+			.select({ image: linksTable.image })
+			.from(linksTable)
+			.where(eq(linksTable.id, linkId))
+			.limit(1)
+		if (existing?.image) {
+			await deleteBlob(existing.image)
 		}
 
 		await db.delete(linksTable).where(eq(linksTable.id, linkId))

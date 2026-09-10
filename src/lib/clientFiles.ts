@@ -7,7 +7,7 @@ import { clientNodes } from '@/db/schema'
 
 // Best-effort blob deletion: a storage failure must not orphan DB rows, so we
 // log and continue rather than throw.
-async function deleteBlob(blobKey: string): Promise<void> {
+export async function deleteBlob(blobKey: string): Promise<void> {
 	try {
 		await del(blobKey, blobAuth())
 	} catch (error) {

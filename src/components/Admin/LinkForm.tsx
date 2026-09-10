@@ -22,6 +22,7 @@ interface LinkFormProps {
 	) => void
 	onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 	onRemoveImageToggle: (checked: boolean) => void
+	onClearSelectedImage: () => void
 	onSubmit: (e: React.FormEvent) => void
 	onCancelEdit: () => void
 }
@@ -37,9 +38,17 @@ export function LinkForm({
 	onInputChange,
 	onImageChange,
 	onRemoveImageToggle,
+	onClearSelectedImage,
 	onSubmit,
 	onCancelEdit,
 }: LinkFormProps) {
+	const imageInputRef = React.useRef<HTMLInputElement>(null)
+
+	const handleClearSelectedImage = () => {
+		onClearSelectedImage()
+		if (imageInputRef.current) imageInputRef.current.value = ''
+	}
+
 	const inputClass =
 		'mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400'
 
@@ -221,7 +230,22 @@ export function LinkForm({
 								</label>
 							</div>
 						)}
+						{imageFile && (
+							<div className="mt-2 flex items-center gap-3">
+								<span className="text-sm text-slate-600 dark:text-slate-400">
+									Selected: {imageFile.name}
+								</span>
+								<button
+									type="button"
+									onClick={handleClearSelectedImage}
+									aria-label="Cancel image selection"
+									className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+									✕ Cancel
+								</button>
+							</div>
+						)}
 						<input
+							ref={imageInputRef}
 							type="file"
 							id="image"
 							name="image"

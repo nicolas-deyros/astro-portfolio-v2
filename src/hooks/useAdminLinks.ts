@@ -61,6 +61,10 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 		if (checked) setImageFile(null)
 	}
 
+	const handleClearSelectedImage = () => {
+		setImageFile(null)
+	}
+
 	const handleEditClick = (link: LinkData) => {
 		setEditMode(true)
 		setEditingLinkId(link.id)
@@ -246,6 +250,7 @@ export function useAdminLinks(initialLinks: LinkData[]) {
 			handleInputChange,
 			handleImageChange,
 			handleRemoveImageToggle,
+			handleClearSelectedImage,
 			handleEditClick,
 			handleSubmit,
 			handleDeleteClick,
