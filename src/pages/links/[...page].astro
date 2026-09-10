@@ -178,6 +178,7 @@ const getTagColor = (tag: string) => {
 			</h3>
 
 			<form
+				id="link-search-form"
 				method="GET"
 				action={`${baseUrl}/1`}
 				class="relative order-3 w-full sm:order-2 sm:w-auto sm:max-w-sm sm:flex-1">
@@ -203,6 +204,8 @@ const getTagColor = (tag: string) => {
 					value={searchQuery ?? ''}
 					placeholder="Search by title, tag or description..."
 					aria-label="Search links"
+					autocomplete="off"
+					transition:persist
 					class="w-full rounded-md border border-slate-300 bg-white py-2 pr-9 pl-9 text-sm text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
 				/>
 				{
@@ -387,4 +390,42 @@ const getTagColor = (tag: string) => {
 			}
 		}
 	</style>
+
+	<script>
+		// Auto-submit the search form while the user types, debounced, using
+		// Astro's ClientRouter for a soft (non-reloading) navigation instead of
+		// requiring Enter. Re-attach on every view-transition navigation since
+		// the DOM is swapped, not the module.
+		let lastSubmittedValue: string | null = null
+
+		document.addEventListener('astro:page-load', () => {
+			const form = document.getElementById(
+				'link-search-form',
+			) as HTMLFormElement | null
+			const input = document.getElementById('q') as HTMLInputElement | null
+			if (!form || !input) return
+
+			// `input` has `transition:persist`, so navigations that don't go
+			// through this form (tag chips, "Clear search") keep the old typed
+			// value in the live DOM. Resync it from the URL, the source of truth,
+			// on every navigation.
+			const urlQuery = new URLSearchParams(window.location.search).get('q') ?? ''
+			if (input.value !== urlQuery) input.value = urlQuery
+			lastSubmittedValue = urlQuery
+
+			// Guard against re-attaching a duplicate listener on the persisted node.
+			if (input.dataset.searchBound === 'true') return
+			input.dataset.searchBound = 'true'
+
+			let debounceTimer: ReturnType<typeof setTimeout>
+			input.addEventListener('input', () => {
+				clearTimeout(debounceTimer)
+				debounceTimer = setTimeout(() => {
+					if (input.value === lastSubmittedValue) return
+					lastSubmittedValue = input.value
+					form.requestSubmit()
+				}, 400)
+			})
+		})
+	</script>
 </Layout>
