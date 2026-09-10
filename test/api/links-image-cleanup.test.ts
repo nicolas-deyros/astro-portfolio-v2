@@ -8,8 +8,11 @@ vi.mock('@lib/session', () => ({
 	validateSession: vi.fn().mockResolvedValue({ sessionId: 'test', token: 'test' }),
 }))
 
-const deleteBlob = vi.fn().mockResolvedValue(undefined)
-vi.mock('@lib/clientFiles', () => ({ deleteBlob }))
+const deleteLinkImageBlob = vi.fn().mockResolvedValue(undefined)
+vi.mock('@lib/blob', () => ({
+	blobAuthLinksImages: vi.fn().mockReturnValue({}),
+	deleteLinkImageBlob,
+}))
 
 const { DELETE, PUT } = await import('@/pages/api/links.json')
 
@@ -25,7 +28,7 @@ describe('links.json.ts image cleanup', () => {
 	let testLinkId: number
 
 	beforeEach(async () => {
-		deleteBlob.mockClear()
+		deleteLinkImageBlob.mockClear()
 		const [inserted] = await db
 			.insert(linksTable)
 			.values({
@@ -60,7 +63,7 @@ describe('links.json.ts image cleanup', () => {
 		} as any)
 
 		expect(res.status).toBe(200)
-		expect(deleteBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
+		expect(deleteLinkImageBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
 	})
 
 	it('deletes the old blob when the image is removed via PUT (image: null)', async () => {
@@ -78,7 +81,7 @@ describe('links.json.ts image cleanup', () => {
 		} as any)
 
 		expect(res.status).toBe(200)
-		expect(deleteBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
+		expect(deleteLinkImageBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
 	})
 
 	it('does not call deleteBlob when the image field is untouched', async () => {
@@ -95,7 +98,7 @@ describe('links.json.ts image cleanup', () => {
 		} as any)
 
 		expect(res.status).toBe(200)
-		expect(deleteBlob).not.toHaveBeenCalled()
+		expect(deleteLinkImageBlob).not.toHaveBeenCalled()
 	})
 
 	it('deletes the associated blob when the link is deleted', async () => {
@@ -109,6 +112,6 @@ describe('links.json.ts image cleanup', () => {
 		} as any)
 
 		expect(res.status).toBe(200)
-		expect(deleteBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
+		expect(deleteLinkImageBlob).toHaveBeenCalledWith('https://blob.example.com/old-image.png')
 	})
 })
