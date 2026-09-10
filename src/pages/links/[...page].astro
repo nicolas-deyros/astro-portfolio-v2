@@ -18,9 +18,10 @@ const currentPage = pageParam
 	: 1
 const pageSize = 12
 
-// Get tag filter from URL search params
+// Get tag filter and search query from URL search params
 const url = new URL(Astro.request.url)
 const selectedTag = url.searchParams.get('tag')
+const searchQuery = url.searchParams.get('q')?.trim() || null
 
 // Fetch all links from the database
 const linksData = await db.select().from(links)
@@ -40,7 +41,7 @@ const sortedLinks = liveLinks.sort(
 )
 
 // Apply tag filtering if a tag is selected
-const filteredLinks = selectedTag
+const tagFilteredLinks = selectedTag
 	? sortedLinks.filter((link: LinkData) => {
 			const linkTags = link.tags
 				? Array.isArray(link.tags)
@@ -53,6 +54,23 @@ const filteredLinks = selectedTag
 		})
 	: sortedLinks
 
+// Apply free-text search over title, description and tags
+const filteredLinks = searchQuery
+	? tagFilteredLinks.filter((link: LinkData) => {
+			const q = searchQuery.toLowerCase()
+			const linkTags = link.tags
+				? Array.isArray(link.tags)
+					? link.tags
+					: link.tags.split(',').map((tag: string) => tag.trim())
+				: []
+			return (
+				link.title.toLowerCase().includes(q) ||
+				(link.description?.toLowerCase().includes(q) ?? false) ||
+				linkTags.some((tag: string) => tag.toLowerCase().includes(q))
+			)
+		})
+	: tagFilteredLinks
+
 // Calculate pagination based on filtered results
 const totalLinks = filteredLinks.length
 const totalPages = Math.ceil(totalLinks / pageSize)
@@ -60,9 +78,25 @@ const startIndex = (currentPage - 1) * pageSize
 const endIndex = startIndex + pageSize
 const currentPageLinks = filteredLinks.slice(startIndex, endIndex)
 
-// Generate pagination URLs with tag parameter preserved
+// Generate pagination URLs preserving both tag and search query params
 const baseUrl = '/links'
-const tagParam = selectedTag ? `?tag=${encodeURIComponent(selectedTag)}` : ''
+const activeParams = new URLSearchParams()
+if (selectedTag) activeParams.set('tag', selectedTag)
+if (searchQuery) activeParams.set('q', searchQuery)
+const tagParam = activeParams.toString() ? `?${activeParams.toString()}` : ''
+// Params preserving only the tag (used when building per-tag links, which drop the current search)
+const tagOnlyParams = (tag: string) => {
+	const p = new URLSearchParams()
+	p.set('tag', tag)
+	if (searchQuery) p.set('q', searchQuery)
+	return `?${p.toString()}`
+}
+const clearTagUrl = searchQuery
+	? `/links/1?q=${encodeURIComponent(searchQuery)}`
+	: '/links/1'
+const clearSearchUrl = selectedTag
+	? `/links/1?tag=${encodeURIComponent(selectedTag)}`
+	: '/links/1'
 const prevPage = currentPage > 1 ? currentPage - 1 : null
 const nextPage = currentPage < totalPages ? currentPage + 1 : null
 
@@ -128,18 +162,20 @@ const getTagColor = (tag: string) => {
 		/>
 	</Fragment>
 	<Section ariaLabel="Latest Social Links">
-		<div
-			class="mb-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
+		<div class="mb-4 flex items-center justify-between gap-3">
 			<h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">
 				Latest Social Links
 				{
-					selectedTag && (
+					(selectedTag || searchQuery) && (
 						<span class="text-base font-normal text-slate-600 dark:text-slate-400">
-							- filtered by "{selectedTag}"
+							{selectedTag && ` - filtered by "${selectedTag}"`}
+							{selectedTag && searchQuery && ','}
+							{searchQuery && ` - search "${searchQuery}"`}
 						</span>
 					)
 				}
 			</h3>
+
 			<a
 				href="/rss-links.xml"
 				class="inline-flex items-center gap-1.5 rounded-md bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-100 dark:bg-orange-400/10 dark:text-orange-400 dark:hover:bg-orange-400/20"
@@ -164,6 +200,63 @@ const getTagColor = (tag: string) => {
 
 		<!-- Mobile Filter Section (visible on mobile only) -->
 		<aside class="mb-6 w-full lg:hidden">
+			<form
+				id="link-search-form-mobile"
+				method="GET"
+				action={`${baseUrl}/1`}
+				class="relative mb-4 w-full">
+				{selectedTag && <input type="hidden" name="tag" value={selectedTag} />}
+				<label for="q-mobile" class="sr-only">Search links</label>
+				<svg
+					class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					aria-hidden="true">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M21 21l-4.35-4.35M17 10.5A6.5 6.5 0 1 1 4 10.5a6.5 6.5 0 0 1 13 0z">
+					</path>
+				</svg>
+				<input
+					type="text"
+					enterkeyhint="search"
+					id="q-mobile"
+					name="q"
+					value={searchQuery ?? ''}
+					placeholder="Search by title, tag or description..."
+					aria-label="Search links"
+					autocomplete="off"
+					transition:persist="search-mobile"
+					class="link-search-input w-full rounded-md border border-slate-300 bg-white py-2 pr-9 pl-9 text-sm text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+				/>
+				{
+					searchQuery && (
+						<a
+							href={clearSearchUrl}
+							aria-label="Clear search"
+							title="Clear search"
+							class="absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+							<svg
+								class="h-4 w-4"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								aria-hidden="true">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M6 18L18 6M6 6l12 12"
+								/>
+							</svg>
+						</a>
+					)
+				}
+				<button type="submit" class="sr-only">Search</button>
+			</form>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<span class="text-sm font-medium text-slate-700 dark:text-slate-300">
 					Filter by tag:
@@ -171,7 +264,7 @@ const getTagColor = (tag: string) => {
 				{
 					selectedTag && (
 						<a
-							href="/links/1"
+							href={clearTagUrl}
 							class="rounded-md bg-red-100 px-3 py-1 text-xs font-medium text-red-800 transition-colors hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
 							Clear Filter
 						</a>
@@ -182,7 +275,7 @@ const getTagColor = (tag: string) => {
 				{
 					allTags.map((tag: string) => (
 						<a
-							href={`/links/1?tag=${encodeURIComponent(tag)}`}
+							href={`/links/1${tagOnlyParams(tag)}`}
 							class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag as string)} ${
 								selectedTag === tag ? 'ring-2 ring-blue-500 ring-offset-2' : ''
 							}`}>
@@ -209,9 +302,19 @@ const getTagColor = (tag: string) => {
 
 				<!-- No results message -->
 				{
-					page.data.length === 0 && selectedTag && (
+					page.data.length === 0 && (selectedTag || searchQuery) && (
 						<div class="mt-8 text-center text-gray-500 dark:text-gray-400">
-							<p>No links found for the tag "{selectedTag}".</p>
+							<p>
+								{searchQuery &&
+									selectedTag &&
+									`No links found matching "${searchQuery}" with the tag "${selectedTag}".`}
+								{searchQuery &&
+									!selectedTag &&
+									`No links found matching "${searchQuery}".`}
+								{!searchQuery &&
+									selectedTag &&
+									`No links found for the tag "${selectedTag}".`}
+							</p>
 							<a
 								href="/links/1"
 								class="mt-2 inline-block text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
@@ -236,6 +339,68 @@ const getTagColor = (tag: string) => {
 			<aside class="hidden w-64 flex-shrink-0 lg:block">
 				<div
 					class="sticky top-6 rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800/50">
+					<form
+						id="link-search-form-desktop"
+						method="GET"
+						action={`${baseUrl}/1`}
+						class="relative mb-4 w-full">
+						{
+							selectedTag && (
+								<input type="hidden" name="tag" value={selectedTag} />
+							)
+						}
+						<label for="q-desktop" class="sr-only">Search links</label>
+						<svg
+							class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-4.35-4.35M17 10.5A6.5 6.5 0 1 1 4 10.5a6.5 6.5 0 0 1 13 0z">
+							</path>
+						</svg>
+						<input
+							type="text"
+							enterkeyhint="search"
+							id="q-desktop"
+							name="q"
+							value={searchQuery ?? ''}
+							placeholder="Search by title, tag or description..."
+							aria-label="Search links"
+							autocomplete="off"
+							transition:persist="search-desktop"
+							class="link-search-input w-full rounded-md border border-slate-300 bg-white py-2 pr-9 pl-9 text-sm text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+						/>
+						{
+							searchQuery && (
+								<a
+									href={clearSearchUrl}
+									aria-label="Clear search"
+									title="Clear search"
+									class="absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+									<svg
+										class="h-4 w-4"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										aria-hidden="true">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"
+										/>
+									</svg>
+								</a>
+							)
+						}
+						<button type="submit" class="sr-only">Search</button>
+					</form>
+
 					<div class="mb-4 flex items-center justify-between">
 						<h4
 							class="text-sm font-semibold text-slate-900 dark:text-slate-100">
@@ -244,7 +409,7 @@ const getTagColor = (tag: string) => {
 						{
 							selectedTag && (
 								<a
-									href="/links/1"
+									href={clearTagUrl}
 									class="rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-800 transition-colors hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
 									Clear
 								</a>
@@ -256,7 +421,7 @@ const getTagColor = (tag: string) => {
 						{
 							allTags.map((tag: string) => (
 								<a
-									href={`/links/1?tag=${encodeURIComponent(tag)}`}
+									href={`/links/1${tagOnlyParams(tag)}`}
 									class={`tag-filter inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 transition-colors ring-inset hover:opacity-80 ${getTagColor(tag as string)} ${
 										selectedTag === tag
 											? 'ring-2 ring-blue-500 ring-offset-2'
@@ -289,4 +454,50 @@ const getTagColor = (tag: string) => {
 			}
 		}
 	</style>
+
+	<script>
+		// Auto-submit the search form while the user types, debounced, using
+		// Astro's ClientRouter for a soft (non-reloading) navigation instead of
+		// requiring Enter. There are two search inputs in the DOM (mobile +
+		// desktop sidebar, only one visible at a time via CSS). This inline
+		// script only ever runs once (Astro skips re-running already-executed
+		// scripts after a soft navigation), so it must not cache elements in a
+		// closure — look them up fresh and delegate to `document` instead of
+		// binding to a specific node.
+		const debounceTimers = new WeakMap<
+			HTMLInputElement,
+			ReturnType<typeof setTimeout>
+		>()
+
+		document.addEventListener('astro:page-load', () => {
+			const urlQuery =
+				new URLSearchParams(window.location.search).get('q') ?? ''
+			document
+				.querySelectorAll<HTMLInputElement>('.link-search-input')
+				.forEach(input => {
+					// Each input has `transition:persist`, so navigations that
+					// don't go through its form (tag chips, "Clear search") keep
+					// the old typed value in the live DOM. Resync from the URL,
+					// the source of truth, on every navigation.
+					if (input.value !== urlQuery) input.value = urlQuery
+					input.dataset.lastSubmitted = urlQuery
+				})
+		})
+
+		document.addEventListener('input', event => {
+			const input = event.target
+			if (!(input instanceof HTMLInputElement)) return
+			if (!input.classList.contains('link-search-input')) return
+
+			clearTimeout(debounceTimers.get(input))
+			debounceTimers.set(
+				input,
+				setTimeout(() => {
+					if (input.value === input.dataset.lastSubmitted) return
+					input.dataset.lastSubmitted = input.value
+					input.closest('form')?.requestSubmit()
+				}, 400),
+			)
+		})
+	</script>
 </Layout>

@@ -106,6 +106,7 @@ export default function AdminLinksManager({
 				onInputChange={handlers.handleInputChange}
 				onImageChange={handlers.handleImageChange}
 				onRemoveImageToggle={handlers.handleRemoveImageToggle}
+				onClearSelectedImage={handlers.handleClearSelectedImage}
 				onSubmit={handlers.handleSubmit}
 				onCancelEdit={handlers.resetForm}
 			/>

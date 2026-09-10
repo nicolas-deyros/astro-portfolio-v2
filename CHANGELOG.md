@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2026-09-10
+
+### ✨ Added
+
+- **Free-text search on `/links`** — matches title, tags, and description, server-side (SQL-free, in-memory over the already-fetched links), combinable with the existing tag filter and pagination. Debounced (~400ms) auto-submit via Astro's `ClientRouter` so results update while typing without a hard page reload; no new client-side dependencies.
+- **`.env.example`** — documents every environment variable this project reads (Turso, Resend, admin auth, Vercel Blob); didn't exist before.
+
+### 🐛 Fixed
+
+- **Orphaned Vercel Blob images** — replacing, removing, or deleting a link's image never deleted the old blob from storage. `src/pages/api/links.json.ts` now calls the existing `deleteBlob()` helper (already used by the client-files feature) on replace/remove/delete.
+- **No way to cancel a newly-selected image** in the admin link form before submitting — added a "Cancel" control that clears the pending file selection.
+- **Search input showed two clear ("x") buttons** — the browser's native `type="search"` cancel button rendered alongside our own. Switched to `type="text"` with `enterkeyhint="search"` for the mobile keyboard, which also sidesteps a Lightning CSS quirk that silently drops `::-webkit-search-cancel-button` rules in this project's Tailwind v4 pipeline.
+- **Debounced search stopped auto-submitting after the first result** — the `input` listener was bound once to a DOM node reference captured at script-execution time, which went stale after Astro's `ClientRouter` swapped the page. Delegated the listener to `document` instead.
+- **Deleting the search query didn't clear results** — same root cause as above.
+- **Admin login "Invalid credentials"** — not a code bug: the local dev server had `API_SECRET_KEY` cached in memory from before `vercel env pull` refreshed `.env.local` with the real secret. Astro/Vite doesn't hot-reload env vars; restarting `npm run dev` picks up the new value. No code change, documented here so it isn't mistaken for a regression later.
+
+### 🎨 Changed
+
+- **Search bar repositioned** — moved out of the `/links` title row and into the tag-filter sections (mobile filter block, desktop sidebar above "Filter by tag"), per design feedback.
+- Version bump `4.1.0` → `4.2.0` (minor: new user-facing search feature).
+
 ## [Unreleased] - 2026-08-10
 
 ### 🚀 Astro 7.2 Upgrade
