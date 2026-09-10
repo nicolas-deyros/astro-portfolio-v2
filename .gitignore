@@ -53,3 +53,4 @@ graphify-out/
 .design-scratch/
 
 local.db
+.env*

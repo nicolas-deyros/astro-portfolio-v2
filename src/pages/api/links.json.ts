@@ -1,5 +1,4 @@
-import { blobAuth } from '@lib/blob'
-import { deleteBlob } from '@lib/clientFiles'
+import { blobAuthLinksImages, deleteLinkImageBlob } from '@lib/blob'
 import { db } from '@lib/db'
 import {
 	ApplicationError,
@@ -25,7 +24,7 @@ async function uploadLinkImage(file: File): Promise<string> {
 	const blobKey = `links/${Date.now()}-${file.name}`
 	const blob = await put(blobKey, file, {
 		access: 'public',
-		...blobAuth(),
+		...blobAuthLinksImages(),
 		addRandomSuffix: true,
 	})
 	return blob.url
@@ -177,7 +176,7 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 				.where(eq(linksTable.id, linkId))
 				.limit(1)
 			if (existing?.image && existing.image !== image) {
-				await deleteBlob(existing.image)
+				await deleteLinkImageBlob(existing.image)
 			}
 		}
 
@@ -216,7 +215,7 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 			.where(eq(linksTable.id, linkId))
 			.limit(1)
 		if (existing?.image) {
-			await deleteBlob(existing.image)
+			await deleteLinkImageBlob(existing.image)
 		}
 
 		await db.delete(linksTable).where(eq(linksTable.id, linkId))
