@@ -16,7 +16,7 @@ This portfolio showcases modern web development practices with a focus on perfor
 - **🌙 Smart Theme System** - Automatic dark/light mode with system preference detection
 - **📝 Advanced Blog System** - MDX support with audio integration and robust Chrome AI features
 - **🤖 Stable On-Device AI** - Summarization and translation powered by Chrome's built-in AI with comprehensive error handling
-- **🔗 Smart Links Management** - Server-side tag filtering and free-text search with bookmarkable URLs
+- **🔗 Smart Links Management** - Server-side tag filtering and free-text search with bookmarkable URLs, auto UTM-tagged outbound clicks
 - **🔐 Enterprise Admin Panel** - Secure authentication with session management
 - **🚀 Performance Optimized** - 91.3/100 Lighthouse score with Core Web Vitals optimization
 - **🧪 Comprehensive Testing** - Automated performance, SEO, accessibility, and AI stability testing

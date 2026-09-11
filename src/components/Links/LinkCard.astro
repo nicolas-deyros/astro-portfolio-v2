@@ -1,4 +1,6 @@
 ---
+import { withUtm } from '@lib/utm'
+
 import type { LinkData } from '@/types/links'
 
 interface Props {
@@ -14,6 +16,8 @@ const tags = link.tags
 		? link.tags
 		: link.tags.split(',').map((tag: string) => tag.trim())
 	: []
+
+const trackedUrl = withUtm(link.url, tags[0])
 
 const hostname = (() => {
 	try {
@@ -78,9 +82,9 @@ const faviconUrl = hostname
 	<div>
 		<h4 class="text-base font-bold text-slate-900 md:text-lg dark:text-slate-100">
 			<a
-				href={link.url}
+				href={trackedUrl}
 				target="_blank"
-				rel="noopener noreferrer"
+				rel="noopener"
 				class="transition-colors hover:text-blue-600 hover:underline dark:hover:text-blue-400">
 				{link.title}
 			</a>
@@ -109,9 +113,9 @@ const faviconUrl = hostname
 
 	<footer class="flex items-center justify-between">
 		<a
-			href={link.url}
+			href={trackedUrl}
 			target="_blank"
-			rel="noopener noreferrer"
+			rel="noopener"
 			class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400">
 			Visit link →
 		</a>

@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss'
 import { db } from '@lib/db'
+import { withUtm } from '@lib/utm'
 import type { APIRoute } from 'astro'
 
 import { links as linksTable } from '@/db/schema'
@@ -29,9 +30,11 @@ export const GET: APIRoute = async context => {
 				? link.tags.split(',').map((tag: string) => tag.trim())
 				: []
 
+			const trackedUrl = withUtm(link.url, tagArray[0])
+
 			// Create description with tags and original URL
 			const description = `
-				<p>Link: <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.url}</a></p>
+				<p>Link: <a href="${trackedUrl}" target="_blank" rel="noopener">${link.url}</a></p>
 				${tagArray.length > 0 ? `<p>Tags: ${tagArray.join(', ')}</p>` : ''}
 			`.trim()
 
@@ -39,7 +42,7 @@ export const GET: APIRoute = async context => {
 				title: link.title,
 				pubDate: new Date(link.date),
 				description: description,
-				link: link.url, // The actual link URL
+				link: trackedUrl, // The actual link URL
 				guid: `${context.site}links/${link.id}`, // Unique identifier
 				categories: tagArray, // RSS categories from tags
 			}

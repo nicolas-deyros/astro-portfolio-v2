@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] - 2026-09-11
+
+### ✨ Added
+
+- **UTM auto-tagging on `/links` outbound clicks** — `src/lib/utm.ts` appends `utm_source=ndeyros.dev&utm_medium=referral&utm_campaign=links_directory&utm_content=<primary-tag>` to every external link's `href` at render time (`LinkCard.astro`, `rss-links.xml.ts`). Computed on read, not stored, so it applies retroactively to every existing link with no migration. Internal `ndeyros.dev` links are left untouched.
+
+### 🎨 Changed
+
+- **`rel="noopener noreferrer"` → `rel="noopener"`** on outbound link anchors — `noreferrer` was stripping the `Referer` header, hiding traffic from destination analytics even with UTM params present. `target="_blank"` still gets `noopener` for tab-hijack protection.
+- Version bump `4.2.0` → `4.3.0` (minor: new outbound-tracking behavior).
+
+> Manual follow-up (not code): enable GA4 **Admin > Data Streams > Web Stream Details > Enhanced measurement > Outbound clicks** to capture these in reports.
+
 ## [4.2.0] - 2026-09-10
 
 ### ✨ Added
