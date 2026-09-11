@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.1] - 2026-09-11
+
+### 🐛 Fixed
+
+- **UTM tagging missed the home page** — `src/components/Home/TopLinks.astro` (the "Latest Social Links" section) rendered raw `link.url` with no `rel` attribute at all on its `target="_blank"` anchors. Now uses the same `withUtm()` util as `/links` and the RSS feed, plus `rel="noopener"`. `Link.astro`'s `rel` prop type widened to accept `'noopener'`.
+- Version bump `4.3.0` → `4.3.1` (patch: closes gap in the previous UTM-tagging change).
+
 ## [4.3.0] - 2026-09-11
 
 ### ✨ Added
