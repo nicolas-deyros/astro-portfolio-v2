@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { DescriptionEditor } from './DescriptionEditor'
+
 interface FormData {
 	title: string
 	url: string
@@ -197,14 +199,13 @@ export function LinkForm({
 							className="block text-sm font-medium text-slate-700 dark:text-slate-300">
 							Description <span className="text-slate-400">(optional)</span>
 						</label>
-						<textarea
-							id="description"
-							name="description"
+						<DescriptionEditor
 							value={formData.description}
-							onChange={onInputChange}
-							rows={3}
-							className={inputClass}
-							placeholder="A short blurb shown under the link on the public page"
+							onChange={html =>
+								onInputChange({
+									target: { name: 'description', value: html },
+								} as React.ChangeEvent<HTMLTextAreaElement>)
+							}
 						/>
 					</div>
 					<div className="sm:col-span-2">

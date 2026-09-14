@@ -91,9 +91,10 @@ const faviconUrl = hostname
 		</h4>
 		{
 			link.description && (
-				<p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
-					{link.description}
-				</p>
+				<p
+					class="mt-1 text-sm text-slate-600 dark:text-slate-300 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5"
+					set:html={link.description}
+				/>
 			)
 		}
 	</div>

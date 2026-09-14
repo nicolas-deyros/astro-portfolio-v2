@@ -11,8 +11,17 @@ import { validateSession } from '@lib/session'
 import { put } from '@vercel/blob'
 import type { APIRoute, AstroCookies } from 'astro'
 import { eq } from 'drizzle-orm'
+import sanitizeHtml from 'sanitize-html'
 
 import { links as linksTable } from '@/db/schema'
+
+const sanitizeDescription = (description: string | null): string | null =>
+	description
+		? sanitizeHtml(description, {
+				allowedTags: ['b', 'strong', 'i', 'em', 'a', 'ul', 'ol', 'li', 'p', 'br'],
+				allowedAttributes: { a: ['href', 'rel', 'target'] },
+			})
+		: description
 
 // Centralized authentication check using the new session utility
 async function verifyAuth(cookies: AstroCookies): Promise<boolean> {
@@ -90,7 +99,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				url,
 				tags: tags || '',
 				date,
-				description,
+				description: sanitizeDescription(description),
 				image,
 			})
 			.returning({ id: linksTable.id })
@@ -161,7 +170,7 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
 			url,
 			tags: tags || '',
 			date,
-			description,
+			description: sanitizeDescription(description),
 		}
 		// Only touch `image` when the caller actually supplied one (new upload,
 		// explicit null from removeImage, or an explicit value in the JSON body).
