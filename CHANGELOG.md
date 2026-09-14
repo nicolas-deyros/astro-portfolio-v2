@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.0] - 2026-09-14
+
+### ✨ Added
+
+- **WYSIWYG editor for link descriptions** — admin "Add/Edit Link" form now uses Tiptap (bold/italic/link/bullet list) instead of a plain textarea. Description is stored as HTML, sanitized server-side (`sanitize-html`, same allow-list pattern as `rss.xml.ts`) before persisting, and rendered as formatted HTML on `/links` and the home Top Links section (`LinkCard.astro`).
+
 ## [4.3.1] - 2026-09-11
 
 ### 🐛 Fixed
