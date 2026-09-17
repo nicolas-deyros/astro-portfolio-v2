@@ -154,7 +154,10 @@
 	},
 	"overrides": {
 		"vite": "^7.3.2",
-		"neotraverse": "^1.0.1"
+		"neotraverse": "^1.0.1",
+		"sanitize-html": {
+			"htmlparser2": "^10.1.0"
+		}
 	},
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx,astro}": [
