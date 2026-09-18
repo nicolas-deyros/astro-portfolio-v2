@@ -143,7 +143,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 
 - **Input Sanitization**: All user inputs sanitized and validated
 - **CSRF Protection**: Cross-site request forgery protection
-- **Rate Limiting**: API rate limiting to prevent abuse
+- **Login Rate Limiting**: Admin and client login endpoints are throttled — 5 failed attempts per 15 minutes, tracked in the `LoginAttempts` table, keyed per IP (admin) or per IP+email (client), cleared on success
 - **Audit Logging**: All admin actions logged for security
 
 ## 🚀 Performance Features
