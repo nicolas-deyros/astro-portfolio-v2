@@ -227,7 +227,7 @@ CREATE INDEX idx_links_date ON Links(date);
 - **Input Validation**: Comprehensive input sanitization
 - **Output Encoding**: XSS prevention through proper encoding
 - **CSRF Protection**: Cross-site request forgery protection
-- **Rate Limiting**: API rate limiting to prevent abuse
+- **Rate Limiting**: Login endpoints (`/api/auth.json`, `/api/client/auth.json`) are rate-limited via `src/lib/rateLimit.ts` — a DB-backed (`LoginAttempts` table) fixed-window counter, 5 failed attempts per 15 minutes, keyed `admin:<ip>` / `client:<ip>:<email>`, cleared on success
 
 #### Authentication Security
 

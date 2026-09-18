@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.1] - 2026-09-18
+
+### 🔒 Security
+
+- **Login rate limiting** — both `/api/auth.json` (admin) and `/api/client/auth.json` (client) login endpoints had no throttling: unlimited brute-force attempts against the admin secret key, and unlimited requests forcing a full PBKDF2 (100k iterations) computation on the client endpoint. Added `src/lib/rateLimit.ts`, a DB-backed (new `LoginAttempts` table, migration `drizzle/0003_add_login_attempts.sql`) fixed-window counter — 5 failed attempts per 15 minutes, keyed `admin:<ip>` / `client:<ip>:<email>`, checked before the credential comparison and cleared on success. Closes ISSUE-21.
+
 ## [4.4.0] - 2026-09-14
 
 ### ✨ Added
