@@ -82,3 +82,14 @@ export const clientNodes = sqliteTable('ClientNodes', {
 	pageSlug: text('pageSlug'),
 	createdAt: text('createdAt').notNull(),
 })
+
+// --- Login rate limiting ---
+
+// Fixed-window failed-login counter, keyed per endpoint (e.g. `admin:<ip>` or
+// `client:<ip>:<email>`). Cleared on a successful login; a new window starts
+// once `windowStart` is older than the endpoint's configured window.
+export const loginAttempts = sqliteTable('LoginAttempts', {
+	key: text('key').primaryKey(),
+	count: integer('count').notNull().default(0),
+	windowStart: text('windowStart').notNull(),
+})

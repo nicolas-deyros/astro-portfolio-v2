@@ -109,6 +109,13 @@ if (!import.meta.env.TURSO_DATABASE_URL) {
 			createdAt TEXT NOT NULL
 		)`,
 	)
+	await client.execute(
+		`CREATE TABLE IF NOT EXISTS LoginAttempts (
+			key TEXT PRIMARY KEY,
+			count INTEGER NOT NULL DEFAULT 0,
+			windowStart TEXT NOT NULL
+		)`,
+	)
 	// Seed a few links if the table is empty (dev/test convenience)
 	const existing = await client.execute('SELECT COUNT(*) as count FROM Links')
 	if ((existing.rows[0]?.count as number) === 0) {

@@ -6,6 +6,7 @@ import {
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { checkRateLimit, clearRateLimit, recordFailedAttempt } from '@lib/rateLimit'
 import {
 	cleanExpiredSessions,
 	createDeviceFingerprint,
@@ -41,14 +42,25 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		switch (action) {
 			case 'login': {
+				// Get client information
+				const clientInfo = createDeviceFingerprint(request)
+				const rateLimitKey = `admin:${clientInfo.ip}`
+
+				if (!(await checkRateLimit(rateLimitKey))) {
+					throw new ApplicationError(
+						'Too many attempts. Please try again later.',
+						429,
+						'RATE_LIMITED',
+					)
+				}
+
 				const validSecretKey =
 					process.env.API_SECRET_KEY || import.meta.env.API_SECRET_KEY
 				if (secretKey !== validSecretKey) {
+					await recordFailedAttempt(rateLimitKey)
 					throw new UnauthorizedError('Invalid credentials')
 				}
-
-				// Get client information
-				const clientInfo = createDeviceFingerprint(request)
+				await clearRateLimit(rateLimitKey)
 
 				// Generate session with cryptographically secure tokens
 				const sessionId = generateSecureSessionId()

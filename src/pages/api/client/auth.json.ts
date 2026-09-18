@@ -2,6 +2,7 @@ import { verifyPassword } from '@lib/clientAuth'
 import {
 	cleanExpiredClientSessions,
 	createClientSession,
+	createDeviceFingerprint,
 	destroyClientSession,
 	validateClientSession,
 } from '@lib/clientSession'
@@ -13,6 +14,7 @@ import {
 	UnauthorizedError,
 	ValidationError,
 } from '@lib/errors'
+import { checkRateLimit, clearRateLimit, recordFailedAttempt } from '@lib/rateLimit'
 import type { APIRoute } from 'astro'
 import { eq } from 'drizzle-orm'
 
@@ -44,20 +46,35 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 					throw new ValidationError('Email and password are required')
 				}
 
+				const normalizedEmail = email.toLowerCase().trim()
+				const { ip } = createDeviceFingerprint(request)
+				const rateLimitKey = `client:${ip}:${normalizedEmail}`
+
+				if (!(await checkRateLimit(rateLimitKey))) {
+					throw new ApplicationError(
+						'Too many attempts. Please try again later.',
+						429,
+						'RATE_LIMITED',
+					)
+				}
+
 				const [client] = await db
 					.select()
 					.from(clients)
-					.where(eq(clients.email, email.toLowerCase().trim()))
+					.where(eq(clients.email, normalizedEmail))
 					.limit(1)
 
 				if (!client || !client.isActive) {
+					await recordFailedAttempt(rateLimitKey)
 					throw new UnauthorizedError('Invalid credentials')
 				}
 
 				const valid = await verifyPassword(password, client.passwordHash)
 				if (!valid) {
+					await recordFailedAttempt(rateLimitKey)
 					throw new UnauthorizedError('Invalid credentials')
 				}
+				await clearRateLimit(rateLimitKey)
 
 				await createClientSession(client.id, cookies, request)
 

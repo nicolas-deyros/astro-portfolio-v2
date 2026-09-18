@@ -218,14 +218,14 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 | **Fix**     | Re-throw after updating state, or return a Result type.                                                                                                   |
 | **Effort**  | Low (30 minutes)                                                                                                                                          |
 
-### ISSUE-21: No Auth Rate Limiting
+### ~~ISSUE-21: No Auth Rate Limiting~~ (FIXED)
 
-|             |                                                                                               |
-| ----------- | --------------------------------------------------------------------------------------------- |
-| **File**    | `src/pages/api/auth.json.ts` (login case)                                                     |
-| **Problem** | No rate limiting, no lockout, no delay on failed login attempts. Enables brute-force attacks. |
-| **Fix**     | Add in-memory rate limiter (e.g., failed attempts counter per IP with exponential backoff).   |
-| **Effort**  | Medium (2-3 hours)                                                                            |
+|             |                                                                                                                                                                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **File**    | `src/pages/api/auth.json.ts` (login case), `src/pages/api/client/auth.json.ts` (login case)                                                                                                                                    |
+| **Problem** | No rate limiting, no lockout, no delay on failed login attempts on either the admin or client login endpoint. Enabled brute-force attacks; the client endpoint additionally let an attacker trigger unbounded PBKDF2 compute. |
+| **Fix**     | `src/lib/rateLimit.ts` — DB-backed (Turso/Drizzle) fixed-window counter, keyed `admin:<ip>` / `client:<ip>:<email>`, 5 attempts per 15 minutes. Checked before the credential comparison, cleared on success. New `LoginAttempts` table (migration `drizzle/0003_add_login_attempts.sql`).                                                                                                          |
+| **Effort**  | Medium (2-3 hours) — actual                                                                                                                                                                                                     |
 
 ---
 

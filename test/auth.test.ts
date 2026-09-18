@@ -382,6 +382,53 @@ describe('Enhanced Authentication System', () => {
 		})
 	})
 
+	describe('Login Rate Limiting', () => {
+		// The rate limit is keyed per source IP (see src/lib/rateLimit.ts). This
+		// test environment sends no x-forwarded-for/x-real-ip header, so every
+		// request in this file resolves to the same 'unknown' IP and therefore
+		// shares one counter with the tests around it. Clear it via the library
+		// directly (same local.db the dev server reads) before and after so this
+		// block neither inherits nor leaves behind lockout state.
+		const RATE_LIMIT_KEY = 'admin:unknown'
+
+		beforeAll(async () => {
+			const { clearRateLimit } = await import('@lib/rateLimit')
+			await clearRateLimit(RATE_LIMIT_KEY)
+		})
+
+		afterAll(async () => {
+			const { clearRateLimit } = await import('@lib/rateLimit')
+			await clearRateLimit(RATE_LIMIT_KEY)
+		})
+
+		it('locks out after 5 failed attempts and reports 429', async () => {
+			const attempt = (): Promise<{ status: number; data: any }> =>
+				page.evaluate(async url => {
+					const res = await fetch(url, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							action: 'login',
+							secretKey: 'wrong-secret-key',
+						}),
+					})
+					return { status: res.status, data: await res.json() }
+				}, authApiUrl)
+
+			let last
+			for (let i = 0; i < 5; i++) {
+				last = await attempt()
+				expect(last.status).toBe(401)
+			}
+
+			// The 6th attempt within the window should be rate-limited, not
+			// re-evaluated against the secret key.
+			const blocked = await attempt()
+			expect(blocked.status).toBe(429)
+			expect(blocked.data.error?.code).toBe('RATE_LIMITED')
+		})
+	})
+
 	describe('Cross-Device Security', () => {
 		it('should prevent session hijacking across devices', async () => {
 			// This test ensures the original vulnerability is fixed

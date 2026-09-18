@@ -10,7 +10,7 @@
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS 4.3.x (via Vite plugin)
 - **UI:** React 19 (islands)
-- **Database:** Drizzle ORM + Turso (LibSQL) — 6 tables: `FormSubmissions`, `Links`, `AdminSessions`, `Clients`, `ClientSessions`, `ClientNodes`
+- **Database:** Drizzle ORM + Turso (LibSQL) — 7 tables: `FormSubmissions`, `Links`, `AdminSessions`, `Clients`, `ClientSessions`, `ClientNodes`, `LoginAttempts`
 - **File Storage:** Vercel Blob — private client files with signed download URLs
 - **Content:** MDX with Content Collections + Zod validation
 - **Testing:** Vitest, Puppeteer/Playwright
@@ -273,7 +273,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 - **Errors swallowed** — `actions/index.ts` catches and returns `{success: false}` hiding error type from callers.
 - **Middleware unprotected** — `middleware.ts` has zero try-catch. DB failure crashes with unhandled exception.
 - **Inconsistent API error formats** — 3 different error response shapes across endpoints.
-- **No auth rate limiting** — `auth.json.ts` login endpoint allows unlimited brute-force attempts.
+- ~~**No auth rate limiting**~~ — Addressed: `src/lib/rateLimit.ts` (DB-backed `LoginAttempts` table, 5 attempts/15 min) gates both `auth.json.ts` and `client/auth.json.ts` login cases (ISSUE-21).
 
 ### API Design Violations
 
