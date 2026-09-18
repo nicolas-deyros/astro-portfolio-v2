@@ -1,6 +1,6 @@
 # Security Hardening Plan
 
-> Status: **planned, not started.** Created after a security audit of the client portal + admin system (June 2026).
+> Status: **Item 1 partially done** (login rate limiting shipped 2026-09-18, PR #93; forgot-password rate limiting still open — see Item 1b). Item 4's Content-Type sub-item already done independently. Items 2 and 3 not started. Created after a security audit of the client portal + admin system (June 2026).
 > Each item is independent — do them on separate branches/PRs in the recommended order.
 > This doc is self-contained: a fresh session should be able to execute any item without re-deriving context.
 
@@ -20,55 +20,69 @@
 
 **Reusable infra:**
 
-- Error helpers: `src/lib/errors.ts` → `ApplicationError`, `UnauthorizedError`, `ValidationError`, `createErrorResponse`, `createSuccessResponse`. Use these for consistent JSON responses (and a 429 will need a new `TooManyRequestsError` — see item 1).
+- Error helpers: `src/lib/errors.ts` → `ApplicationError`, `UnauthorizedError`, `ValidationError`, `createErrorResponse`, `createSuccessResponse`. Use these for consistent JSON responses — a 429 doesn't need a new error class, `new ApplicationError(message, 429, 'RATE_LIMITED')` is enough (this is what Item 1 actually did; the class was never added).
 - DB client: `src/lib/db.ts` (`db`). Local dev auto-creates tables when `TURSO_DATABASE_URL` is unset (uses `file:local.db`); prod uses Turso via `TURSO_DATABASE_URL`.
 - **Migration pattern (IMPORTANT — three places must stay in sync):** when adding a table/column,
   1. add it to `src/db/schema.ts`,
   2. add idempotent `CREATE TABLE IF NOT EXISTS` / `ALTER TABLE` to the local-dev block in `src/lib/db.ts`,
-  3. add it to `tools/migrate-client-tables.mjs` (the script that migrates **prod** Turso — reads `ASTRO_DB_REMOTE_URL`/`ASTRO_DB_APP_TOKEN` from `.env.local`),
-  4. optionally `npm run db:generate` for a Drizzle migration file (note: drizzle.config wants `TURSO_*` env names, but `.env.local` uses `ASTRO_DB_*` — map them, or rely on the migrate script which is the established path).
+  3. `npm run db:generate` (needs `TURSO_DATABASE_URL` set to anything, e.g. `file:local.db` — generation is offline, doesn't need a live connection) to produce a reviewed SQL file under `drizzle/`,
+  4. apply that SQL to **prod** by hand — `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are marked **sensitive** in Vercel, so `vercel env pull` returns them blank and they can't be retrieved via CLI or dashboard reveal. Get the DB URL from the Turso dashboard (non-secret) and mint a **fresh** auth token there if you need one (don't need the original), then either run `TURSO_DATABASE_URL=... TURSO_AUTH_TOKEN=... npm run db:migrate`, or — simpler and lower-risk, since prod's `__drizzle_migrations` tracking table has likely never been initialized (schema changes here have always been applied by hand) — paste just the new migration's `CREATE TABLE`/`ALTER TABLE` SQL directly into the Turso dashboard's SQL Shell. `db:migrate` would try to replay *all* migrations from `0000` and error on already-existing tables; the direct-paste path only touches the one new statement.
+  (`tools/migrate-client-tables.mjs`, referenced by an earlier version of this doc, no longer exists — removed when the project moved off `@astrojs/db` to Drizzle+Turso.)
   Run prod migration **before** deploying code that uses the new schema (additive/nullable = backward-compatible).
 
 **Workflow:** branches only (no direct commits to `master`); `npm run check` before push; PR → squash-merge → Vercel auto-deploys. Verify build with `npm run build`, lint with eslint config at `./config/eslint.config.js`, tests with `npm run test:run`.
 
 ---
 
-## Item 1 — Rate limiting (HIGHEST PRIORITY)
+## Item 1 — Rate limiting (HIGHEST PRIORITY) — PARTIALLY DONE
 
-**Problem:** No rate limiting anywhere. Two abusable endpoints:
+**Problem:** No rate limiting anywhere. Three abusable endpoints were identified:
 
-- `src/pages/api/client/forgot-password.json.ts` — scripted requests with a known email → victim gets hundreds of reset emails; burns Resend quota; harms sender reputation.
-- `src/pages/api/client/auth.json.ts` (`action: 'login'`) — unlimited password brute-force, no lockout.
-- (Also consider `src/pages/api/auth.json.ts` admin login. Lower priority: `set-password.json.ts` tokens are 32-byte random — brute-force infeasible, skip.)
+- `src/pages/api/client/forgot-password.json.ts` — scripted requests with a known email → victim gets hundreds of reset emails; burns Resend quota; harms sender reputation. **Still open — see Item 1b below.**
+- `src/pages/api/client/auth.json.ts` (`action: 'login'`) — unlimited password brute-force, no lockout. **Fixed**, PR #93 (2026-09-18).
+- `src/pages/api/auth.json.ts` admin login — unlimited brute-force of the shared secret key. **Fixed**, PR #93 (2026-09-18).
+- (`set-password.json.ts` tokens are 32-byte random — brute-force infeasible, correctly skipped.)
 
-Listed as a known gap in `docs/ISSUES.md` ("No auth rate limiting").
+Was listed as a known gap in `docs/ISSUES.md` ("No auth rate limiting") — that entry is now marked `(FIXED)` for the login endpoints only.
 
-**Why in-memory won't work:** Vercel serverless = many short-lived instances; an in-memory counter doesn't persist across invocations/cold starts. Must be DB-backed (Turso) or an external store (Vercel KV / Upstash). **Recommendation: Turso table** — no new dependency, consistent with the rest of the stack.
+**What shipped (reuse this, don't rebuild it):**
 
-**Design:**
-
-- New table `RateLimits` (add via the 3-place migration pattern above):
+- Table `LoginAttempts` (`src/db/schema.ts`, migration `drizzle/0003_add_login_attempts.sql`):
   ```
-  key TEXT PRIMARY KEY,        -- e.g. "login:<ip>", "forgot:<emailLower>", "login:<emailLower>"
-  count INTEGER NOT NULL,
+  key TEXT PRIMARY KEY,        -- e.g. "admin:<ip>", "client:<ip>:<emailLower>"
+  count INTEGER NOT NULL DEFAULT 0,
   windowStart TEXT NOT NULL    -- ISO timestamp
   ```
-- New lib `src/lib/rateLimit.ts`:
+- `src/lib/rateLimit.ts` — fixed-window, 5 attempts / 15 minutes (`WINDOW_MS`, `MAX_ATTEMPTS` constants at the top of the file):
   ```ts
-  // returns { ok: boolean, retryAfterSeconds?: number }
-  export async function checkRateLimit(key: string, limit: number, windowMs: number)
+  checkRateLimit(key: string): Promise<boolean>   // true = still allowed
+  recordFailedAttempt(key: string): Promise<void> // increments/starts the window
+  clearRateLimit(key: string): Promise<void>      // call on success
   ```
-  Fixed-window is simplest and good enough: if `now - windowStart > windowMs` reset count=1; else increment; if `count > limit` → not ok. One upsert + read. (Sliding window is nicer but more code — start with fixed window; `// ponytail: fixed window, switch to sliding if abuse continues`.)
-- Get client IP from `src/lib/clientSession.ts` `createDeviceFingerprint` pattern (`x-forwarded-for` first hop → `x-real-ip` → `cf-connecting-ip`).
-- Add `TooManyRequestsError` to `src/lib/errors.ts` (statusCode 429, code `RATE_LIMITED`); include `Retry-After`. `createErrorResponse` should map it to a 429.
+  No generic `limit`/`windowMs` params like originally speced below — it's hardcoded to the login use case. **Item 1b needs different limits (3/15min), so either add optional params to this lib, or accept the mismatch and hardcode a second constant — see Item 1b.**
+- Applied in `auth.json.ts` and `client/auth.json.ts`: `checkRateLimit` before the credential comparison → throw `ApplicationError(..., 429, 'RATE_LIMITED')` if blocked; `recordFailedAttempt` on a wrong credential; `clearRateLimit` on success. No new `TooManyRequestsError` class was added — the existing generic `ApplicationError` with an explicit 429/`RATE_LIMITED` code was reused instead (simpler, no new export needed).
+- Tests: `test/unit/rate-limit.test.ts` (window logic against local.db) + an E2E lockout test in `test/auth.test.ts` (`Login Rate Limiting` describe block).
 
-**Suggested limits:** login 5 / 15 min per IP **and** per email; forgot-password 3 / 15 min per IP **and** per email. Tune later.
+**Verification:** `npx vitest run test/unit/rate-limit.test.ts test/auth.test.ts --config config/vitest.config.ts`.
 
-**Apply in:** `client/auth.json.ts` (login branch, before password check), `client/forgot-password.json.ts` (before lookup), optionally `api/auth.json.ts`. Keep forgot-password's existing **no-enumeration** behavior (still return the generic success message even when rate-limited? — No: return 429 generically, it doesn't leak account existence).
+---
 
-**Verification:** unit test the window logic (`test/unit/rate-limit.test.ts`, vitest, `--config ./config/vitest.config.ts`); manually hammer the endpoint and confirm 429 + `Retry-After`. Confirm a normal user flow still works.
+## Item 1b — Rate limit `forgot-password.json.ts` (HIGHEST PRIORITY, remaining)
 
-**Effort:** Medium (needs the table + migration in all 3 places + prod migration run).
+**Problem:** `src/pages/api/client/forgot-password.json.ts` has zero throttling — confirmed by direct read, 2026-09-19. Anyone can script requests with a known/guessed client email and trigger unlimited password-reset emails. This was the *primary* concern in the original Item 1 write-up, and it's the one piece not yet done.
+
+**Design — reuse `src/lib/rateLimit.ts`, don't duplicate it:**
+
+- Suggested limits from the original plan: **3 attempts / 15 minutes**, keyed **per IP and per email** (two separate checks, or one combined key like `forgot:<ip>:<emailLower>` — combined key is simpler and matches the pattern already used for `client:<ip>:<email>` in the login fix; a determined attacker rotating IPs is a lesser concern than the accidental/scripted case this is mainly defending against).
+- `rateLimit.ts` currently hardcodes `MAX_ATTEMPTS = 5` / `WINDOW_MS = 15 * 60 * 1000` for the login use case. Forgot-password wants a stricter `3`. Simplest fix: add optional `maxAttempts`/`windowMs` parameters to `checkRateLimit`/`recordFailedAttempt`/`clearRateLimit` (default to the existing login values so the two call sites in `auth.json.ts`/`client/auth.json.ts` don't need changes), then pass `{ maxAttempts: 3 }` from `forgot-password.json.ts`.
+- Apply the check **before** the DB lookup, unconditionally — not just on the "client found" branch. Keep the existing **no-enumeration** behavior: do NOT return a different response shape that reveals whether the email exists. When rate-limited, return a generic 429 (`ApplicationError(..., 429, 'RATE_LIMITED')`) — a 429 doesn't leak account existence, it just says "you're going too fast," so this doesn't weaken the existing enumeration protection.
+- On any request that passes the rate-limit check, whether or not a matching active client was found, do **not** call `recordFailedAttempt` conditionally on "client not found" — that would itself be an enumeration side-channel (attacker could infer existence from whether the counter increments differently). Record an attempt on every check that reaches this point, success or not; only `clearRateLimit` differs (there's no real "success" state to clear on for this endpoint — every valid request should probably just record, never clear, since repeated legitimate resets are also worth limiting).
+
+**Apply in:** `src/pages/api/client/forgot-password.json.ts`, right after the Content-Type/body validation, before the `db.select` lookup.
+
+**Verification:** extend `test/unit/rate-limit.test.ts` if `checkRateLimit` gains parameters (test the custom-limit path), and add an E2E test mirroring the `Login Rate Limiting` block in `test/auth.test.ts` — or a new small Puppeteer-free test if a lighter-weight harness exists for this endpoint. Manually hammer `/api/client/forgot-password.json` and confirm 429 after 3 attempts, confirm the generic success message is still returned for both real and fake emails when not rate-limited.
+
+**Effort:** Small — the hard part (DB-backed rate limiting infra) is already built. This is wiring + one design decision (per-key limit override) + tests.
 
 ---
 
@@ -119,7 +133,7 @@ Listed as a known gap in `docs/ISSUES.md` ("No auth rate limiting").
 
 - **CRM modal — escape `id`:** `src/pages/admin/crm.astro` (~line 347) interpolates `${id}` unescaped into `insertAdjacentHTML`. It's an app-generated integer (low risk), but escape it for consistency with the `name`/`message` handling already there.
 - **Upload limits:** `src/pages/api/admin/client-files.json.ts` POST has no app-level MIME allow-list or size cap (relies on Vercel Blob's 5TB default). Admin is trusted, so low risk — but add a sane `maximumSizeInBytes` and optional content-type allow-list to prevent accidental huge/odd uploads.
-- **Content-Type validation:** some endpoints don't assert `application/json` (noted in `docs/ISSUES.md`). The newer client-portal endpoints already do; audit older ones (`auth.json.ts`, `links.json.ts`).
+- ~~**Content-Type validation:** some endpoints don't assert `application/json`~~ — Done independently: `auth.json.ts`, `client/auth.json.ts`, and `links.json.ts` all validate Content-Type (confirmed by direct read, 2026-09-19).
 
 **Effort:** Trivial each.
 
@@ -127,14 +141,13 @@ Listed as a known gap in `docs/ISSUES.md` ("No auth rate limiting").
 
 ## Recommended order
 
-1. **Item 2 (password policy)** — small, high value, no infra. Quick win.
-2. **Item 1 (rate limiting)** — highest security value; needs the table + migration.
-3. **Item 4 (minor hardening)** — cheap cleanups, bundle into either PR above or its own.
-4. **Item 3 (CSP)** — last; highest effort + regression risk.
+1. **Item 1b (forgot-password rate limiting)** — highest remaining priority; small effort, infra already built.
+2. **Item 2 (password policy)** — small, high value, no infra. Quick win.
+3. **Item 3 (CSP)** — highest effort + regression risk; do last regardless of what else is picked up.
 
 ## Cross-cutting reminders
 
 - Branch per item; `npm run check` before push; PR → squash-merge → Vercel deploy.
-- For Item 1's table: run the **prod** migration (`node tools/migrate-client-tables.mjs`) **before** merging the code that reads it. Verify read-only first (see how `setupTokenHash` was added this cycle — same pattern).
+- For a new table/column: see the updated migration pattern above — `npm run db:generate` locally, then apply the resulting SQL to prod by hand via the Turso dashboard SQL Shell (not `db:migrate`, given prod's untracked migration history — see migration pattern note above for why).
 - Add a unit test for any non-trivial pure logic (rate-limit window math, password policy) — `test/unit/*.test.ts`, run with `npm run test:run`.
-- Update `docs/ISSUES.md` to tick off "No auth rate limiting" and any others resolved.
+- Update `docs/ISSUES.md` to tick off any newly resolved items, matching the `~~ISSUE-N: Title~~ (FIXED)` convention already used there (see ISSUE-21).
