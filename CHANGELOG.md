@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.2] - 2026-10-19
+
+### 🚀 Astro 7.4 Upgrade
+
+- **Upgraded `astro` 7.3.3 → 7.4.1** and integrations: `@astrojs/mdx` 7.0.5 → 8.1.0 (major: MDX now handled by the Markdown processor — no custom processor here, no action), `@astrojs/react` 6.0.2 → 7.1.0 (major: `@vitejs/plugin-react` v6/Oxc, `babel` option removed — unused), `vercel` 11.0.16, `sitemap` 3.7.4, `partytown` 2.1.8, `check` 0.9.11.
+- **Node.js ≥ 22.22.0 required** (Astro 7.4 minimum) — added `engines.node` to `package.json`, readme prerequisites updated.
+- **Vite 7 pin + patch removed** — `overrides.vite` moved `^7.3.2` → `^8.3.4` (Astro 7.4 requires Vite 8; the override keeps `@tailwindcss/vite` and `vitest` on the same single Vite instead of a 7/8 split). Deleted `patches/vite+7.3.5.patch`, the `postinstall` patch hook and the `patch-package` devDependency.
+- **`experimental.parallelPrerender` evaluated, not enabled** — measured with the new `astro build --timings`: prerendering is ~1–2s for 25 pages, total build is dominated by the `@astrojs/vercel` `astro:build:done` hook (~27s), so worker threads gave no measurable gain.
+- **Not applicable:** split build/runtime image services (no image CDN), `notFound()` for `astro/fetch`/`astro/hono` (no custom entrypoint), font provider `getFontProperties()` (no Fonts API), `experimental.redirectPage` (no `redirects`), prerenderer metadata deprecations (no custom prerenderer).
+
+### 🐛 Fixed
+
+- **`GuiaApis.jsx` was not valid UTF-8** — ~46 emoji bytes were corrupted when the file was added in #71. Vite 7 decoded it leniently (rendering `�`); Vite 8/Rolldown rejects it (`UNLOADABLE_DEPENDENCY … stream did not contain valid UTF-8`). Re-encoded with U+FFFD in place of the invalid bytes, so the page renders exactly as before. The original emoji still need restoring from the source content.
+
 ## [4.4.1] - 2026-09-18
 
 ### 🔒 Security
