@@ -221,7 +221,7 @@ Quality checks run before each commit:
 
 ### Common Issues
 
-1. **Port Conflicts**: Tests use different ports (4321, 4322, 4323)
+1. **Port Conflicts**: Server-dependent tests run in the `e2e` Vitest project (`SERVER_TESTS` in `config/vitest.config.ts`). Its `test/globalSetup.ts` starts one shared dev server on port 4321 with the test `API_SECRET_KEY` and stops it after the run. It refuses to start if 4321 is already in use, so stop your own dev server first (`npx astro dev stop`). Test files must not start or kill servers themselves. Unit-only runs (`test:critical`) never start a server.
 2. **Timeout Errors**: Extended timeouts for performance tests
 3. **Browser Issues**: Puppeteer setup and Chrome dependencies
 4. **Content Changes**: Update tests when content structure changes

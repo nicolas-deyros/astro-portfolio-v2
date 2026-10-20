@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.3] - 2026-10-20
+
+### 🐛 Fixed
+
+- **`GuiaApis.jsx` emoji restored** — the 32 placeholders left by the #71 corruption were reconstructed from the surviving UTF-8 bytes plus surrounding text (✅ 🔗 🔄 🔑 🔒 🤝 ⏳ ⏱️ ⚠ ⚡ ═ ► ✓ 🤖). Line 117 ("Cuenta activa") and line 636 had too few surviving bytes for an exact match and use ✅ / 🤖 as best fits.
+- **Test suite runs green end-to-end** — `npm run check:full` now passes. Server-dependent tests share one dev server from a new Vitest `e2e` project (`test/globalSetup.ts`), replacing the duplicated per-file spawn/`taskkill` code in `auth`, `admin-interface`, `back-to-top` and `performance` tests, which killed each other's servers and left `security.test.ts` with nothing to hit. The server runs `astro`'s bin with Node directly, so stopping it leaves no orphaned process on port 4321.
+- **Admin nav visibility tests** used a `.admin-menu-item` class removed in #72; now assert the server-rendered `/admin` link and logout button instead (present when logged in, absent when logged out).
+- **Admin links tests** waited only for `networkidle2`; on a cold server the React island rendered later. Now wait for the island's search input.
+
+### 🔧 Tooling
+
+- ESLint, CSpell and Vitest no longer scan the gitignored `.agents/` (local skill scripts caused 234 linting errors and 2 failing tests). CSpell also ignores generated `graphify-out/` and Spanish client content under `src/components/clients/`, and learns `utm`.
+- New `test/unit/source-encoding.test.ts` fails if any `src` file is invalid UTF-8 or contains U+FFFD, catching corruptions like #71 before Vite 8 rejects the build.
+
 ## [4.4.2] - 2026-10-19
 
 ### 🚀 Astro 7.4 Upgrade

@@ -2,19 +2,46 @@ import path from 'path'
 import { defineConfig } from 'vitest/config'
 import { configDefaults } from 'vitest/config'
 
+// Tests that hit the dev server at localhost:4321. They run in the `e2e`
+// project, whose globalSetup starts one shared server (only when one of these
+// files is in the run, so unit-only runs like test:critical stay server-free).
+const SERVER_TESTS = [
+	'test/admin-interface.test.ts',
+	'test/auth.test.ts',
+	'test/back-to-top.test.ts',
+	'test/performance.test.ts',
+	'test/e2e/security.test.ts',
+	'test/e2e/links-tag-filtering.test.ts',
+]
+
 export default defineConfig({
 	test: {
 		exclude: [
 			...configDefaults.exclude,
 			'db/**',
+			'.agents/**',
 			'testsprite_tests/**',
-			// These tests spawn their own dev server process, which conflicts with
-			// the already-running dev server on Windows. The same functionality is
-			// covered by test/back-to-top.test.ts (which uses the running server).
+			// These tests still spawn their own dev server process, which would
+			// fight the shared e2e server. back-to-top-* duplicate
+			// test/back-to-top.test.ts.
 			'test/back-to-top-isolated.test.ts',
 			'test/back-to-top-optimized.test.ts',
 			'test/date-filtering.test.ts',
 			'test/e2e/links.test.ts',
+		],
+		projects: [
+			{
+				extends: true,
+				test: { name: 'unit', exclude: SERVER_TESTS },
+			},
+			{
+				extends: true,
+				test: {
+					name: 'e2e',
+					include: SERVER_TESTS,
+					globalSetup: [path.resolve(__dirname, '../test/globalSetup.ts')],
+				},
+			},
 		],
 		fileParallelism: false,
 		maxWorkers: 1,

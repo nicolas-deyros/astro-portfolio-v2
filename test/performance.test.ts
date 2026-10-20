@@ -1,4 +1,3 @@
-import { spawn } from 'child_process'
 import { readdirSync, readFileSync } from 'fs'
 import matter from 'gray-matter'
 import { join } from 'path'
@@ -27,38 +26,8 @@ interface BlogPost {
 	}
 }
 
-// Helper function to wait for server to be ready
-async function waitForServer(
-	url: string,
-	timeout: number = 30000,
-): Promise<void> {
-	const start = Date.now()
-	const checkInterval = 1000 // Check every second
-
-	while (Date.now() - start < timeout) {
-		try {
-			const response = await fetch(url)
-			if (response.status === 200) {
-				// Additional check: make sure we can actually get content
-				const text = await response.text()
-				if (text.length > 100) {
-					// Basic sanity check
-					return // Server is ready and serving content
-				}
-			}
-		} catch {
-			// Server not ready yet, continue polling
-		}
-
-		await new Promise(resolve => setTimeout(resolve, checkInterval))
-	}
-
-	throw new Error(`Server at ${url} did not become ready within ${timeout}ms`)
-}
-
 describe('Core Web Vitals & Performance Testing', () => {
 	let browser: Browser
-	let astroServer: ReturnType<typeof spawn> | null = null
 	const testResults: PerformanceMetrics[] = []
 	const baseUrl = 'http://localhost:4321' // Astro default dev server
 
@@ -76,95 +45,6 @@ describe('Core Web Vitals & Performance Testing', () => {
 	}
 
 	beforeAll(async () => {
-		console.log('🚀 Starting Astro dev server for performance testing...')
-
-		// Cleanup any processes using port 4321 before starting
-		try {
-			await new Promise<void>(resolve => {
-				const killPort = spawn('netstat', ['-ano'], { shell: true })
-				let output = ''
-
-				killPort.stdout?.on('data', data => {
-					output += data.toString()
-				})
-
-				killPort.on('close', async () => {
-					const lines = output.split('\n')
-					const port4321Lines = lines.filter(
-						line => line.includes(':4321') && line.includes('LISTENING'),
-					)
-
-					for (const line of port4321Lines) {
-						const pid = line.trim().split(/\s+/).pop()
-						if (pid && !isNaN(Number(pid))) {
-							console.log(`🧹 Cleaning up existing process ${pid} on port 4321`)
-							try {
-								spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
-								await new Promise(resolve => setTimeout(resolve, 1000))
-							} catch {
-								// Continue even if this fails
-							}
-						}
-					}
-					resolve()
-				})
-
-				killPort.on('error', () => resolve()) // Continue even if cleanup fails
-			})
-		} catch {
-			console.log('⚠️  Pre-cleanup completed')
-		}
-
-		// Start Astro dev server with explicit port
-		const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
-		astroServer = spawn(cmd, ['astro', 'dev', '--port', '4321'], {
-			stdio: ['ignore', 'pipe', 'pipe'],
-			shell: true,
-			env: { ...process.env, NODE_ENV: 'development' },
-		})
-		// Handle server output
-		if (astroServer.stdout) {
-			astroServer.stdout.on('data', data => {
-				const output = data.toString()
-				if (output.includes('Local:') || output.includes('server running at')) {
-					console.log('📡 Dev server output:', output.trim())
-				}
-			})
-		}
-
-		if (astroServer.stderr) {
-			astroServer.stderr.on('data', data => {
-				const error = data.toString()
-				console.error('🚨 Dev server error:', error)
-				// Check for common error patterns
-				if (
-					error.includes('EADDRINUSE') ||
-					error.includes('port already in use')
-				) {
-					console.error(
-						'❌ Port 4321 is already in use. Please stop other Astro servers.',
-					)
-				}
-			})
-		}
-
-		// Handle server process exit
-		astroServer.on('exit', (code, signal) => {
-			console.warn(`🚨 Astro server exited with code ${code}, signal ${signal}`)
-		})
-
-		// Wait for server to be ready
-		console.log('⏳ Waiting for Astro dev server to start...')
-		try {
-			await waitForServer(baseUrl, 90000) // Increased timeout to 90 seconds
-			console.log('✅ Astro dev server is ready!')
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : String(error)
-			console.error('❌ Failed to start Astro dev server:', message)
-			throw error
-		}
-		console.log('✅ Astro dev server is ready!')
-
 		// Start browser for testing
 		browser = await puppeteer.launch({
 			headless: true,
@@ -189,59 +69,6 @@ describe('Core Web Vitals & Performance Testing', () => {
 		if (browser) {
 			await browser.close()
 			console.log('✅ Browser closed')
-		}
-
-		// Stop Astro dev server
-		if (astroServer) {
-			console.log('⏹️  Stopping Astro dev server...')
-
-			// Kill the process more forcefully
-			astroServer.kill('SIGKILL')
-
-			// Wait for process to fully terminate
-			await new Promise(resolve => setTimeout(resolve, 2000))
-
-			console.log('✅ Astro dev server stopped')
-		}
-
-		// Enhanced cleanup: kill any remaining processes on port 4321
-		try {
-			await new Promise<void>(resolve => {
-				const killPort = spawn('netstat', ['-ano'], { shell: true })
-				let output = ''
-
-				killPort.stdout?.on('data', data => {
-					output += data.toString()
-				})
-
-				killPort.on('close', async () => {
-					const lines = output.split('\n')
-					const port4321Lines = lines.filter(
-						line => line.includes(':4321') && line.includes('LISTENING'),
-					)
-
-					for (const line of port4321Lines) {
-						const pid = line.trim().split(/\s+/).pop()
-						if (pid && !isNaN(Number(pid))) {
-							console.log(
-								`🧹 Cleaning up remaining process ${pid} on port 4321`,
-							)
-							try {
-								spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
-								await new Promise(resolve => setTimeout(resolve, 500))
-							} catch {
-								// Continue cleanup even if this fails
-							}
-						}
-					}
-					resolve()
-				})
-
-				killPort.on('error', () => resolve()) // Continue even if cleanup fails
-			})
-		} catch {
-			// Ignore cleanup errors
-			console.log('⚠️  Port cleanup completed')
 		}
 
 		// Print summary report

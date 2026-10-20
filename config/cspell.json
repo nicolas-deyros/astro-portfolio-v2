@@ -48,6 +48,9 @@
 		"dist/**",
 		"**/dist/**",
 		".astro/**",
+		"**/.agents/**",
+		"**/graphify-out/**",
+		"**/src/components/clients/**",
 		"coverage/**",
 		"*.log",
 		"package-lock.json",
@@ -78,6 +81,7 @@
 		"href\\s*=\\s*['\"][^'\"]*['\"]"
 	],
 	"words": [
+		"utm",
 		"PREFS",
 		"GTM",
 		"DSN",

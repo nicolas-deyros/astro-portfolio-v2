@@ -1,97 +1,16 @@
-import { ChildProcess, spawn } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-// Helper function to wait for server to be ready
-async function waitForServer(
-	url: string,
-	timeout: number = 60000,
-): Promise<void> {
-	const start = Date.now()
-	console.log(`Waiting for server at ${url}...`)
-	while (Date.now() - start < timeout) {
-		try {
-			const response = await fetch(url)
-			if (response.status === 200) {
-				console.log(`Server at ${url} is ready!`)
-				return
-			}
-		} catch {
-			// wait
-		}
-		await new Promise(resolve => setTimeout(resolve, 1000))
-	}
-	throw new Error(`Server at ${url} did not start in time.`)
-}
-
-// Helper function to kill any existing processes on port 4321
-async function killExistingServer(): Promise<void> {
-	try {
-		await new Promise<void>(resolve => {
-			const killPort = spawn('netstat', ['-ano'], { shell: true })
-			let output = ''
-
-			killPort.stdout?.on('data', data => {
-				output += data.toString()
-			})
-
-			killPort.on('close', () => {
-				const lines = output.split('\n')
-				const port4321Line = lines.find(
-					line => line.includes(':4321') && line.includes('LISTENING'),
-				)
-
-				if (port4321Line) {
-					const pid = port4321Line.trim().split(/\s+/).pop()
-					if (pid && !isNaN(Number(pid))) {
-						console.log(`🧹 Killing existing process ${pid} on port 4321`)
-						spawn('taskkill', ['/PID', pid, '/F'], { shell: true })
-						setTimeout(resolve, 2000) // Wait for cleanup
-					} else {
-						resolve()
-					}
-				} else {
-					resolve()
-				}
-			})
-
-			killPort.on('error', () => resolve()) // Continue even if cleanup fails
-		})
-	} catch {
-		console.log('⚠️ Port cleanup completed')
-	}
-}
+// Admin nav link, server-rendered only for logged-in users (HeaderMenu.astro)
+const ADMIN_NAV_LINK = 'a[href="/admin"][title="Admin Dashboard"]'
 
 describe('Admin Interface Tests', () => {
-	let server: ChildProcess
 	let browser: Browser
 	let page: Page
 	const serverUrl = 'http://localhost:4321'
 	const adminUrl = `${serverUrl}/admin`
 
 	beforeAll(async () => {
-		// Set environment variable for testing
-		process.env.API_SECRET_KEY = 'test-secret-key'
-
-		// First, clean up any existing server on port 4321
-		await killExistingServer()
-		await new Promise(resolve => setTimeout(resolve, 3000))
-
-		// Prepare environment for dev server (unsetting VITEST to avoid conflict with Astro DB logic)
-		const serverEnv = {
-			...process.env,
-			API_SECRET_KEY: 'test-secret-key',
-		} as NodeJS.ProcessEnv
-		delete serverEnv.VITEST
-
-		// Start the dev server using npm run dev:test (without --open flag) for testing
-		server = spawn('npm', ['run', 'dev:test'], {
-			shell: true, // Important for Windows
-			stdio: 'pipe', // Capture output
-			env: serverEnv,
-		})
-		await waitForServer(serverUrl)
-
 		// Launch browser
 		browser = await puppeteer.launch({
 			headless: true,
@@ -125,17 +44,15 @@ describe('Admin Interface Tests', () => {
 
 	afterAll(async () => {
 		if (browser) await browser.close()
-		if (server) {
-			server.kill('SIGTERM')
-			await new Promise(resolve => setTimeout(resolve, 1000))
-			if (!server.killed) server.kill('SIGKILL')
-		}
 	})
 
 	describe('Pagination and Search Features', () => {
 		beforeAll(async () => {
 			await performLogin()
 			await page.goto(`${adminUrl}/links`, { waitUntil: 'networkidle2' })
+			// The links UI is a React island; on a cold dev server it can land
+			// after networkidle2, so wait for it explicitly.
+			await page.waitForSelector('input[name="search"]', { timeout: 30000 })
 		})
 
 		it('should have pagination controls when there are multiple pages', async () => {
@@ -505,22 +422,17 @@ describe('Admin Interface Tests', () => {
 
 			await page.goto(serverUrl) // Go to home page
 
-			// Check that admin menu items are hidden
-			const adminItems = await page.$$('.admin-menu-item:not(.hidden)')
-			expect(adminItems.length).toBe(0)
+			// Admin link and logout are server-rendered only for logged-in users
+			expect(await page.$(ADMIN_NAV_LINK)).toBeNull()
+			expect(await page.$('#admin-logout-btn')).toBeNull()
 		})
 
 		it('should show admin navigation items when authenticated', async () => {
 			await performLogin()
 			await page.goto(serverUrl)
 
-			// Check that admin menu items are visible
-			const adminItems = await page.$$('.admin-menu-item:not(.hidden)')
-			expect(adminItems.length).toBeGreaterThan(0)
-
-			// Check that logout button is visible
-			const logoutBtn = await page.$('#admin-logout-btn:not(.hidden)')
-			expect(logoutBtn).toBeTruthy()
+			expect(await page.$(ADMIN_NAV_LINK)).toBeTruthy()
+			expect(await page.$('#admin-logout-btn')).toBeTruthy()
 		})
 
 		it('should redirect to login on logout', async () => {
