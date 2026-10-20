@@ -25,7 +25,7 @@ This portfolio showcases modern web development practices with a focus on perfor
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22.22+
 - npm or pnpm
 
 ### Installation

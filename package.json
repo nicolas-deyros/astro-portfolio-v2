@@ -1,10 +1,12 @@
 {
 	"name": "portfolio",
 	"type": "module",
-	"version": "4.4.1",
+	"version": "4.4.2",
+	"engines": {
+		"node": ">=22.22.0"
+	},
 	"scripts": {
 		"// === Development ===": "",
-		"postinstall": "node -e \"const{readFileSync}=require('fs');try{const c=readFileSync('node_modules/vite/dist/node/chunks/config.js','utf8');if(c.includes('rolldownOptions?.input')){console.log('[patch] Vite patch already applied.')}else{require('child_process').execSync('patch-package',{stdio:'inherit'})}}catch(e){console.warn('[patch] Skipped:',e.message)}\"",
 		"dev": "astro dev --open",
 		"dev:clean": "astro dev --port 4321",
 		"dev:test": "astro dev --port 4321",
@@ -73,12 +75,12 @@
 	},
 	"dependencies": {
 		"@astrojs/db": "^0.21.3",
-		"@astrojs/mdx": "^7.0.5",
-		"@astrojs/partytown": "^2.1.7",
-		"@astrojs/react": "^6.0.2",
+		"@astrojs/mdx": "^8.1.0",
+		"@astrojs/partytown": "^2.1.8",
+		"@astrojs/react": "^7.1.0",
 		"@astrojs/rss": "^4.0.19",
-		"@astrojs/sitemap": "^3.7.3",
-		"@astrojs/vercel": "^11.0.5",
+		"@astrojs/sitemap": "^3.7.4",
+		"@astrojs/vercel": "^11.0.16",
 		"@iconify/react": "^6.0.2",
 		"@libsql/client": "^0.17.4",
 		"@react-email/components": "0.3.2",
@@ -92,7 +94,7 @@
 		"@vercel/blob": "^2.4.1",
 		"@vercel/og": "^0.8.6",
 		"@vercel/speed-insights": "^2.0.0",
-		"astro": "^7.2.0",
+		"astro": "^7.4.1",
 		"astro-icon": "^1.1.5",
 		"astro-seo": "^0.8.4",
 		"drizzle-orm": "^0.45.2",
@@ -105,7 +107,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.10",
+		"@astrojs/check": "^0.9.11",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@eslint/js": "^9.31.0",
@@ -133,7 +135,6 @@
 		"jsdom": "^26.1.0",
 		"lighthouse": "^12.8.0",
 		"lint-staged": "^16.1.4",
-		"patch-package": "^8.0.1",
 		"prettier": "^3.8.4",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-tailwindcss": "^0.8.0",
@@ -153,7 +154,7 @@
 		"web-vitals": "^5.0.3"
 	},
 	"overrides": {
-		"vite": "^7.3.2",
+		"vite": "^8.3.4",
 		"neotraverse": "^1.0.1",
 		"sanitize-html": {
 			"htmlparser2": "^10.1.0"

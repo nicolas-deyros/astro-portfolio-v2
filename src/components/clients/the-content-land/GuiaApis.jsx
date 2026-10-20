@@ -14,11 +14,11 @@ const PLATFORMS = [
     clientNeeds: [
       { icon: "ðŸ¢", text: "Cuenta de empresa registrada en Meta (Facebook)" },
       { icon: "ðŸ“±", text: "Crear una 'app' en Meta for Developers (gratuito)" },
-      { icon: "--…", text: "Solicitar aprobaciÃ³n para acceder a mÃ©tricas de terceros" },
+      { icon: "--ï¿½", text: "Solicitar aprobaciÃ³n para acceder a mÃ©tricas de terceros" },
     ],
     influencerNeeds: [
-      { icon: "ðŸ-„", text: "Cambiar su cuenta personal a cuenta de Creator o Business (gratis, 2 min)" },
-      { icon: "ðŸ-—", text: "Hacer clic en un link que vos le mandÃ¡s y aceptar el acceso (1 min)" },
+      { icon: "ï¿½-ï¿½", text: "Cambiar su cuenta personal a cuenta de Creator o Business (gratis, 2 min)" },
+      { icon: "ï¿½-ï¿½", text: "Hacer clic en un link que vos le mandÃ¡s y aceptar el acceso (1 min)" },
       { icon: "ðŸ“Š", text: "Tener al menos una publicaciÃ³n reciente en la cuenta" },
     ],
     steps: [
@@ -47,10 +47,10 @@ const PLATFORMS = [
     clientNeeds: [
       { icon: "ðŸ¢", text: "Registrarse como desarrollador en developers.tiktok.com" },
       { icon: "ðŸ“‹", text: "Aplicar al programa de Content Marketing Partners (proceso de selecciÃ³n)" },
-      { icon: "-³", text: "Esperar aprobaciÃ³n  -  TikTok puede rechazar sin dar motivos" },
+      { icon: "-ï¿½ï¿½", text: "Esperar aprobaciÃ³n  -  TikTok puede rechazar sin dar motivos" },
     ],
     influencerNeeds: [
-      { icon: "ðŸ-—", text: "Hacer clic en el link de autorizaciÃ³n y aceptar (igual que Instagram)" },
+      { icon: "ï¿½-ï¿½", text: "Hacer clic en el link de autorizaciÃ³n y aceptar (igual que Instagram)" },
       { icon: "ðŸ“ˆ", text: "Tener cuenta con cierta actividad reciente (TikTok lo verifica)" },
     ],
     steps: [
@@ -78,8 +78,8 @@ const PLATFORMS = [
     approval: "AprobaciÃ³n automÃ¡tica",
     clientNeeds: [
       { icon: "ðŸ“§", text: "Cuenta de Google (cualquier Gmail sirve)" },
-      { icon: "ðŸ-‘", text: "Crear credenciales en Google Cloud Console (gratuito, 10 min)" },
-      { icon: "--…", text: "Activar YouTube Analytics API  -  se aprueba instantÃ¡neamente" },
+      { icon: "ï¿½-ï¿½", text: "Crear credenciales en Google Cloud Console (gratuito, 10 min)" },
+      { icon: "--ï¿½", text: "Activar YouTube Analytics API  -  se aprueba instantÃ¡neamente" },
     ],
     influencerNeeds: [
       { icon: "ðŸ“§", text: "Iniciar sesiÃ³n con su cuenta de Google y aceptar el acceso (1 min)" },
@@ -113,8 +113,8 @@ const PLATFORMS = [
       { icon: "ðŸ“‹", text: "Describir el caso de uso (aprobaciÃ³n manual)" },
     ],
     influencerNeeds: [
-      { icon: "ðŸ-—", text: "Autorizar con OAuth como en las otras plataformas" },
-      { icon: "ðŸ-¦", text: "Cuenta activa (no se requiere verificaciÃ³n)" },
+      { icon: "ï¿½-ï¿½", text: "Autorizar con OAuth como en las otras plataformas" },
+      { icon: "ï¿½-ï¿½", text: "Cuenta activa (no se requiere verificaciÃ³n)" },
     ],
     steps: [
       { label: "PagÃ¡s el plan", detail: "El plan Basic (USD 100/mes) permite leer mÃ©tricas propias. Para mÃ©tricas de terceros necesitÃ¡s Pro o Enterprise." },
@@ -163,8 +163,8 @@ function DifficultyBadge({ level }) {
 function FlowDiagram({ platform, active }) {
   const nodes = [
     { icon: "ðŸ“±", label: "Cuenta del\ninfluencer" },
-    { icon: "ðŸ-—", label: "Toca el\nlink" },
-    { icon: "--…", label: "Plataforma\nautoriza" },
+    { icon: "ï¿½-ï¿½", label: "Toca el\nlink" },
+    { icon: "--ï¿½", label: "Plataforma\nautoriza" },
     { icon: "ðŸ“Š", label: "Datos en\ntu dashboard" },
   ];
   return (
@@ -217,7 +217,7 @@ function FlowDiagram({ platform, active }) {
                 fontSize: 12,
                 color: active ? platform.color : "#1E293B",
                 transition: "color 0.3s",
-              }}>--º</div>
+              }}>--ï¿½</div>
             </div>
           )}
         </div>
@@ -333,10 +333,10 @@ export default function Guide() {
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
         {[
-          { icon: "ðŸ-’", title: "Datos privados vs. pÃºblicos", text: "Los likes y comentarios son pÃºblicos. Pero el alcance real, las impresiones y los clics solo los ve el dueÃ±o de la cuenta." },
-          { icon: "ðŸ-", title: "El influencer siempre decide", text: "Nada se accede sin su permiso explÃ­cito. Ellos ven exactamente quÃ© informaciÃ³n compartÃ­s y pueden revocar el acceso cuando quieran." },
-          { icon: "ðŸ-‘", title: "Una autorizaciÃ³n por plataforma", text: "Si un influencer publica en Instagram y TikTok, necesita autorizar en cada una por separado." },
-          { icon: "-±ï¸", title: "Una sola vez por campaÃ±a", text: "Una vez que autorizÃ³, los datos fluyen automÃ¡ticamente. No hace falta pedirle nada mÃ¡s." },
+          { icon: "ï¿½-ï¿½", title: "Datos privados vs. pÃºblicos", text: "Los likes y comentarios son pÃºblicos. Pero el alcance real, las impresiones y los clics solo los ve el dueÃ±o de la cuenta." },
+          { icon: "ï¿½-ï¿½", title: "El influencer siempre decide", text: "Nada se accede sin su permiso explÃ­cito. Ellos ven exactamente quÃ© informaciÃ³n compartÃ­s y pueden revocar el acceso cuando quieran." },
+          { icon: "ï¿½-ï¿½", title: "Una autorizaciÃ³n por plataforma", text: "Si un influencer publica en Instagram y TikTok, necesita autorizar en cada una por separado." },
+          { icon: "-ï¿½ï¿½ï¸", title: "Una sola vez por campaÃ±a", text: "Una vez que autorizÃ³, los datos fluyen automÃ¡ticamente. No hace falta pedirle nada mÃ¡s." },
         ].map((c, i) => (
           <div key={i} style={{
             padding: "20px 22px",
@@ -376,7 +376,7 @@ export default function Guide() {
 
       <div style={{ padding: "28px 32px", maxWidth: 960, margin: "0 auto" }}>
 
-        {/* -•--•- PLATAFORMAS -•--•- */}
+        {/* -ï¿½--ï¿½- PLATAFORMAS -ï¿½--ï¿½- */}
         {section === "plataformas" && (
           <div>
             {/* Platform selector */}
@@ -491,7 +491,7 @@ export default function Guide() {
                   fontSize: 11, fontWeight: 700, color: "#78350F",
                   letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10,
                 }}>
-                  -š  A tener en cuenta
+                  -ï¿½ï¿½ A tener en cuenta
                 </div>
                 <p style={{ fontSize: 13, color: "#92400E", lineHeight: 1.6, margin: 0 }}>
                   {plat.caveat}
@@ -501,7 +501,7 @@ export default function Guide() {
           </div>
         )}
 
-        {/* -•--•- COSTOS -•--•- */}
+        {/* -ï¿½--ï¿½- COSTOS -ï¿½--ï¿½- */}
         {section === "costos" && (
           <div>
             <p style={{ fontSize: 14, color: "#64748B", marginBottom: 24, lineHeight: 1.7 }}>
@@ -588,7 +588,7 @@ export default function Guide() {
           </div>
         )}
 
-        {/* -•--•- RECOMENDACIÃ“N -•--•- */}
+        {/* -ï¿½--ï¿½- RECOMENDACIÃ“N -ï¿½--ï¿½- */}
         {section === "recomendacion" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
@@ -602,7 +602,7 @@ export default function Guide() {
                 fontSize: 11, fontWeight: 700, color: "#059669",
                 letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10,
               }}>
-                --“ RecomendaciÃ³n para empezar
+                --ï¿½ RecomendaciÃ³n para empezar
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: "#F8FAFC", margin: "0 0 12px" }}>
                 Google Sheets + carga manual de datos
@@ -632,8 +632,8 @@ export default function Guide() {
                 {[
                   { threshold: "MÃ¡s de 20 campaÃ±as activas simultÃ¡neas", icon: "ðŸ“Š" },
                   { threshold: "MÃ¡s de 100 influencers reportados por mes", icon: "ðŸ‘¥" },
-                  { threshold: "El cliente pide datos en tiempo real (no a fin de campaÃ±a)", icon: "-š¡" },
-                  { threshold: "Se necesita automatizar la detecciÃ³n de publicaciones nuevas", icon: "ðŸ--" },
+                  { threshold: "El cliente pide datos en tiempo real (no a fin de campaÃ±a)", icon: "-ï¿½ï¿½" },
+                  { threshold: "Se necesita automatizar la detecciÃ³n de publicaciones nuevas", icon: "ï¿½--" },
                 ].map((r, i) => (
                   <div key={i} style={{
                     display: "flex", alignItems: "center", gap: 12,
