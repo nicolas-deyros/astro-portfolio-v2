@@ -54,6 +54,8 @@ export default [
 	{
 		ignores: [
 			'.astro/',
+			'.agents/',
+			'.gemini/',
 			'dist/',
 			'node_modules/',
 			'.gitignore',

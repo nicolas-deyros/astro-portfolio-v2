@@ -14,11 +14,11 @@ const PLATFORMS = [
     clientNeeds: [
       { icon: "🏢", text: "Cuenta de empresa registrada en Meta (Facebook)" },
       { icon: "📱", text: "Crear una 'app' en Meta for Developers (gratuito)" },
-      { icon: "--�", text: "Solicitar aprobación para acceder a métricas de terceros" },
+      { icon: "✅", text: "Solicitar aprobación para acceder a métricas de terceros" },
     ],
     influencerNeeds: [
-      { icon: "�-�", text: "Cambiar su cuenta personal a cuenta de Creator o Business (gratis, 2 min)" },
-      { icon: "�-�", text: "Hacer clic en un link que vos le mandás y aceptar el acceso (1 min)" },
+      { icon: "🔄", text: "Cambiar su cuenta personal a cuenta de Creator o Business (gratis, 2 min)" },
+      { icon: "🔗", text: "Hacer clic en un link que vos le mandás y aceptar el acceso (1 min)" },
       { icon: "📊", text: "Tener al menos una publicación reciente en la cuenta" },
     ],
     steps: [
@@ -47,10 +47,10 @@ const PLATFORMS = [
     clientNeeds: [
       { icon: "🏢", text: "Registrarse como desarrollador en developers.tiktok.com" },
       { icon: "📋", text: "Aplicar al programa de Content Marketing Partners (proceso de selección)" },
-      { icon: "-��", text: "Esperar aprobación  -  TikTok puede rechazar sin dar motivos" },
+      { icon: "⏳", text: "Esperar aprobación  -  TikTok puede rechazar sin dar motivos" },
     ],
     influencerNeeds: [
-      { icon: "�-�", text: "Hacer clic en el link de autorización y aceptar (igual que Instagram)" },
+      { icon: "🔗", text: "Hacer clic en el link de autorización y aceptar (igual que Instagram)" },
       { icon: "📈", text: "Tener cuenta con cierta actividad reciente (TikTok lo verifica)" },
     ],
     steps: [
@@ -78,8 +78,8 @@ const PLATFORMS = [
     approval: "Aprobación automática",
     clientNeeds: [
       { icon: "📧", text: "Cuenta de Google (cualquier Gmail sirve)" },
-      { icon: "�-�", text: "Crear credenciales en Google Cloud Console (gratuito, 10 min)" },
-      { icon: "--�", text: "Activar YouTube Analytics API  -  se aprueba instantáneamente" },
+      { icon: "🔑", text: "Crear credenciales en Google Cloud Console (gratuito, 10 min)" },
+      { icon: "✅", text: "Activar YouTube Analytics API  -  se aprueba instantáneamente" },
     ],
     influencerNeeds: [
       { icon: "📧", text: "Iniciar sesión con su cuenta de Google y aceptar el acceso (1 min)" },
@@ -113,8 +113,8 @@ const PLATFORMS = [
       { icon: "📋", text: "Describir el caso de uso (aprobación manual)" },
     ],
     influencerNeeds: [
-      { icon: "�-�", text: "Autorizar con OAuth como en las otras plataformas" },
-      { icon: "�-�", text: "Cuenta activa (no se requiere verificación)" },
+      { icon: "🔗", text: "Autorizar con OAuth como en las otras plataformas" },
+      { icon: "✅", text: "Cuenta activa (no se requiere verificación)" },
     ],
     steps: [
       { label: "Pagás el plan", detail: "El plan Basic (USD 100/mes) permite leer métricas propias. Para métricas de terceros necesitás Pro o Enterprise." },
@@ -163,8 +163,8 @@ function DifficultyBadge({ level }) {
 function FlowDiagram({ platform, active }) {
   const nodes = [
     { icon: "📱", label: "Cuenta del\ninfluencer" },
-    { icon: "�-�", label: "Toca el\nlink" },
-    { icon: "--�", label: "Plataforma\nautoriza" },
+    { icon: "🔗", label: "Toca el\nlink" },
+    { icon: "✅", label: "Plataforma\nautoriza" },
     { icon: "📊", label: "Datos en\ntu dashboard" },
   ];
   return (
@@ -217,7 +217,7 @@ function FlowDiagram({ platform, active }) {
                 fontSize: 12,
                 color: active ? platform.color : "#1E293B",
                 transition: "color 0.3s",
-              }}>--�</div>
+              }}>►</div>
             </div>
           )}
         </div>
@@ -333,10 +333,10 @@ export default function Guide() {
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
         {[
-          { icon: "�-�", title: "Datos privados vs. públicos", text: "Los likes y comentarios son públicos. Pero el alcance real, las impresiones y los clics solo los ve el dueño de la cuenta." },
-          { icon: "�-�", title: "El influencer siempre decide", text: "Nada se accede sin su permiso explícito. Ellos ven exactamente qué información compartís y pueden revocar el acceso cuando quieran." },
-          { icon: "�-�", title: "Una autorización por plataforma", text: "Si un influencer publica en Instagram y TikTok, necesita autorizar en cada una por separado." },
-          { icon: "-��️", title: "Una sola vez por campaña", text: "Una vez que autorizó, los datos fluyen automáticamente. No hace falta pedirle nada más." },
+          { icon: "🔒", title: "Datos privados vs. públicos", text: "Los likes y comentarios son públicos. Pero el alcance real, las impresiones y los clics solo los ve el dueño de la cuenta." },
+          { icon: "🤝", title: "El influencer siempre decide", text: "Nada se accede sin su permiso explícito. Ellos ven exactamente qué información compartís y pueden revocar el acceso cuando quieran." },
+          { icon: "🔑", title: "Una autorización por plataforma", text: "Si un influencer publica en Instagram y TikTok, necesita autorizar en cada una por separado." },
+          { icon: "⏱️", title: "Una sola vez por campaña", text: "Una vez que autorizó, los datos fluyen automáticamente. No hace falta pedirle nada más." },
         ].map((c, i) => (
           <div key={i} style={{
             padding: "20px 22px",
@@ -376,7 +376,7 @@ export default function Guide() {
 
       <div style={{ padding: "28px 32px", maxWidth: 960, margin: "0 auto" }}>
 
-        {/* -�--�- PLATAFORMAS -�--�- */}
+        {/* ══ PLATAFORMAS ══ */}
         {section === "plataformas" && (
           <div>
             {/* Platform selector */}
@@ -491,7 +491,7 @@ export default function Guide() {
                   fontSize: 11, fontWeight: 700, color: "#78350F",
                   letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10,
                 }}>
-                  -�� A tener en cuenta
+                  ⚠ A tener en cuenta
                 </div>
                 <p style={{ fontSize: 13, color: "#92400E", lineHeight: 1.6, margin: 0 }}>
                   {plat.caveat}
@@ -501,7 +501,7 @@ export default function Guide() {
           </div>
         )}
 
-        {/* -�--�- COSTOS -�--�- */}
+        {/* ══ COSTOS ══ */}
         {section === "costos" && (
           <div>
             <p style={{ fontSize: 14, color: "#64748B", marginBottom: 24, lineHeight: 1.7 }}>
@@ -588,7 +588,7 @@ export default function Guide() {
           </div>
         )}
 
-        {/* -�--�- RECOMENDACIÓN -�--�- */}
+        {/* ══ RECOMENDACIÓN ══ */}
         {section === "recomendacion" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
@@ -602,7 +602,7 @@ export default function Guide() {
                 fontSize: 11, fontWeight: 700, color: "#059669",
                 letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10,
               }}>
-                --� Recomendación para empezar
+                ✓ Recomendación para empezar
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: "#F8FAFC", margin: "0 0 12px" }}>
                 Google Sheets + carga manual de datos
@@ -632,8 +632,8 @@ export default function Guide() {
                 {[
                   { threshold: "Más de 20 campañas activas simultáneas", icon: "📊" },
                   { threshold: "Más de 100 influencers reportados por mes", icon: "👥" },
-                  { threshold: "El cliente pide datos en tiempo real (no a fin de campaña)", icon: "-��" },
-                  { threshold: "Se necesita automatizar la detección de publicaciones nuevas", icon: "�--" },
+                  { threshold: "El cliente pide datos en tiempo real (no a fin de campaña)", icon: "⚡" },
+                  { threshold: "Se necesita automatizar la detección de publicaciones nuevas", icon: "🤖" },
                 ].map((r, i) => (
                   <div key={i} style={{
                     display: "flex", alignItems: "center", gap: 12,
