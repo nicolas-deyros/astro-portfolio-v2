@@ -24,9 +24,19 @@ describe('Blog SlideDeck', () => {
 
 	test('renders every slide with a title', () => {
 		const slides = doc.querySelectorAll('article[aria-roledescription="slide"]')
-		expect(slides).toHaveLength(6)
+		expect(slides).toHaveLength(10)
 		slides.forEach(slide => {
 			expect(slide.querySelector('h3')?.textContent?.trim()).toBeTruthy()
+		})
+	})
+
+	test('every slide image has descriptive alt text', () => {
+		const images = doc.querySelectorAll(
+			'article[aria-roledescription="slide"] img',
+		)
+		expect(images).toHaveLength(10)
+		images.forEach(img => {
+			expect(img.getAttribute('alt')?.length).toBeGreaterThan(40)
 		})
 	})
 })
