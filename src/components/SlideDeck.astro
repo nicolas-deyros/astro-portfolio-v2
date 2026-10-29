@@ -1,0 +1,27 @@
+---
+interface Props {
+	label: string
+}
+
+const { label } = Astro.props
+---
+
+<section
+	aria-roledescription="carousel"
+	aria-label={label}
+	class="not-prose my-8">
+	<div
+		tabindex="0"
+		class="slide-track flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 focus-visible:outline-2 focus-visible:outline-blue-500">
+		<slot />
+	</div>
+	<p class="text-center text-sm text-slate-500 dark:text-slate-400">
+		Scroll or swipe sideways to see every slide →
+	</p>
+</section>
+
+<style>
+	.slide-track {
+		counter-reset: slide;
+	}
+</style>
