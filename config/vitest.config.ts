@@ -12,6 +12,7 @@ const SERVER_TESTS = [
 	'test/performance.test.ts',
 	'test/e2e/security.test.ts',
 	'test/e2e/links-tag-filtering.test.ts',
+	'test/e2e/blog-slide-deck.test.ts',
 ]
 
 export default defineConfig({
