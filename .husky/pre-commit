@@ -1,2 +1,8 @@
-npx lint-staged
+branch=$(git symbolic-ref --short -q HEAD)
+if [ "$branch" = "master" ] || [ "$branch" = "main" ]; then
+  echo "❌ Direct commits to '$branch' are forbidden."
+  echo "💡 Create a feature branch: npm run git:start <branch-name> \"<description>\""
+  exit 1
+fi
 
+npx lint-staged

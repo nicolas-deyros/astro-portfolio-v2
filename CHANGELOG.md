@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.4] - 2026-11-12
+
+### 🔧 Tooling
+
+- **`session:init` no longer upgrades dependencies by default** — it pulls `master` and reports the outdated count. Pass `npm run session:init -- --upgrade` to run `deps:upgrade`, on a dedicated branch. Previously any outdated package triggered an upgrade on `master`, leaking dependency bumps into unrelated work.
+- **Commits on `master`/`main` are rejected** by `.husky/pre-commit`, enforcing the feature-branch rule for people and agents alike.
+- **Shared Claude Code permissions** in `.claude/settings.json`: allow-list for routine git/gh/npm commands (Bash and PowerShell), confirmation for push/reset/rebase/merge/install/`db:migrate`, and deny for force-push, `--no-verify`, `db:push` and reading `.env` files.
+- **`CLAUDE.md`** — delivery checklist now spells out docs, `SECURITY.md`, version and changelog steps; review protocol defaults to SMALL CHANGE; removed stale `@astrojs/db` and `.mcp.json` references.
+- `.gemini/` (session report output) is gitignored.
+
 ## [4.4.3] - 2026-10-20
 
 ### 🐛 Fixed
