@@ -49,6 +49,7 @@
 		"pre-push": "npm run type-check && npm run test:critical",
 		"check:commit": "tsx tools/test-grammar.ts",
 		"// === Utilities ===": "",
+		"prepare": "git config core.hooksPath .husky || echo \"hooks not installed (no git repo)\"",
 		"clean": "tsx tools/test-clean.ts",
 		"fast": "tsx tools/test-fast.ts",
 		"// === Git Automation ===": "",

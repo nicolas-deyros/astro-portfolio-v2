@@ -177,7 +177,7 @@ npm run fallow:fix        # Preview automatic dead-code removal (dry-run)
 - **Type Safety:** Strict TypeScript everywhere. All new code must be typed.
 - **Styling:** Tailwind CSS utility classes. Scoped `<style>` blocks in Astro files or CSS Modules for component-specific styles.
 - **Testing:** New features MUST include tests (unit, integration, and/or end-to-end as appropriate).
-- **Commits:** Conventional commits enforced by commitlint. Pre-commit hooks (lint-staged) auto-lint and format. Pre-push hooks run critical tests.
+- **Commits:** Conventional commits enforced by commitlint. Pre-commit hooks (lint-staged) auto-lint and format. Pre-push hooks run critical tests. Hooks live in `.husky/` and are wired by the `prepare` script (`git config core.hooksPath .husky`) — no husky package.
 - **Documentation:** Maintain `docs/` for significant architectural changes.
 - **Astro Components:** Use typed `Props` interface. Prefer static over hydrated. Choose the least-eager client directive that works.
 - **Content:** All blog content in MDX. Schema validated by Zod. SEO limits enforced in schema.

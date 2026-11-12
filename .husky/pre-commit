@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 branch=$(git symbolic-ref --short -q HEAD)
 if [ "$branch" = "master" ] || [ "$branch" = "main" ]; then
   echo "❌ Direct commits to '$branch' are forbidden."
