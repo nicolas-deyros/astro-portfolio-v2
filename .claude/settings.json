@@ -8,7 +8,6 @@
 			"Bash(git fetch *)",
 			"Bash(git pull *)",
 			"Bash(git switch *)",
-			"Bash(git checkout *)",
 			"Bash(git branch *)",
 			"Bash(git add *)",
 			"Bash(git commit *)",
@@ -17,7 +16,6 @@
 			"Bash(git rev-list *)",
 			"Bash(gh pr *)",
 			"Bash(gh run *)",
-			"Bash(gh api *)",
 			"Bash(npm run *)",
 			"Bash(npm test *)",
 			"Bash(npm ci *)",
@@ -35,7 +33,6 @@
 			"PowerShell(git fetch *)",
 			"PowerShell(git pull *)",
 			"PowerShell(git switch *)",
-			"PowerShell(git checkout *)",
 			"PowerShell(git branch *)",
 			"PowerShell(git add *)",
 			"PowerShell(git commit *)",
@@ -44,7 +41,6 @@
 			"PowerShell(git rev-list *)",
 			"PowerShell(gh pr *)",
 			"PowerShell(gh run *)",
-			"PowerShell(gh api *)",
 			"PowerShell(npm run *)",
 			"PowerShell(npm test *)",
 			"PowerShell(npm ci *)",
@@ -74,7 +70,19 @@
 			"PowerShell(npm install *)",
 			"PowerShell(npm run db:migrate*)",
 			"PowerShell(npm run deps:upgrade*)",
-			"PowerShell(npm run git:ship*)"
+			"PowerShell(npm run git:ship*)",
+			"Bash(git checkout *)",
+			"Bash(gh api *)",
+			"Bash(git stash drop*)",
+			"Bash(git stash clear*)",
+			"Bash(git branch -D *)",
+			"Bash(npm run db:seed*)",
+			"PowerShell(git checkout *)",
+			"PowerShell(gh api *)",
+			"PowerShell(git stash drop*)",
+			"PowerShell(git stash clear*)",
+			"PowerShell(git branch -D *)",
+			"PowerShell(npm run db:seed*)"
 		],
 		"deny": [
 			"Bash(git push --force*)",
@@ -91,7 +99,15 @@
 			"PowerShell(npm run db:push*)",
 			"Read(./.env)",
 			"Read(./.env.local)",
-			"Read(./.env.production)"
+			"Read(./.env.production)",
+			"Bash(git commit --no-verify*)",
+			"Bash(git commit -n *)",
+			"Bash(git push --no-verify*)",
+			"Bash(git push * --no-verify*)",
+			"PowerShell(git commit --no-verify*)",
+			"PowerShell(git commit -n *)",
+			"PowerShell(git push --no-verify*)",
+			"PowerShell(git push * --no-verify*)"
 		]
 	}
 }
