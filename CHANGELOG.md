@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.5] - 2026-11-13
+
+### 📝 Docs
+
+- `docs/ISSUES.md`: ISSUE-07 to ISSUE-10 marked as fixed (verified against current code).
+- `CLAUDE.md`: Boy Scout list updated to match; notes the three `console.log` calls left in `admin/crm.astro`.
+
 ## [4.4.4] - 2026-11-12
 
 ### 🔧 Tooling

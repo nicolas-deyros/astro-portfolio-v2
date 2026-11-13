@@ -270,11 +270,11 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ### Boy Scout (Cleanup)
 
-- Debug `console.log` statements in `api/links.json.ts` and `admin/links.astro`
-- Unnecessary comments restating code in `session.ts` and `auth.json.ts`
+- ~~Debug `console.log` in `api/links.json.ts` and `admin/links.astro`~~ — Fixed (ISSUE-07). Three remain in `admin/crm.astro`.
+- ~~Unnecessary comments in `session.ts` and `auth.json.ts`~~ — Fixed (ISSUE-08)
 - Magic numbers: session duration, byte lengths, Chrome AI version threshold
-- `prerender = true` in `TopPosts.astro` component (no effect)
-- `z.string().transform()` for dates instead of `z.coerce.date()` in content schema
+- ~~`prerender = true` in `TopPosts.astro`~~ — Fixed (ISSUE-09)
+- ~~`z.string().transform()` for dates~~ — Fixed: `z.coerce.date()` in `src/content.config.ts` (ISSUE-10)
 
 ### Error Handling Patterns
 
