@@ -69,7 +69,7 @@ Centralized in `src/middleware.ts`:
 
 ### Integrations
 
-`mdx`, `partytown`, `sitemap` (excludes /admin), `astro-icon`, `@astrojs/db`, `react`
+`mdx`, `partytown`, `sitemap` (excludes /admin), `astro-icon`, `react`
 
 ## Key Directories
 
@@ -80,7 +80,8 @@ Centralized in `src/middleware.ts`:
 - `src/layouts/` — Single layout wrapper (with ClientRouter)
 - `src/lib/` — Business logic: `email.ts`, `session.ts`, `clientSession.ts`, `clientAuth.ts`, `blogPostUtils.ts`, `audioPlayer.ts`, `browserDetection.ts`
 - `src/utils/` — Shared utilities
-- `db/` — Astro DB schema (3 tables) and seed data
+- `src/db/` — Drizzle schema (`schema.ts`, 7 tables)
+- `db/` — Legacy Astro DB config and seed data
 - `test/` — Comprehensive test suites
 - `docs/` — Technical documentation
 - `config/` — ESLint, Prettier, Vitest, CSpell, textlint configs
@@ -148,7 +149,8 @@ npm run deps:audit           # Quick Socket.dev audit of current dependencies
 > The `~/.npmrc` setting `ignore-scripts=true` blocks lifecycle scripts globally — keep it.
 
 ```bash
-npm run session:init                     # Sync environment before starting work
+npm run session:init                     # Pull master + report outdated deps (no upgrade)
+npm run session:init -- --upgrade        # Same, plus deps:upgrade (dedicated deps branch only)
 npm run git:start <branch-name> "<desc>" # Create feature branch + Draft PR
 npm run docs:sync                        # Sync documentation and changelog
 npm run git:ship                         # Full check + ship (PR ready + auto-merge)
@@ -175,7 +177,7 @@ npm run fallow:fix        # Preview automatic dead-code removal (dry-run)
 - **Type Safety:** Strict TypeScript everywhere. All new code must be typed.
 - **Styling:** Tailwind CSS utility classes. Scoped `<style>` blocks in Astro files or CSS Modules for component-specific styles.
 - **Testing:** New features MUST include tests (unit, integration, and/or end-to-end as appropriate).
-- **Commits:** Conventional commits enforced by commitlint. Pre-commit hooks (lint-staged) auto-lint and format. Pre-push hooks run critical tests.
+- **Commits:** Conventional commits enforced by commitlint. Pre-commit hooks (lint-staged) auto-lint and format. Pre-push hooks run critical tests. Hooks live in `.husky/` and are wired by the `prepare` script (`git config core.hooksPath .husky`) — no husky package.
 - **Documentation:** Maintain `docs/` for significant architectural changes.
 - **Astro Components:** Use typed `Props` interface. Prefer static over hydrated. Choose the least-eager client directive that works.
 - **Content:** All blog content in MDX. Schema validated by Zod. SEO limits enforced in schema.
@@ -190,9 +192,11 @@ Before any work:
 npm run session:init
 ```
 
+It only reports outdated dependencies. Dependency upgrades go in their own branch (`npm run session:init -- --upgrade`), never mixed into feature or content work.
+
 ### 2. Branching
 
-**Direct commits to `master` (or `main`) are FORBIDDEN.** Always use feature branches:
+**Direct commits to `master` (or `main`) are FORBIDDEN** — the `.husky/pre-commit` hook rejects them. Always use feature branches, without asking first:
 
 1. Create branch + Draft PR: `npm run git:start <branch-name> "<description>"`
 2. Develop using TDD: Write tests → Implement → Refactor
@@ -200,9 +204,15 @@ npm run session:init
 
 ### 3. Delivery
 
-1. Sync docs: `npm run docs:sync`
-2. Full verification: `npm run check:full`
-3. PR lifecycle: Mark Ready for Review (`gh pr ready`) → Enable Auto-Merge (`gh pr merge --auto --squash`)
+Every change, however small, includes these steps. Do them without being asked and list them in any plan or summary:
+
+1. Docs: run `npm run docs:sync`, then update whatever the change made stale — `docs/`, `README.md`, and this file
+2. Security: state whether `SECURITY.md` is affected; update it if so
+3. Version: bump `package.json` (SemVer) and add a `CHANGELOG.md` entry
+4. Full verification: `npm run check:full`
+5. PR lifecycle: Mark Ready for Review (`gh pr ready`) → Enable Auto-Merge (`gh pr merge --auto --squash`)
+
+Claude Code permissions shared by the team live in `.claude/settings.json` (allow/ask/deny rules). Personal overrides go in the gitignored `.claude/settings.local.json`.
 
 ## Engineering Preferences
 
@@ -233,7 +243,7 @@ For each issue found:
 
 ### Before Starting Any Change
 
-Ask which mode:
+Default to **SMALL CHANGE** without asking. Use BIG CHANGE only when the user says so, or propose it when the change spans several subsystems.
 
 1. **BIG CHANGE** — Interactive, one section at a time (Architecture → Code Quality → Tests → Performance), max 4 issues per section
 2. **SMALL CHANGE** — One question per review section
@@ -292,7 +302,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ## MCP Servers
 
-This project uses MCP servers defined in `.mcp.json`:
+No `.mcp.json` is checked in. Useful servers to configure locally:
 
 - **astro-mcp** — Astro framework operations (`npx -y @astrojs/mcp-server`)
 - **GitHub** — GitHub integration for repos, issues, and PRs (`npx -y @modelcontextprotocol/server-github`)

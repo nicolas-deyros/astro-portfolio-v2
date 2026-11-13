@@ -49,6 +49,7 @@ skills-lock.json
 .continue/
 
 # Generated/scratch output
+.gemini/
 graphify-out/
 .design-scratch/
 

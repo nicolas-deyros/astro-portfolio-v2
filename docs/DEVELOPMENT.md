@@ -85,7 +85,7 @@ The project uses a highly automated workflow. All feature development must follo
 
 #### Automation Scripts
 
-- `npm run session:init`: **Daily Driver.** Syncs Git, updates dependencies, and checks environment health.
+- `npm run session:init`: **Daily Driver.** Syncs Git and reports outdated dependencies. Upgrades them only with `npm run session:init -- --upgrade` (do that on a dedicated branch).
 - `npm run git:start <branch> [desc]`: Starts a new feature with a Draft PR on GitHub.
 - `npm run docs:sync`: Checks for documentation drift and suggests changelog updates.
 - `npm run git:ship`: Finalizes a feature, runs full checks, and handles the delivery process.

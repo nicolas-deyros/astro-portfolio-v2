@@ -51,7 +51,15 @@ async function main(): Promise<void> {
 		const outdated = JSON.parse(outdatedJson || '{}')
 		const updateCount = Object.keys(outdated).length
 
-		if (updateCount > 0) {
+		// Upgrading is opt-in: dep bumps belong in their own branch, not in whatever work follows.
+		if (updateCount > 0 && !process.argv.includes('--upgrade')) {
+			addReport(
+				`- [~] Dependencies: Found ${updateCount} updates (not applied; run \`npm run session:init -- --upgrade\`)`,
+			)
+			log(
+				`Found ${updateCount} outdated dependencies. Skipping upgrade (pass --upgrade to apply).`,
+			)
+		} else if (updateCount > 0) {
 			addReport(`- [~] Dependencies: Found ${updateCount} updates`)
 			addReport('  - Auto-updating via `npm run deps:upgrade`...')
 			log(`Found ${updateCount} outdated dependencies. Updating...`)
