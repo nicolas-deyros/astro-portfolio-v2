@@ -76,7 +76,7 @@
 
 **Effort:** Low (1 hour)
 
-### ISSUE-07: Debug Logs in Production
+### ~~ISSUE-07: Debug Logs in Production~~ (FIXED)
 
 | File                | Lines              |
 | ------------------- | ------------------ |
@@ -86,7 +86,7 @@
 **Fix:** Remove all `console.log` debug statements. Keep `console.error` for actual errors.
 **Effort:** Low (15 minutes)
 
-### ISSUE-08: Unnecessary Comments
+### ~~ISSUE-08: Unnecessary Comments~~ (FIXED)
 
 Comments that restate what the code does (violates clean-code "no obvious comments"):
 
@@ -105,7 +105,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ## 💡 Minor — Astro Best Practices
 
-### ISSUE-09: Ineffective `prerender` in Component
+### ~~ISSUE-09: Ineffective `prerender` in Component~~ (FIXED)
 
 |             |                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------- |
@@ -114,7 +114,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 | **Fix**     | Remove the export.                                                                                       |
 | **Effort**  | Trivial (1 minute)                                                                                       |
 
-### ISSUE-10: Date Schema Using `transform` Instead of `coerce`
+### ~~ISSUE-10: Date Schema Using `transform` Instead of `coerce`~~ (FIXED)
 
 |             |                                                                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -155,17 +155,17 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### ~~ISSUE-14: No Custom Error Hierarchy~~ (FIXED)
 
-|             |                                                                                                                                                               |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | `src/lib/errors.ts`, API endpoints                                                                                                                           |
-| **Problem** | Every error was a generic `Error`. No way to distinguish auth, validation, not-found, or service errors at the catch site.                                    |
+|             |                                                                                                                                                                                                                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Files**   | `src/lib/errors.ts`, API endpoints                                                                                                                                                                                                                                                                |
+| **Problem** | Every error was a generic `Error`. No way to distinguish auth, validation, not-found, or service errors at the catch site.                                                                                                                                                                        |
 | **Fix**     | Added `src/lib/errors.ts` with an `ApplicationError` hierarchy (`UnauthorizedError`, `ValidationError`) carrying `code`/`statusCode`, plus `toApplicationError` and `createSuccessResponse`/`createErrorResponse` helpers, used by the API endpoints. (Unused subclasses were trimmed in PR #65.) |
 
 ### ~~ISSUE-15: Error Context Destroyed by Wrapping~~ (FIXED)
 
 |             |                                                                                                                                          |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **File**    | ~~`src/actions/links.ts`~~ (removed in PR #65)                                                                                            |
+| **File**    | ~~`src/actions/links.ts`~~ (removed in PR #65)                                                                                           |
 | **Problem** | `throw new Error(\`Failed to create link: ${error.message}\`)` discarded the original stack trace.                                       |
 | **Fix**     | The offending file was deleted; `errors.ts` preserves the original error via the ECMAScript 2022 `cause` option in `toApplicationError`. |
 
@@ -220,12 +220,12 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### ~~ISSUE-21: No Auth Rate Limiting~~ (FIXED)
 
-|             |                                                                                                                                                                                                                                    |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **File**    | `src/pages/api/auth.json.ts` (login case), `src/pages/api/client/auth.json.ts` (login case)                                                                                                                                    |
-| **Problem** | No rate limiting, no lockout, no delay on failed login attempts on either the admin or client login endpoint. Enabled brute-force attacks; the client endpoint additionally let an attacker trigger unbounded PBKDF2 compute. |
-| **Fix**     | `src/lib/rateLimit.ts` — DB-backed (Turso/Drizzle) fixed-window counter, keyed `admin:<ip>` / `client:<ip>:<email>`, 5 attempts per 15 minutes. Checked before the credential comparison, cleared on success. New `LoginAttempts` table (migration `drizzle/0003_add_login_attempts.sql`).                                                                                                          |
-| **Effort**  | Medium (2-3 hours) — actual                                                                                                                                                                                                     |
+|             |                                                                                                                                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **File**    | `src/pages/api/auth.json.ts` (login case), `src/pages/api/client/auth.json.ts` (login case)                                                                                                                                                                                                |
+| **Problem** | No rate limiting, no lockout, no delay on failed login attempts on either the admin or client login endpoint. Enabled brute-force attacks; the client endpoint additionally let an attacker trigger unbounded PBKDF2 compute.                                                              |
+| **Fix**     | `src/lib/rateLimit.ts` — DB-backed (Turso/Drizzle) fixed-window counter, keyed `admin:<ip>` / `client:<ip>:<email>`, 5 attempts per 15 minutes. Checked before the credential comparison, cleared on success. New `LoginAttempts` table (migration `drizzle/0003_add_login_attempts.sql`). |
+| **Effort**  | Medium (2-3 hours) — actual                                                                                                                                                                                                                                                                |
 
 ---
 
@@ -262,10 +262,10 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### ~~ISSUE-25: Dual API Surface for Same Resources~~ (FIXED)
 
-|             |                                                                                                                                                                   |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Files**   | ~~Actions: `actions/links.ts`~~ — links now served only via REST `api/links.json.ts`; email only via the `sendEmail` Action.                                     |
-| **Problem** | Both REST endpoints and Astro Actions managed the same resources (email, links) with different validation, auth, and response formats.                            |
+|             |                                                                                                                                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Files**   | ~~Actions: `actions/links.ts`~~ — links now served only via REST `api/links.json.ts`; email only via the `sendEmail` Action.                                                                              |
+| **Problem** | Both REST endpoints and Astro Actions managed the same resources (email, links) with different validation, auth, and response formats.                                                                    |
 | **Fix**     | Removed the unused link Astro actions (`src/actions/links.ts`) entirely — they had zero consumers. Links are managed solely through the REST endpoint; the only remaining Action is `sendEmail`. (PR #65) |
 
 ---
@@ -357,7 +357,7 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ### Quick Wins (≤2 hours total)
 
-ISSUE-07, 08, 09, 10, 11, 12 (clean code), ~~ISSUE-15~~, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
+~~ISSUE-07, 08, 09, 10~~, 11, 12 (clean code), ~~ISSUE-15~~, 16, 17, 20 (error handling), ISSUE-22, 26 (API design), ISSUE-28, 32, 33 (SEO)
 
 ### Medium Effort (2-4 hours each)
 
