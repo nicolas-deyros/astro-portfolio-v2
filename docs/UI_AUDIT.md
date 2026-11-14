@@ -2,6 +2,11 @@
 
 Baseline audit before the UI polish work. Scope: public site, admin, client portal. Standard: WCAG 2.2 AA (see `PRODUCT.md`). Visual baseline: `DESIGN.md`.
 
+## Status
+
+- **2026-11-14 — public site pass (v4.4.7):** findings 1–5, 7–14, 17, 19, 22, 23 fixed. Re-run: zero axe violations, no horizontal overflow, one `h1` per page on the eight public routes. Finding 18 is half done ("Visit link" target fixed; the audio seek bar is still 8px tall).
+- **Open:** 6, 15, 16 (admin and client portal), 18 (seek bar), 20, 21, 24.
+
 ## Method
 
 - `impeccable detect` over `src/` (39 findings, 36 advisory).

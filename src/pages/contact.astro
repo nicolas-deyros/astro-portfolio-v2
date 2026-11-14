@@ -3,6 +3,9 @@ import ContactUs from '@components/Form/ContactUS'
 import Layout from '@layouts/index.astro'
 ---
 
-<Layout title="Contact Us">
+<Layout
+	title="Contact Us"
+	description="Get in touch with Nicolás Deyros about a project, a role, or an idea.">
+	<h1 class="sr-only">Contact</h1>
 	<ContactUs client:visible />
 </Layout>

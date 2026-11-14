@@ -83,7 +83,7 @@ describe.skip('Links Tag Filtering and Pagination', () => {
 			const $ = load(html)
 
 			// Check that filtered indicator appears in title
-			const title = $('h3').text()
+			const title = $('h1').text()
 			expect(title).toContain(`filtered by "${testTag}"`)
 
 			// Check that all displayed links contain the tag

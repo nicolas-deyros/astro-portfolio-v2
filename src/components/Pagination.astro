@@ -12,8 +12,8 @@ const tagParam = currentUrl?.includes('?tag=')
 	: ''
 ---
 
-<div
-	class="my-3 flex items-center justify-center gap-3 text-slate-700"
+<nav
+	class="my-3 flex items-center justify-center gap-3 text-slate-700 dark:text-slate-300"
 	aria-label="Pagination">
 	{
 		startUrl ? (
@@ -62,4 +62,4 @@ const tagParam = currentUrl?.includes('?tag=')
 			/>
 		) : null
 	}
-</div>
+</nav>

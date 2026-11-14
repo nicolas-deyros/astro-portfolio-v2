@@ -163,7 +163,7 @@ const getTagColor = (tag: string) => {
 	</Fragment>
 	<Section ariaLabel="Latest Social Links">
 		<div class="mb-4 flex items-center justify-between gap-3">
-			<h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">
+			<h1 class="text-xl font-bold text-slate-800 dark:text-slate-200">
 				Latest Social Links
 				{
 					(selectedTag || searchQuery) && (
@@ -174,7 +174,7 @@ const getTagColor = (tag: string) => {
 						</span>
 					)
 				}
-			</h3>
+			</h1>
 
 			<a
 				href="/rss-links.xml"
@@ -402,10 +402,10 @@ const getTagColor = (tag: string) => {
 					</form>
 
 					<div class="mb-4 flex items-center justify-between">
-						<h4
+						<h2
 							class="text-sm font-semibold text-slate-900 dark:text-slate-100">
 							Filter by tag
-						</h4>
+						</h2>
 						{
 							selectedTag && (
 								<a

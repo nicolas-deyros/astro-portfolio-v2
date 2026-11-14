@@ -24,7 +24,7 @@ function StatusBanner({ variant, message }: StatusBannerProps) {
 			role="status"
 			aria-live="polite"
 			className={`mb-4 rounded-lg border p-4 text-center transition-all duration-300 ${STATUS_STYLES[variant]}`}>
-			<h3 className="text-lg font-semibold">{message}</h3>
+			<p className="text-lg font-semibold">{message}</p>
 		</div>
 	)
 }
@@ -61,7 +61,7 @@ const ContactUs = () => {
 
 	const buttonTexts = {
 		enabled: 'Send Message',
-		disabled: 'Complete Form',
+		disabled: 'Send Message',
 		submitting: 'Sending...',
 		success: 'Sent!',
 	}

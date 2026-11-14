@@ -5,6 +5,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.7] - 2026-11-14
+
+### ♿ Accessibility
+
+Public-site fixes from `docs/UI_AUDIT.md` (findings 1–5, 7–14, 17, 19, 22, 23). Axe-core now reports zero WCAG 2.2 AA violations on the eight public routes in light and dark.
+
+- Theme toggles have an accessible name; desktop nav items sit in a list; pagination is a `nav` landmark.
+- Dark mode: footer, pagination, and contact form fields now have dark variants and pass contrast.
+- Home no longer scrolls sideways on phones; the hero icon is capped so the name is visible without scrolling.
+- `prefers-reduced-motion` is respected: entry animations and the home typewriter stop.
+- One `h1` per page with an ordered outline on home, blog, categories, tags, links, and contact.
+- Nav labels appear on keyboard focus; the closed mobile menu is no longer focusable and its shadow no longer leaks onto the page.
+- Reading-progress badge moved clear of the theme toggle and passes contrast.
+- Meta descriptions added to `/blog/` and `/contact/`.
+
+### 🧹 Cleanup
+
+- `fadeInUp` keyframes defined once in `global.css` instead of five components; entry stagger cut to 60 ms per item.
+- Removed a debug `console.log` from the home page.
+
+### 🧪 Tests
+
+- `test/unit/ui-a11y.test.ts`: 17 source-level guards for the fixes above.
+
 ## [4.4.6] - 2026-11-13
 
 ### 📝 Docs
