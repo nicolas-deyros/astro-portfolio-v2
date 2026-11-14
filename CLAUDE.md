@@ -298,7 +298,13 @@ See `docs/ISSUES.md` for full details and implementation plan.
 - **No canonical tags** — Zero `<link rel="canonical">` across the site. Duplicate content risk from www/non-www, trailing slashes.
 - **No structured data** — Zero JSON-LD markup. Missing Person, BlogPosting, BreadcrumbList, site schemas.
 - **OG image is favicon.svg** — Social shares show tiny icon. Need proper 1200×630 PNG OG image, ideally per-page.
-- **404 page** — Heading hierarchy violation (h1→h3 skips h2), missing meta description.
+- ~~**404 page**~~ — Fixed: `h1 → h2` outline and meta description are in place (verified in `docs/UI_AUDIT.md`).
+
+### UI / Design
+
+- `PRODUCT.md` — product truth for design work (audiences, success, WCAG 2.2 AA).
+- `DESIGN.md` + `.impeccable/design.json` — the current visual system; refine against it, do not redesign.
+- `docs/UI_AUDIT.md` — ranked UI findings (P1–P3) for the public site, admin, and client portal.
 
 ## MCP Servers
 

@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.6] - 2026-11-13
+
+### 📝 Docs
+
+- `PRODUCT.md`: product context for design work (audiences, success criteria, WCAG 2.2 AA requirement).
+- `DESIGN.md` and `.impeccable/design.json`: the current visual system documented as the baseline for refinement.
+- `docs/UI_AUDIT.md`: baseline UI audit of the public site, admin, and client portal (12/20, 24 findings ranked P1–P3).
+- `CLAUDE.md`: points to the new files; removes the stale 404 debt note.
+
 ## [4.4.5] - 2026-11-13
 
 ### 📝 Docs
