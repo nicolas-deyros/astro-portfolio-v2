@@ -91,6 +91,19 @@ describe('UI accessibility guards', () => {
 		expect(crm).not.toContain('fixed inset-0')
 	})
 
+	it('clears any open submission modal before inserting a new one', () => {
+		// Regression: double "View" clicks used to leave a stale duplicate
+		// #submission-modal whose Close button couldn't target the right one.
+		const crm = read('pages/admin/crm.astro')
+		const fnBody = crm.slice(
+			crm.indexOf('function openSubmissionModal'),
+			crm.indexOf('insertAdjacentHTML'),
+		)
+		expect(fnBody).toContain(
+			"document.getElementById('submission-modal')?.remove()",
+		)
+	})
+
 	it('names every icon-only close button', () => {
 		// Each "✕" belongs to the nearest preceding <button opening tag.
 		const buttons = read('components/Admin/AdminClientsManager.tsx')
