@@ -11,7 +11,7 @@ const Input = ({ label, error, touched, className, ...props }: InputProps) => {
 		'block w-full rounded-md border p-2.5 text-sm transition-colors duration-200'
 	const stateClasses = hasError
 		? 'border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500'
-		: 'border-slate-300 bg-slate-50 text-slate-900 placeholder-slate-500 dark:text-slate-500 focus:border-blue-500 focus:ring-blue-500 focus:bg-white'
+		: 'border-slate-300 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-blue-500 focus:ring-blue-500 focus:bg-white dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:bg-slate-900'
 
 	const labelClasses = `block text-sm font-medium mb-1 ${
 		hasError ? 'text-red-700' : 'text-slate-700 dark:text-slate-200'

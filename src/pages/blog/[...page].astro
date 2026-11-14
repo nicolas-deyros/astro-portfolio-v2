@@ -59,15 +59,17 @@ const getTagColor = (tag: string) => {
 }
 ---
 
-<Layout title="Blog">
+<Layout
+	title="Blog"
+	description="Posts by Nicolás Deyros on web development, AI, and project management.">
 	<div class="flex flex-col lg:flex-row lg:gap-8">
 		<!-- Main content -->
 		<div class="flex-1">
 			<Section ariaLabel="New Blog Posts">
-				<h2
+				<h1
 					class="my-3 w-full text-center text-4xl font-bold text-slate-800 dark:text-slate-200">
 					New Blog Posts
-				</h2>
+				</h1>
 
 				<div class="mt-3 flex w-full flex-col items-center gap-4">
 					{
@@ -82,13 +84,13 @@ const getTagColor = (tag: string) => {
 										day: 'numeric',
 									})}
 								</time>
-								<h3 class="mb-1 text-xl font-bold text-slate-900 dark:text-slate-100">
+								<h2 class="mb-1 text-xl font-bold text-slate-900 dark:text-slate-100">
 									<a
 										href={`/blog/${post.id}/`}
 										class="transition-colors hover:text-blue-600 hover:underline dark:hover:text-blue-400">
 										{post.data.title}
 									</a>
-								</h3>
+								</h2>
 								<div class="mb-2 text-sm text-slate-600 dark:text-slate-400">
 									By {post.data.author ?? 'Unknown Author'}
 								</div>
@@ -111,10 +113,10 @@ const getTagColor = (tag: string) => {
 		<!-- Sidebar - Right on desktop, bottom on mobile -->
 		<aside class="w-full lg:w-80 lg:flex-shrink-0">
 			<Section ariaLabel="Blog Top Categories">
-				<h3
+				<h2
 					class="mb-6 text-center text-2xl font-bold text-slate-800 dark:text-slate-200">
 					Popular Categories
-				</h3>
+				</h2>
 
 				<div class="mx-auto max-w-4xl lg:max-w-none">
 					<div class="flex flex-wrap justify-center gap-3">

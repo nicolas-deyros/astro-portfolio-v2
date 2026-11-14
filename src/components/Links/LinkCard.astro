@@ -33,7 +33,7 @@ const faviconUrl = hostname
 
 <article
 	class="article-animate link-item flex w-full max-w-2xl flex-col gap-3 border-b-2 border-slate-200 py-5 dark:border-slate-700"
-	style={`animation-delay: ${index * 100}ms`}
+	style={`animation-delay: ${index * 60}ms`}
 	data-link-id={link.id}>
 	<header class="flex items-center gap-3">
 		{
@@ -49,7 +49,8 @@ const faviconUrl = hostname
 			)
 		}
 		<div class="min-w-0 flex-1">
-			<div class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+			<div
+				class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
 				{hostname}
 			</div>
 			<time
@@ -80,7 +81,8 @@ const faviconUrl = hostname
 	}
 
 	<div>
-		<h4 class="text-base font-bold text-slate-900 md:text-lg dark:text-slate-100">
+		<h2
+			class="text-base font-bold text-slate-900 md:text-lg dark:text-slate-100">
 			<a
 				href={trackedUrl}
 				target="_blank"
@@ -88,7 +90,7 @@ const faviconUrl = hostname
 				class="transition-colors hover:text-blue-600 hover:underline dark:hover:text-blue-400">
 				{link.title}
 			</a>
-		</h4>
+		</h2>
 		{
 			link.description && (
 				<p
@@ -117,7 +119,7 @@ const faviconUrl = hostname
 			href={trackedUrl}
 			target="_blank"
 			rel="noopener"
-			class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400">
+			class="inline-block py-1 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400">
 			Visit link →
 		</a>
 
@@ -137,8 +139,8 @@ const faviconUrl = hostname
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-					></path>
+						d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z">
+					</path>
 				</svg>
 				<span class="like-count">{link.likes}</span>
 			</button>
@@ -158,8 +160,8 @@ const faviconUrl = hostname
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-					></path>
+						d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z">
+					</path>
 				</svg>
 				<span class="share-label sr-only sm:not-sr-only">Share</span>
 			</button>
@@ -204,95 +206,84 @@ const faviconUrl = hostname
 
 		const likedIds = getLikedIds()
 
-		document.querySelectorAll<HTMLButtonElement>('.like-button').forEach(button => {
-			const id = button.dataset.linkId
-			if (!id) return
+		document
+			.querySelectorAll<HTMLButtonElement>('.like-button')
+			.forEach(button => {
+				const id = button.dataset.linkId
+				if (!id) return
 
-			if (likedIds.includes(id)) {
-				button.setAttribute('aria-pressed', 'true')
-				button.classList.add('text-rose-600', 'dark:text-rose-400')
-			}
-
-			button.addEventListener('click', async () => {
-				if (button.getAttribute('aria-pressed') === 'true') return
-
-				const countEl = button.querySelector('.like-count')
-				const previousCount = countEl ? parseInt(countEl.textContent || '0') : 0
-
-				button.setAttribute('aria-pressed', 'true')
-				button.classList.add('text-rose-600', 'dark:text-rose-400')
-				if (countEl) countEl.textContent = String(previousCount + 1)
-				setLiked(id)
-
-				try {
-					const res = await fetch('/api/links/like.json', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ id: Number(id) }),
-					})
-					if (!res.ok) throw new Error('Like request failed')
-					const data = await res.json()
-					if (countEl && typeof data.likes === 'number') {
-						countEl.textContent = String(data.likes)
-					}
-				} catch {
-					// Roll back on failure.
-					button.setAttribute('aria-pressed', 'false')
-					button.classList.remove('text-rose-600', 'dark:text-rose-400')
-					if (countEl) countEl.textContent = String(previousCount)
-					unsetLiked(id)
+				if (likedIds.includes(id)) {
+					button.setAttribute('aria-pressed', 'true')
+					button.classList.add('text-rose-600', 'dark:text-rose-400')
 				}
-			})
-		})
 
-		document.querySelectorAll<HTMLButtonElement>('.share-button').forEach(button => {
-			button.addEventListener('click', async () => {
-				const url = button.dataset.linkUrl
-				const title = button.dataset.linkTitle
-				if (!url) return
+				button.addEventListener('click', async () => {
+					if (button.getAttribute('aria-pressed') === 'true') return
 
-				const label = button.querySelector('.share-label')
+					const countEl = button.querySelector('.like-count')
+					const previousCount = countEl
+						? parseInt(countEl.textContent || '0')
+						: 0
 
-				if (navigator.share) {
+					button.setAttribute('aria-pressed', 'true')
+					button.classList.add('text-rose-600', 'dark:text-rose-400')
+					if (countEl) countEl.textContent = String(previousCount + 1)
+					setLiked(id)
+
 					try {
-						await navigator.share({ title, url })
-						return
+						const res = await fetch('/api/links/like.json', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ id: Number(id) }),
+						})
+						if (!res.ok) throw new Error('Like request failed')
+						const data = await res.json()
+						if (countEl && typeof data.likes === 'number') {
+							countEl.textContent = String(data.likes)
+						}
 					} catch {
-						// User cancelled the share sheet — no fallback needed.
-						return
+						// Roll back on failure.
+						button.setAttribute('aria-pressed', 'false')
+						button.classList.remove('text-rose-600', 'dark:text-rose-400')
+						if (countEl) countEl.textContent = String(previousCount)
+						unsetLiked(id)
 					}
-				}
-
-				try {
-					await navigator.clipboard.writeText(url)
-					if (label) {
-						const original = label.textContent
-						label.textContent = 'Copied!'
-						setTimeout(() => {
-							label.textContent = original
-						}, 1500)
-					}
-				} catch {
-					// Clipboard API unavailable — nothing more we can do silently.
-				}
+				})
 			})
-		})
+
+		document
+			.querySelectorAll<HTMLButtonElement>('.share-button')
+			.forEach(button => {
+				button.addEventListener('click', async () => {
+					const url = button.dataset.linkUrl
+					const title = button.dataset.linkTitle
+					if (!url) return
+
+					const label = button.querySelector('.share-label')
+
+					if (navigator.share) {
+						try {
+							await navigator.share({ title, url })
+							return
+						} catch {
+							// User cancelled the share sheet — no fallback needed.
+							return
+						}
+					}
+
+					try {
+						await navigator.clipboard.writeText(url)
+						if (label) {
+							const original = label.textContent
+							label.textContent = 'Copied!'
+							setTimeout(() => {
+								label.textContent = original
+							}, 1500)
+						}
+					} catch {
+						// Clipboard API unavailable — nothing more we can do silently.
+					}
+				})
+			})
 	})
 </script>
-
-<style>
-	@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(30px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-	.article-animate {
-		opacity: 0;
-		animation: fadeInUp 0.6s forwards;
-	}
-</style>

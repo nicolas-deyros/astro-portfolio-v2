@@ -53,29 +53,31 @@ const isLoggedIn = !!session
 
 <!-- Desktop Navigation -->
 <nav class="hidden lg:flex lg:items-center lg:gap-3">
-	{
-		navData.map((item: NavItem) => (
-			<NavList
-				href={item.path}
-				icon={item.icon}
-				text={item.text}
-				title={item.text}
-				data-navLink
-			/>
-		))
-	}
-	{/* Admin Dashboard Link (Desktop) - Only render if logged in */}
-	{
-		isLoggedIn && (
-			<NavList
-				href="/admin"
-				icon="mdi:shield-account"
-				text="Admin"
-				title="Admin Dashboard"
-				data-navLink
-			/>
-		)
-	}
+	<ul class="flex items-center gap-3">
+		{
+			navData.map((item: NavItem) => (
+				<NavList
+					href={item.path}
+					icon={item.icon}
+					text={item.text}
+					title={item.text}
+					data-navLink
+				/>
+			))
+		}
+		{/* Admin Dashboard Link (Desktop) - Only render if logged in */}
+		{
+			isLoggedIn && (
+				<NavList
+					href="/admin"
+					icon="mdi:shield-account"
+					text="Admin"
+					title="Admin Dashboard"
+					data-navLink
+				/>
+			)
+		}
+	</ul>
 	<!-- Admin Logout Button (Desktop) - Only render if logged in -->
 	{
 		isLoggedIn && (
@@ -95,10 +97,11 @@ const isLoggedIn = !!session
 			type="checkbox"
 			value=""
 			id="theme-toggle-checkbox"
+			aria-label="Dark mode"
 			class="peer sr-only"
 		/>
 		<div
-			class="peer relative h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-800 peer-focus:ring-4 peer-focus:ring-slate-300 peer-focus:outline-none before:absolute before:top-[2px] before:left-[2px] before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:border before:border-slate-300 before:bg-white before:text-xs before:text-yellow-600 before:transition-all before:duration-300 before:content-['☀'] peer-checked:before:translate-x-full peer-checked:before:border-white peer-checked:before:opacity-0 after:absolute after:top-[2px] after:left-[2px] after:flex after:h-5 after:w-5 after:items-center after:justify-center after:rounded-full after:border after:border-white after:bg-gray-900 after:text-xs after:text-blue-200 after:opacity-0 after:transition-all after:duration-300 after:content-['☽'] peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:opacity-100 dark:bg-gray-700 dark:peer-checked:bg-slate-200 dark:peer-focus:ring-slate-600 dark:before:border-gray-600 dark:before:bg-gray-300">
+			class="peer relative h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-800 peer-focus-visible:ring-4 peer-focus-visible:ring-slate-300 peer-focus-visible:outline-none before:absolute before:top-[2px] before:left-[2px] before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:border before:border-slate-300 before:bg-white before:text-xs before:text-yellow-600 before:transition-all before:duration-300 before:content-['☀'] peer-checked:before:translate-x-full peer-checked:before:border-white peer-checked:before:opacity-0 after:absolute after:top-[2px] after:left-[2px] after:flex after:h-5 after:w-5 after:items-center after:justify-center after:rounded-full after:border after:border-white after:bg-gray-900 after:text-xs after:text-blue-200 after:opacity-0 after:transition-all after:duration-300 after:content-['☽'] peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:opacity-100 dark:bg-gray-700 dark:peer-checked:bg-slate-200 dark:peer-focus-visible:ring-slate-600 dark:before:border-gray-600 dark:before:bg-gray-300">
 		</div>
 	</label>
 </nav>
@@ -113,7 +116,7 @@ const isLoggedIn = !!session
 <!-- Mobile Navigation Menu -->
 <nav
 	id="mobile-menu"
-	class="fixed top-0 right-0 z-50 h-full w-80 max-w-[90vw] translate-x-full transform bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden dark:bg-gray-900"
+	class="invisible fixed top-0 right-0 z-50 h-full w-80 max-w-[90vw] translate-x-full transform bg-white shadow-xl transition-[translate,visibility] duration-300 ease-in-out lg:hidden dark:bg-gray-900"
 	aria-label="Mobile navigation">
 	<!-- Mobile Menu Header -->
 	<div
@@ -185,10 +188,11 @@ const isLoggedIn = !!session
 				type="checkbox"
 				value=""
 				id="mobile-theme-toggle-checkbox"
+				aria-label="Dark mode"
 				class="peer sr-only"
 			/>
 			<div
-				class="peer relative h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-800 peer-focus:ring-4 peer-focus:ring-slate-300 peer-focus:outline-none before:absolute before:top-[2px] before:left-[2px] before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:border before:border-slate-300 before:bg-white before:text-xs before:text-yellow-600 before:transition-all before:duration-300 before:content-['☀'] peer-checked:before:translate-x-full peer-checked:before:border-white peer-checked:before:opacity-0 after:absolute after:top-[2px] after:left-[2px] after:flex after:h-5 after:w-5 after:items-center after:justify-center after:rounded-full after:border after:border-white after:bg-gray-900 after:text-xs after:text-blue-200 after:opacity-0 after:transition-all after:duration-300 after:content-['☽'] peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:opacity-100 dark:bg-gray-700 dark:peer-checked:bg-slate-200 dark:peer-focus:ring-slate-600 dark:before:border-gray-600 dark:before:bg-gray-300">
+				class="peer relative h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-800 peer-focus-visible:ring-4 peer-focus-visible:ring-slate-300 peer-focus-visible:outline-none before:absolute before:top-[2px] before:left-[2px] before:flex before:h-5 before:w-5 before:items-center before:justify-center before:rounded-full before:border before:border-slate-300 before:bg-white before:text-xs before:text-yellow-600 before:transition-all before:duration-300 before:content-['☀'] peer-checked:before:translate-x-full peer-checked:before:border-white peer-checked:before:opacity-0 after:absolute after:top-[2px] after:left-[2px] after:flex after:h-5 after:w-5 after:items-center after:justify-center after:rounded-full after:border after:border-white after:bg-gray-900 after:text-xs after:text-blue-200 after:opacity-0 after:transition-all after:duration-300 after:content-['☽'] peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:opacity-100 dark:bg-gray-700 dark:peer-checked:bg-slate-200 dark:peer-focus-visible:ring-slate-600 dark:before:border-gray-600 dark:before:bg-gray-300">
 			</div>
 		</label>
 	</div>
@@ -208,7 +212,7 @@ const isLoggedIn = !!session
 
 		function openMobileMenu(): void {
 			if (mobileMenu) {
-				mobileMenu.classList.remove('translate-x-full')
+				mobileMenu.classList.remove('translate-x-full', 'invisible')
 			}
 			if (mobileMenuOverlay) {
 				mobileMenuOverlay.classList.remove('opacity-0', 'invisible')
@@ -221,7 +225,7 @@ const isLoggedIn = !!session
 
 		function closeMobileMenu(): void {
 			if (mobileMenu) {
-				mobileMenu.classList.add('translate-x-full')
+				mobileMenu.classList.add('translate-x-full', 'invisible')
 			}
 			if (mobileMenuOverlay) {
 				mobileMenuOverlay.classList.add('opacity-0', 'invisible')
