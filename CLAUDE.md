@@ -270,7 +270,7 @@ See `docs/ISSUES.md` for full details and implementation plan.
 
 ### Boy Scout (Cleanup)
 
-- ~~Debug `console.log` in `api/links.json.ts` and `admin/links.astro`~~ — Fixed (ISSUE-07). Three remain in `admin/crm.astro`.
+- ~~Debug `console.log` in `api/links.json.ts` and `admin/links.astro`~~ — Fixed (ISSUE-07); the three in `admin/crm.astro` were removed in v4.4.9.
 - ~~Unnecessary comments in `session.ts` and `auth.json.ts`~~ — Fixed (ISSUE-08)
 - Magic numbers: session duration, byte lengths, Chrome AI version threshold
 - ~~`prerender = true` in `TopPosts.astro`~~ — Fixed (ISSUE-09)

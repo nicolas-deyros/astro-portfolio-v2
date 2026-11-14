@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { describe, expect, it } from 'vitest'
 
@@ -99,6 +99,26 @@ describe('UI accessibility guards', () => {
 			.map(before => before.slice(before.lastIndexOf('<button')))
 		expect(buttons).toHaveLength(3)
 		buttons.forEach(button => expect(button).toMatch(/aria-label="[^"]+"/))
+	})
+
+	it('gives the audio range inputs a 24px hit area', () => {
+		const inputs = read('components/AudioPlayer/HybridAudioPlayer.tsx').match(
+			/<input\s+type="range"[\s\S]*?\/>/g,
+		)
+		expect(inputs).toHaveLength(2)
+		inputs?.forEach(input => expect(input).toMatch(/\bh-6\b/))
+	})
+
+	it('spells the author name the same in every post', () => {
+		const dir = join(process.cwd(), 'src', 'content', 'blog')
+		const authors = readdirSync(dir)
+			.filter(file => file.endsWith('.mdx'))
+			.map(file => /^author:.*$/m.exec(read(`content/blog/${file}`))?.[0])
+		expect(new Set(authors)).toEqual(new Set(["author: 'Nicolás Deyros'"]))
+	})
+
+	it('keeps debug logging out of the CRM page', () => {
+		expect(read('pages/admin/crm.astro')).not.toContain('console.log')
 	})
 
 	it.each([
