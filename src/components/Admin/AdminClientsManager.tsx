@@ -1,6 +1,7 @@
-import { useEffect,useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ConfirmModal } from './ConfirmModal'
+import { Dialog } from './Dialog'
 
 interface Client {
 	id: number
@@ -25,19 +26,22 @@ function Modal({
 	children: React.ReactNode
 }) {
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-			<div className="w-full max-w-md rounded-lg bg-white shadow-xl dark:bg-gray-800">
+		<Dialog label={title} onClose={onClose}>
+			<div className="w-full rounded-lg bg-white shadow-xl dark:bg-gray-800">
 				<div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-					<h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+					<h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+						{title}
+					</h3>
 					<button
 						onClick={onClose}
-						className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+						aria-label="Close"
+						className="rounded-md p-2 text-gray-500 hover:text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-gray-400 dark:hover:text-gray-200">
 						✕
 					</button>
 				</div>
 				<div className="px-6 py-4">{children}</div>
 			</div>
-		</div>
+		</Dialog>
 	)
 }
 
@@ -60,7 +64,9 @@ function Field({
 }) {
 	return (
 		<div className="mb-4">
-			<label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+			<label
+				htmlFor={id}
+				className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
 				{label}
 			</label>
 			<input
@@ -82,7 +88,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 	const [editTarget, setEditTarget] = useState<Client | null>(null)
 	const [selectedClient, setSelectedClient] = useState<Client | null>(null)
 	const [error, setError] = useState<string | null>(null)
-	const [setupNotice, setSetupNotice] = useState<{ url: string; emailSent: boolean } | null>(null)
+	const [setupNotice, setSetupNotice] = useState<{
+		url: string
+		emailSent: boolean
+	} | null>(null)
 	const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
 	const [saving, setSaving] = useState(false)
 
@@ -113,14 +122,18 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				}),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to create client')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed to create client')
 			setClientList(prev => [...prev, json.client])
 			setShowCreate(false)
 			setCreateName('')
 			setCreateEmail('')
 			setCreateSlug('')
 			if (json.setupUrl) {
-				setSetupNotice({ url: json.setupUrl, emailSent: json.emailSent === true })
+				setSetupNotice({
+					url: json.setupUrl,
+					emailSent: json.emailSent === true,
+				})
 			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
@@ -156,8 +169,11 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				body: JSON.stringify(body),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to update client')
-			setClientList(prev => prev.map(c => (c.id === json.client.id ? json.client : c)))
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed to update client')
+			setClientList(prev =>
+				prev.map(c => (c.id === json.client.id ? json.client : c)),
+			)
 			setEditTarget(null)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
@@ -176,8 +192,11 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				body: JSON.stringify({ id: client.id, isActive: newActive }),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to update')
-			setClientList(prev => prev.map(c => (c.id === json.client.id ? json.client : c)))
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed to update')
+			setClientList(prev =>
+				prev.map(c => (c.id === json.client.id ? json.client : c)),
+			)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
 		}
@@ -194,7 +213,8 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				body: JSON.stringify({ id: client.id, regenerateSetupToken: true }),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to resend')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed to resend')
 			setSetupNotice({ url: json.setupUrl, emailSent: json.emailSent === true })
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
@@ -211,7 +231,8 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				credentials: 'include',
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed to delete client')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed to delete client')
 			setClientList(prev => prev.filter(c => c.id !== deleteTarget.id))
 			setDeleteTarget(null)
 		} catch (err) {
@@ -274,16 +295,22 @@ export default function AdminClientsManager({ initialClients }: Props) {
 				<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead className="bg-gray-50 dark:bg-gray-800">
 						<tr>
-							{['Name', 'Email', 'Slug', 'Status', 'Created', 'Actions'].map(h => (
-								<th key={h} className="px-4 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-									{h}
-								</th>
-							))}
+							{['Name', 'Email', 'Slug', 'Status', 'Created', 'Actions'].map(
+								h => (
+									<th
+										key={h}
+										className="px-4 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
+										{h}
+									</th>
+								),
+							)}
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
 						{clientList.map(client => (
-							<tr key={client.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+							<tr
+								key={client.id}
+								className="hover:bg-gray-50 dark:hover:bg-gray-800">
 								<td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
 									{client.name}
 								</td>
@@ -344,7 +371,9 @@ export default function AdminClientsManager({ initialClients }: Props) {
 						))}
 						{clientList.length === 0 && (
 							<tr>
-								<td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">
+								<td
+									colSpan={6}
+									className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
 									No clients yet. Create one to get started.
 								</td>
 							</tr>
@@ -366,7 +395,10 @@ export default function AdminClientsManager({ initialClients }: Props) {
 							Close ✕
 						</button>
 					</div>
-					<AdminClientFilesInline clientId={selectedClient.id} clientSlug={selectedClient.slug} />
+					<AdminClientFilesInline
+						clientId={selectedClient.id}
+						clientSlug={selectedClient.slug}
+					/>
 				</div>
 			)}
 
@@ -374,15 +406,51 @@ export default function AdminClientsManager({ initialClients }: Props) {
 			{showCreate && (
 				<Modal title="New Client" onClose={() => setShowCreate(false)}>
 					<form onSubmit={handleCreate}>
-						<Field label="Company / Client Name" id="c-name" value={createName} onChange={v => { setCreateName(v); setCreateSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) }} required />
-						<Field label="Email" id="c-email" type="email" value={createEmail} onChange={setCreateEmail} required />
-						<Field label="Slug (URL identifier)" id="c-slug" value={createSlug} onChange={setCreateSlug} placeholder="auto-generated" />
+						<Field
+							label="Company / Client Name"
+							id="c-name"
+							value={createName}
+							onChange={v => {
+								setCreateName(v)
+								setCreateSlug(
+									v
+										.toLowerCase()
+										.replace(/[^a-z0-9]+/g, '-')
+										.replace(/^-+|-+$/g, ''),
+								)
+							}}
+							required
+						/>
+						<Field
+							label="Email"
+							id="c-email"
+							type="email"
+							value={createEmail}
+							onChange={setCreateEmail}
+							required
+						/>
+						<Field
+							label="Slug (URL identifier)"
+							id="c-slug"
+							value={createSlug}
+							onChange={setCreateSlug}
+							placeholder="auto-generated"
+						/>
 						<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-							The client receives an email with a one-time link to set their own password.
+							The client receives an email with a one-time link to set their own
+							password.
 						</p>
 						<div className="flex justify-end gap-3 pt-2">
-							<button type="button" onClick={() => setShowCreate(false)} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
-							<button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">
+							<button
+								type="button"
+								onClick={() => setShowCreate(false)}
+								className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">
+								Cancel
+							</button>
+							<button
+								type="submit"
+								disabled={saving}
+								className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">
 								{saving ? 'Creating…' : 'Create'}
 							</button>
 						</div>
@@ -392,14 +460,43 @@ export default function AdminClientsManager({ initialClients }: Props) {
 
 			{/* Edit modal */}
 			{editTarget && (
-				<Modal title={`Edit — ${editTarget.name}`} onClose={() => setEditTarget(null)}>
+				<Modal
+					title={`Edit — ${editTarget.name}`}
+					onClose={() => setEditTarget(null)}>
 					<form onSubmit={handleEdit}>
-						<Field label="Name" id="e-name" value={editName} onChange={setEditName} required />
-						<Field label="Email" id="e-email" type="email" value={editEmail} onChange={setEditEmail} required />
-						<Field label="New Password (leave blank to keep current)" id="e-password" type="password" value={editPassword} onChange={setEditPassword} />
+						<Field
+							label="Name"
+							id="e-name"
+							value={editName}
+							onChange={setEditName}
+							required
+						/>
+						<Field
+							label="Email"
+							id="e-email"
+							type="email"
+							value={editEmail}
+							onChange={setEditEmail}
+							required
+						/>
+						<Field
+							label="New Password (leave blank to keep current)"
+							id="e-password"
+							type="password"
+							value={editPassword}
+							onChange={setEditPassword}
+						/>
 						<div className="flex justify-end gap-3 pt-2">
-							<button type="button" onClick={() => setEditTarget(null)} className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">Cancel</button>
-							<button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">
+							<button
+								type="button"
+								onClick={() => setEditTarget(null)}
+								className="rounded-md border px-4 py-2 text-sm dark:border-gray-600 dark:text-gray-300">
+								Cancel
+							</button>
+							<button
+								type="submit"
+								disabled={saving}
+								className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-60">
 								{saving ? 'Saving…' : 'Save'}
 							</button>
 						</div>
@@ -424,20 +521,30 @@ export default function AdminClientsManager({ initialClients }: Props) {
 }
 
 // Inline file manager used inside the same island
-function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; clientSlug: string }) {
-	const [nodes, setNodes] = useState<Array<{
-		id: number
-		parentId: number | null
-		name: string
-		type: string
-		mimeType: string | null
-		size: number | null
-		pageSlug: string | null
-		createdAt: string
-	}>>([])
+function AdminClientFilesInline({
+	clientId,
+	clientSlug,
+}: {
+	clientId: number
+	clientSlug: string
+}) {
+	const [nodes, setNodes] = useState<
+		Array<{
+			id: number
+			parentId: number | null
+			name: string
+			type: string
+			mimeType: string | null
+			size: number | null
+			pageSlug: string | null
+			createdAt: string
+		}>
+	>([])
 	const [loading, setLoading] = useState(true)
 	const [currentParent, setCurrentParent] = useState<number | null>(null)
-	const [breadcrumb, setBreadcrumb] = useState<Array<{ id: number | null; name: string }>>([{ id: null, name: 'Root' }])
+	const [breadcrumb, setBreadcrumb] = useState<
+		Array<{ id: number | null; name: string }>
+	>([{ id: null, name: 'Root' }])
 	const [uploading, setUploading] = useState(false)
 	const [addingFolder, setAddingFolder] = useState(false)
 	const [addingPage, setAddingPage] = useState(false)
@@ -453,7 +560,9 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 		try {
 			const params = new URLSearchParams({ clientId: String(clientId) })
 			if (parentId !== null) params.set('parentId', String(parentId))
-			const res = await fetch(`/api/admin/client-files.json?${params}`, { credentials: 'include' })
+			const res = await fetch(`/api/admin/client-files.json?${params}`, {
+				credentials: 'include',
+			})
 			const json = await res.json()
 			if (json.success) setNodes(json.nodes ?? [])
 		} catch {
@@ -464,7 +573,9 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 	}
 
 	// Load nodes on mount
-	useEffect(() => { loadNodes(null) }, [])
+	useEffect(() => {
+		loadNodes(null)
+	}, [])
 
 	async function navigateTo(folderId: number | null, name: string) {
 		setCurrentParent(folderId)
@@ -493,7 +604,8 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 				body: form,
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Upload failed')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Upload failed')
 			await loadNodes(currentParent)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Upload error')
@@ -511,10 +623,16 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
-				body: JSON.stringify({ type: 'folder', name: folderName, clientId, parentId: currentParent }),
+				body: JSON.stringify({
+					type: 'folder',
+					name: folderName,
+					clientId,
+					parentId: currentParent,
+				}),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed')
 			setFolderName('')
 			setAddingFolder(false)
 			await loadNodes(currentParent)
@@ -531,10 +649,17 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
-				body: JSON.stringify({ type: 'page', name: pageName, pageSlug, clientId, parentId: currentParent }),
+				body: JSON.stringify({
+					type: 'page',
+					name: pageName,
+					pageSlug,
+					clientId,
+					parentId: currentParent,
+				}),
 			})
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Failed')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Failed')
 			setPageName('')
 			setPageSlug('')
 			setAddingPage(false)
@@ -548,12 +673,16 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 		if (deleteNodeId === null) return
 		setDeletingNode(true)
 		try {
-			const res = await fetch(`/api/admin/client-files.json?nodeId=${deleteNodeId}`, {
-				method: 'DELETE',
-				credentials: 'include',
-			})
+			const res = await fetch(
+				`/api/admin/client-files.json?nodeId=${deleteNodeId}`,
+				{
+					method: 'DELETE',
+					credentials: 'include',
+				},
+			)
 			const json = await res.json()
-			if (!res.ok || !json.success) throw new Error(json.error?.message ?? 'Delete failed')
+			if (!res.ok || !json.success)
+				throw new Error(json.error?.message ?? 'Delete failed')
 			await loadNodes(currentParent)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error')
@@ -594,7 +723,12 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 			<div className="mb-4 flex flex-wrap gap-2">
 				<label className="cursor-pointer rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">
 					{uploading ? 'Uploading…' : 'Upload File'}
-					<input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
+					<input
+						type="file"
+						className="hidden"
+						onChange={handleUpload}
+						disabled={uploading}
+					/>
 				</label>
 				<button
 					onClick={() => setAddingFolder(!addingFolder)}
@@ -618,8 +752,18 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 						required
 						className="flex-1 rounded-md border px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					/>
-					<button type="submit" className="rounded-md bg-gray-700 px-3 py-1.5 text-sm text-white">Create</button>
-					<button type="button" onClick={() => setAddingFolder(false)} className="px-2 text-sm text-gray-400">✕</button>
+					<button
+						type="submit"
+						className="rounded-md bg-gray-700 px-3 py-1.5 text-sm text-white">
+						Create
+					</button>
+					<button
+						type="button"
+						onClick={() => setAddingFolder(false)}
+						aria-label="Cancel"
+						className="rounded-md p-2 text-sm text-gray-500 dark:text-gray-400">
+						✕
+					</button>
 				</form>
 			)}
 
@@ -640,22 +784,40 @@ function AdminClientFilesInline({ clientId, clientSlug }: { clientId: number; cl
 						required
 						className="flex-1 rounded-md border px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 					/>
-					<button type="submit" className="rounded-md bg-gray-700 px-3 py-1.5 text-sm text-white">Add</button>
-					<button type="button" onClick={() => setAddingPage(false)} className="px-2 text-sm text-gray-400">✕</button>
+					<button
+						type="submit"
+						className="rounded-md bg-gray-700 px-3 py-1.5 text-sm text-white">
+						Add
+					</button>
+					<button
+						type="button"
+						onClick={() => setAddingPage(false)}
+						aria-label="Cancel"
+						className="rounded-md p-2 text-sm text-gray-500 dark:text-gray-400">
+						✕
+					</button>
 				</form>
 			)}
 
 			{/* Node list */}
 			{loading ? (
-				<p className="py-4 text-center text-sm text-gray-400">Loading…</p>
+				<p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+					Loading…
+				</p>
 			) : nodes.length === 0 ? (
-				<p className="py-4 text-center text-sm text-gray-400">Empty folder</p>
+				<p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+					Empty folder
+				</p>
 			) : (
 				<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead>
 						<tr>
 							{['Name', 'Type', 'Size', ''].map(h => (
-								<th key={h} className="px-3 py-2 text-left text-xs text-gray-500">{h}</th>
+								<th
+									key={h}
+									className="px-3 py-2 text-left text-xs text-gray-500">
+									{h}
+								</th>
 							))}
 						</tr>
 					</thead>

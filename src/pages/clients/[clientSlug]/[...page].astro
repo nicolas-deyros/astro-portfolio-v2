@@ -13,9 +13,16 @@ if (!clientSlug) return Astro.redirect('/client/login', 302)
 
 const pageSlug = Array.isArray(page) ? page.join('/') : (page ?? '')
 
-const session = await requireClientAccess(Astro.cookies, Astro.request, clientSlug)
+const session = await requireClientAccess(
+	Astro.cookies,
+	Astro.request,
+	clientSlug,
+)
 if (!session) {
-	const currentSession = await requireClientSession(Astro.cookies, Astro.request)
+	const currentSession = await requireClientSession(
+		Astro.cookies,
+		Astro.request,
+	)
 	if (currentSession) return Astro.redirect('/client/', 302)
 	return Astro.redirect('/client/login', 302)
 }
@@ -42,7 +49,8 @@ const [client] = await db
 
 <Layout title="Page Not Found — Client Portal">
 	<ClientLayout clientName={client?.name ?? 'Client'} title="Page not found">
-		<div class="flex flex-col items-center justify-center py-20 text-gray-400">
+		<div
+			class="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
 			<p class="text-4xl font-bold text-gray-300 dark:text-gray-600">404</p>
 			<p class="mt-2 text-sm">
 				{node ? 'This page exists but has no content yet.' : 'Page not found.'}

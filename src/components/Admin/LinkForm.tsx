@@ -20,7 +20,9 @@ interface LinkFormProps {
 	editMode: boolean
 	isSubmitting: boolean
 	onInputChange: (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+		e: React.ChangeEvent<
+			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+		>,
 	) => void
 	onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 	onRemoveImageToggle: (checked: boolean) => void
@@ -197,7 +199,10 @@ export function LinkForm({
 						<label
 							htmlFor="description"
 							className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-							Description <span className="text-slate-400">(optional)</span>
+							Description{' '}
+							<span className="text-slate-500 dark:text-slate-400">
+								(optional)
+							</span>
 						</label>
 						<DescriptionEditor
 							value={formData.description}
@@ -212,7 +217,10 @@ export function LinkForm({
 						<label
 							htmlFor="image"
 							className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-							Image <span className="text-slate-400">(optional)</span>
+							Image{' '}
+							<span className="text-slate-500 dark:text-slate-400">
+								(optional)
+							</span>
 						</label>
 						{formData.image && !imageFile && !removeImage && (
 							<div className="mt-2 flex items-center gap-3">

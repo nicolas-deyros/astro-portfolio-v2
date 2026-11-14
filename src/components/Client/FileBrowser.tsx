@@ -34,42 +34,83 @@ function formatBytes(bytes: number): string {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-function NodeIcon({ type, mimeType }: { type: string; mimeType?: string | null }) {
+function NodeIcon({
+	type,
+	mimeType,
+}: {
+	type: string
+	mimeType?: string | null
+}) {
 	if (type === 'folder') {
 		return (
-			<svg className="h-10 w-10 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+			<svg
+				className="h-10 w-10 text-yellow-400"
+				fill="currentColor"
+				viewBox="0 0 24 24">
 				<path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z" />
 			</svg>
 		)
 	}
 	if (type === 'page') {
 		return (
-			<svg className="h-10 w-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+			<svg
+				className="h-10 w-10 text-blue-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24">
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth={1.5}
+					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
 			</svg>
 		)
 	}
 	if (mimeType?.startsWith('image/')) {
 		return (
-			<svg className="h-10 w-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-					d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+			<svg
+				className="h-10 w-10 text-green-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24">
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth={1.5}
+					d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+				/>
 			</svg>
 		)
 	}
 	if (mimeType === 'application/pdf') {
 		return (
-			<svg className="h-10 w-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+			<svg
+				className="h-10 w-10 text-red-400"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24">
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth={1.5}
+					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
 			</svg>
 		)
 	}
 	return (
-		<svg className="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-				d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+		<svg
+			className="h-10 w-10 text-gray-400"
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24">
+			<path
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth={1.5}
+				d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+			/>
 		</svg>
 	)
 }
@@ -90,9 +131,7 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 			)
 			if (!res.ok) {
 				const json = await res.json().catch(() => ({}))
-				throw new Error(
-					toClientMessage(json.error?.message, 'Download failed'),
-				)
+				throw new Error(toClientMessage(json.error?.message, 'Download failed'))
 			}
 			const { url } = await res.json()
 			const a = document.createElement('a')
@@ -132,7 +171,9 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 			<nav className="mb-6 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
 				{breadcrumb.map((item, i) => (
 					<span key={i} className="flex items-center gap-1">
-						{i > 0 && <span className="text-gray-300 dark:text-gray-600">/</span>}
+						{i > 0 && (
+							<span className="text-gray-300 dark:text-gray-600">/</span>
+						)}
 						{i < breadcrumb.length - 1 ? (
 							<a
 								href={item.id ? `/client/?folder=${item.id}` : '/client/'}
@@ -159,10 +200,18 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 
 			{/* Empty state */}
 			{nodes.length === 0 && (
-				<div className="flex flex-col items-center justify-center py-20 text-gray-400">
-					<svg className="mb-3 h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-							d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+				<div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
+					<svg
+						className="mb-3 h-12 w-12"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={1.5}
+							d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"
+						/>
 					</svg>
 					<p className="text-sm">No files here yet</p>
 				</div>
@@ -175,13 +224,13 @@ export default function FileBrowser({ nodes, breadcrumb, clientSlug }: Props) {
 						key={node.id}
 						onClick={() => handleNodeClick(node)}
 						disabled={downloading === node.id}
-						className="group flex flex-col items-center gap-2 rounded-lg border border-gray-200 bg-white p-4 text-center hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600">
+						className="group flex flex-col items-center gap-2 rounded-lg border border-gray-200 bg-white p-4 text-center hover:border-blue-300 hover:shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600">
 						<NodeIcon type={node.type as NodeType} mimeType={node.mimeType} />
 						<span className="line-clamp-2 text-xs font-medium text-gray-700 dark:text-gray-300">
 							{node.name}
 						</span>
 						{node.type === 'file' && node.size !== null && (
-							<span className="text-xs text-gray-400">
+							<span className="text-xs text-gray-500 dark:text-gray-400">
 								{downloading === node.id
 									? 'Starting download…'
 									: downloadStarted === node.id

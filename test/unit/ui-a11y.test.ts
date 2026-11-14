@@ -72,6 +72,35 @@ describe('UI accessibility guards', () => {
 		}
 	})
 
+	it('builds every overlay on the native dialog element', () => {
+		expect(read('components/Admin/Dialog.tsx')).toMatch(
+			/<dialog[\s\S]*showModal\(\)|showModal\(\)[\s\S]*<dialog/,
+		)
+		for (const file of [
+			'components/Admin/ConfirmModal.tsx',
+			'components/Admin/ErrorModal.tsx',
+			'components/Admin/AdminClientsManager.tsx',
+		]) {
+			const source = read(file)
+			expect(source, file).toContain('<Dialog')
+			expect(source, file).not.toContain('fixed inset-0')
+		}
+		const crm = read('pages/admin/crm.astro')
+		expect(crm).toContain('<dialog id="submission-modal"')
+		expect(crm).toContain('showModal()')
+		expect(crm).not.toContain('fixed inset-0')
+	})
+
+	it('names every icon-only close button', () => {
+		// Each "✕" belongs to the nearest preceding <button opening tag.
+		const buttons = read('components/Admin/AdminClientsManager.tsx')
+			.split(/(?<=>\s*)✕(?=\s*<)/)
+			.slice(0, -1)
+			.map(before => before.slice(before.lastIndexOf('<button')))
+		expect(buttons).toHaveLength(3)
+		buttons.forEach(button => expect(button).toMatch(/aria-label="[^"]+"/))
+	})
+
 	it.each([
 		'pages/index.astro',
 		'pages/blog/[...page].astro',
