@@ -1,3 +1,5 @@
+import { Dialog } from './Dialog'
+
 interface ErrorModalProps {
 	message: string
 	onDismiss: () => void
@@ -5,10 +7,8 @@ interface ErrorModalProps {
 
 export function ErrorModal({ message, onDismiss }: ErrorModalProps) {
 	return (
-		<div
-			id="session-modal"
-			className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-			<div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+		<Dialog id="session-modal" label="Error" onClose={onDismiss}>
+			<div className="w-full rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
 				<div className="flex flex-col items-center">
 					<div className="mb-4 flex items-center gap-3">
 						<svg
@@ -37,6 +37,6 @@ export function ErrorModal({ message, onDismiss }: ErrorModalProps) {
 					</button>
 				</div>
 			</div>
-		</div>
+		</Dialog>
 	)
 }

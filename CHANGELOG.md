@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.8] - 2026-11-14
+
+### ♿ Accessibility
+
+Admin and client-portal fixes from `docs/UI_AUDIT.md` (findings 6, 15, 16).
+
+- All four overlays (confirm, error, client forms, CRM submission details) now use the native `<dialog>` element through a shared `Dialog` component: focus stays inside, Escape closes, and screen readers announce the title.
+- Icon-only "✕" buttons have accessible names and a larger target.
+- Helper and empty-state text in the admin, the client file browser, and the home lists moved from `-400` to `-500` greys for contrast, with matching dark variants.
+
+### 🧪 Tests
+
+- `test/unit/ui-a11y.test.ts`: two more guards (native dialogs, named close buttons).
+
 ## [4.4.7] - 2026-11-14
 
 ### ♿ Accessibility

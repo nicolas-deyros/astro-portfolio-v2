@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { Dialog } from './Dialog'
+
 type ConfirmModalVariant = 'delete' | 'update'
 
 interface ConfirmModalProps {
@@ -57,10 +59,13 @@ export function ConfirmModal({
 		typedValue !== requireTypedConfirmation
 
 	return (
-		<div
+		<Dialog
 			id={c.id}
-			className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-			<div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+			label={c.title}
+			onClose={() => {
+				if (!pending) onCancel()
+			}}>
+			<div className="w-full rounded-xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
 				<div className="flex flex-col items-center">
 					<div className="mb-4 flex items-center gap-3">
 						<svg
@@ -95,6 +100,7 @@ export function ConfirmModal({
 								value={typedValue}
 								onChange={e => setTypedValue(e.target.value)}
 								placeholder={requireTypedConfirmation}
+								aria-label={`Type ${requireTypedConfirmation} to confirm`}
 								className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-red-500 focus:ring-red-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-white"
 							/>
 						</div>
@@ -115,6 +121,6 @@ export function ConfirmModal({
 					</div>
 				</div>
 			</div>
-		</div>
+		</Dialog>
 	)
 }
