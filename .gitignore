@@ -55,3 +55,6 @@ graphify-out/
 
 local.db
 .env*
+
+# Adversarial review loop state (local bookkeeping)
+.claude/adversarial-review/

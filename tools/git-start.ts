@@ -1,7 +1,9 @@
+import path from 'node:path'
+
 import { execSync } from 'child_process'
 
-function runCommand(command: string): string {
-	return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim()
+function runCommand(command: string, cwd?: string): string {
+	return execSync(command, { encoding: 'utf-8', stdio: 'pipe', cwd }).trim()
 }
 
 function log(message: string): void {
@@ -17,21 +19,31 @@ async function main(): Promise<void> {
 
 	const branchName = args[0]
 	const description = args[1] || `Work in progress: ${branchName}`
+	// Each branch gets its own worktree so concurrent sessions never share a HEAD.
+	const worktreePath = path.resolve(
+		'.claude/worktrees',
+		branchName.replace(/\//g, '-'),
+	)
 
 	try {
-		// 1. Create Branch
-		log(`Creating branch '${branchName}'...`)
+		// 1. Create Branch in its own worktree
+		log(`Creating worktree for branch '${branchName}' at ${worktreePath}...`)
 		try {
-			runCommand(`git checkout -b ${branchName}`)
+			runCommand(`git worktree add -b ${branchName} "${worktreePath}"`)
 		} catch {
-			log(`Branch '${branchName}' might already exist. Checking out...`)
-			runCommand(`git checkout ${branchName}`)
+			log(
+				`Branch '${branchName}' might already exist. Adding worktree for it...`,
+			)
+			runCommand(`git worktree add "${worktreePath}" ${branchName}`)
 		}
 
 		// 2. Push Empty Commit (to allow PR creation)
 		log('Pushing empty commit to initialize remote branch...')
-		runCommand('git commit --allow-empty -m "chore: start work on feature"')
-		runCommand(`git push -u origin ${branchName}`)
+		runCommand(
+			'git commit --allow-empty -m "chore: start work on feature"',
+			worktreePath,
+		)
+		runCommand(`git push -u origin ${branchName}`, worktreePath)
 
 		// 3. Create Draft PR
 		log('Creating Draft Pull Request...')
@@ -39,12 +51,14 @@ async function main(): Promise<void> {
 			// Check if PR already exists
 			const existingPr = runCommand(
 				`gh pr list --head ${branchName} --json url --limit 1`,
+				worktreePath,
 			)
 			if (existingPr !== '[]') {
 				log('PR already exists.')
 			} else {
 				const prUrl = runCommand(
 					`gh pr create --draft --title "${branchName}: ${description}" --body "Automated Draft PR for tracking progress."`,
+					worktreePath,
 				)
 				log(`Draft PR created: ${prUrl}`)
 			}
@@ -54,7 +68,7 @@ async function main(): Promise<void> {
 			// Don't exit, we can still work locally
 		}
 
-		log('Ready to work!')
+		log(`Ready to work! cd "${worktreePath}"`)
 	} catch (error) {
 		console.error('Git start failed:', error)
 		process.exit(1)

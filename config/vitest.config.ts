@@ -22,6 +22,10 @@ export default defineConfig({
 			'db/**',
 			'.agents/**',
 			'testsprite_tests/**',
+			// Nested git worktrees (git:start creates them here) carry their own
+			// copy of every test file; without this, Vitest discovers and runs
+			// them a second time, fighting the shared e2e dev server for port 4321.
+			'.claude/worktrees/**',
 			// These tests still spawn their own dev server process, which would
 			// fight the shared e2e server. back-to-top-* duplicate
 			// test/back-to-top.test.ts.
