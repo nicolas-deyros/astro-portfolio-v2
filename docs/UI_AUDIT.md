@@ -6,7 +6,8 @@ Baseline audit before the UI polish work. Scope: public site, admin, client port
 
 - **2026-11-14 — public site pass (v4.4.7):** findings 1–5, 7–14, 17, 19, 22, 23 fixed. Re-run: zero axe violations, no horizontal overflow, one `h1` per page on the eight public routes. Finding 18 is half done ("Visit link" target fixed; the audio seek bar is still 8px tall).
 - **2026-11-14 — admin and client portal pass (v4.4.8):** findings 6, 15, 16 fixed. Verified by the admin end-to-end suite and source guards; the logged-in screens were not reviewed visually.
-- **Open:** 18 (seek bar), 20, 21, 24, and a visual pass of the logged-in admin and client portal.
+- **2026-11-14 — closeout (v4.4.9):** finding 18 finished (audio seek and volume inputs have a 24px hit area; the track is still drawn 8px) and finding 24 fixed (every post uses "Nicolás Deyros").
+- **Open:** 20 and 21 (opportunistic, no bulk rewrite), and a visual pass of the logged-in admin and client portal.
 
 ## Method
 

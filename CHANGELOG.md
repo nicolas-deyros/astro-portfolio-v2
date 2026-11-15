@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.9] - 2026-11-14
+
+### ♿ Accessibility
+
+- Audio player seek and volume sliders have a 24px hit area (WCAG 2.5.8); the visible track is unchanged (`docs/UI_AUDIT.md` finding 18).
+
+### 🧹 Cleanup
+
+- Blog posts all spell the author "Nicolás Deyros" (finding 24).
+- Removed three debug `console.log` calls from `src/pages/admin/crm.astro`.
+
+### 🧪 Tests
+
+- `test/unit/ui-a11y.test.ts`: three more guards (range input height, author spelling, no CRM debug logging).
+
 ## [4.4.8] - 2026-11-14
 
 ### ♿ Accessibility

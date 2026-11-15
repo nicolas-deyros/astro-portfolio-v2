@@ -28,12 +28,6 @@ try {
 			if (submission.resendMessageId) {
 				try {
 					const response = await resend.emails.get(submission.resendMessageId)
-					// Log the response data for inspection
-					console.log(
-						'Resend API response for messageId',
-						submission.resendMessageId,
-						response.data,
-					)
 					// Display only the last_event field if available
 					status =
 						response.data &&
@@ -52,7 +46,6 @@ try {
 			}
 		}),
 	)
-	console.log(`Loaded ${submissions.length} form submissions from database`)
 } catch (error) {
 	console.error('Error fetching form submissions from database:', error)
 	submissions = []
@@ -286,7 +279,6 @@ try {
 				const data = await response.json()
 
 				if (!response.ok || !data.success || !data.authenticated) {
-					console.log('Not authenticated, redirecting to admin')
 					window.location.href = '/admin'
 					return
 				}

@@ -203,7 +203,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 				</div>
 			</div>
 
-			{/* Progress Bar */}
+			{/* Progress Bar: 24px hit area (WCAG 2.5.8), track still drawn 8px via bg-clip-content */}
 			<div className="space-y-2">
 				<div className="flex items-center space-x-2">
 					<span className="text-sm text-slate-600 dark:text-slate-400">
@@ -216,7 +216,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 						step={isTTS ? '0.01' : '0.1'}
 						value={isTTS ? currentState.progress : currentState.progress * 100}
 						onChange={onSeek}
-						className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700"
+						className="h-6 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 bg-clip-content py-2 dark:bg-slate-700"
 						title="Seek position"
 						aria-label="Seek audio position"
 					/>
@@ -238,7 +238,7 @@ const HybridAudioPlayer: React.FC<HybridAudioPlayerProps> = ({
 							step="1"
 							value={currentState.volume * 100}
 							onChange={audioHandlers.volumeChange}
-							className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700"
+							className="h-6 flex-1 cursor-pointer appearance-none rounded-full bg-slate-200 bg-clip-content py-2 dark:bg-slate-700"
 							title="Adjust volume"
 							aria-label="Adjust audio volume"
 						/>
