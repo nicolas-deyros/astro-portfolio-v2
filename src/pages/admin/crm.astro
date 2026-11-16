@@ -309,6 +309,9 @@ try {
 			): void {
 				if (!id || !name || !email) return
 
+				// Only one submission modal at a time; drop any still-open instance first.
+				document.getElementById('submission-modal')?.remove()
+
 				// Helper to escape HTML to prevent XSS
 				const escapeHtml = (unsafe: string | null): string => {
 					if (!unsafe) return ''
