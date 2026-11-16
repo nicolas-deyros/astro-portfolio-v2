@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.10] - 2026-11-16
+
+### 🐛 Fixes
+
+- Admin CRM: fixed duplicate `#submission-modal` ID so rapid double "View" clicks no longer leave a stuck second modal (`src/pages/admin/crm.astro`).
+
 ## [4.4.9] - 2026-11-14
 
 ### ♿ Accessibility
