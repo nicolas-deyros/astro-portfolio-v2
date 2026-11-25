@@ -48,8 +48,8 @@ VERCEL_ANALYTICS_ID="your-analytics-id"
 # Generate database schema
 npm run db:generate
 
-# Seed with sample data
-npm run db:seed
+# Apply migrations (review the SQL first)
+npm run db:migrate
 ```
 
 #### 4. Start Development
@@ -329,48 +329,15 @@ export function Button({
 
 ## 🗄️ Database Development
 
-### Schema Development
+The database is Drizzle ORM on Turso (LibSQL).
 
-```typescript
-// db/config.ts
-import { defineDb, defineTable, column } from 'astro:db'
+- Schema: `src/db/schema.ts`
+- Client: `src/lib/db.ts`
+- Tooling config: `drizzle.config.ts`
 
-const Links = defineTable({
-	columns: {
-		id: column.number({ primaryKey: true }),
-		title: column.text(),
-		url: column.text(),
-		tags: column.text(),
-		date: column.date(),
-	},
-})
-
-export default defineDb({
-	tables: { Links },
-})
-```
-
-### Data Operations
-
-```typescript
-// Using Astro DB
-import { db, Links } from 'astro:db'
-
-// Insert data
-await db.insert(Links).values({
-	title: 'Example Link',
-	url: 'https://example.com',
-	tags: 'web, development',
-	date: new Date(),
-})
-
-// Query data
-const allLinks = await db.select().from(Links)
-const recentLinks = await db
-	.select()
-	.from(Links)
-	.where(gte(Links.date, thirtyDaysAgo))
-	.orderBy(desc(Links.date))
+```bash
+npm run db:generate      # Generate SQL migration files
+npm run db:migrate       # Apply migrations (review the SQL first)
 ```
 
 ## 🧪 Testing Guidelines
@@ -506,13 +473,12 @@ export const collections = { blog }
 import { defineConfig } from 'astro/config'
 import tailwind from '@astrojs/tailwind'
 import mdx from '@astrojs/mdx'
-import db from '@astrojs/db'
 
 export default defineConfig({
 	site: 'https://www.nicolasdeyros.dev/',
 	output: 'server',
 	adapter: vercel(),
-	integrations: [tailwind(), mdx(), db(), react(), icon()],
+	integrations: [tailwind(), mdx(), react(), icon()],
 })
 ```
 

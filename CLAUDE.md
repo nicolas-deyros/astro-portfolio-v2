@@ -81,7 +81,7 @@ Centralized in `src/middleware.ts`:
 - `src/lib/` — Business logic: `email.ts`, `session.ts`, `clientSession.ts`, `clientAuth.ts`, `blogPostUtils.ts`, `audioPlayer.ts`, `browserDetection.ts`
 - `src/utils/` — Shared utilities
 - `src/db/` — Drizzle schema (`schema.ts`, 7 tables)
-- `db/` — Legacy Astro DB config and seed data
+- `db/` — Legacy seed data
 - `test/` — Comprehensive test suites
 - `docs/` — Technical documentation
 - `config/` — ESLint, Prettier, Vitest, CSpell, textlint configs
@@ -100,7 +100,6 @@ npm run preview          # Preview production build
 npm run db:push          # Push Drizzle schema to a NEW Turso DB (never run against production)
 npm run db:generate      # Generate SQL migration files (review before applying)
 npm run db:migrate       # Apply migration files to the connected Turso DB (review SQL first)
-npm run db:studio        # Open Astro DB Studio (legacy — use Drizzle Studio instead)
 ```
 
 ### Testing
