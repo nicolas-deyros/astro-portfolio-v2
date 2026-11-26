@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed unused `@astrojs/db` and `eslint-plugin-mdx` (fixes the `ERESOLVE` peer warning), the broken `db:seed` and `db:studio` scripts, and the empty `db/config.ts`.
 - Fallow CI runs on Node 22, matching `engines`, and uses `fallow-rs/fallow@v3`; the `v2` verifier rejects current CLI packages.
+- Made the `.husky/` Git hooks executable; Git was ignoring them, so the `master` commit guard, `lint-staged`, `commitlint` and pre-push tests never ran.
 
 ### 🧪 Tests
 
