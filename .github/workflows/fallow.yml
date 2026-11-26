@@ -27,7 +27,7 @@ jobs:
         # Required so Fallow can resolve tsconfig.json `extends: astro/tsconfigs/strict`
         # and follow the full path-alias chain (@components/*, @lib/*, @/*, etc.)
 
-      - uses: fallow-rs/fallow@v2
+      - uses: fallow-rs/fallow@v3
         with:
           format: sarif
           fail-on-issues: false # warn-first: never block merges at this stage
