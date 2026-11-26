@@ -5,6 +5,29 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.11] - 2026-11-25
+
+### 🔒 Security
+
+- `npm audit fix` within SemVer ranges (`astro` 7.4.13 and others).
+- New `overrides` for versions pinned upstream: `zod` under `@vercel/cli-config`, `path-to-regexp` under `@vercel/routing-utils`, `postcss-selector-parser` under `@tailwindcss/typography`.
+- Production audit (`npm audit --omit=dev`) goes from 18 findings to 2 moderate (`satori` via `@vercel/og`).
+
+### 🧹 Cleanup
+
+- Removed unused `@astrojs/db` and `eslint-plugin-mdx` (fixes the `ERESOLVE` peer warning), the broken `db:seed` and `db:studio` scripts, and the empty `db/config.ts`.
+- Fallow CI runs on Node 22, matching `engines`, and uses `fallow-rs/fallow@v3`; the `v2` verifier rejects current CLI packages.
+- Made the `.husky/` Git hooks executable; Git was ignoring them, so the `master` commit guard, `lint-staged`, `commitlint` and pre-push tests never ran.
+- Corrected the Socket instructions in `CLAUDE.md`: wrapper check, API token scope, and how to run a scan.
+
+### 🧪 Tests
+
+- `test/globalSetup.ts` keeps the Astro dev server in the foreground (`ASTRO_DEV_BACKGROUND=0`), so the end-to-end suite also runs under AI agents.
+
+### ⚠️ Requirements
+
+- Node.js `>=22.23.4` (required by `astro` 7.4.7 and later).
+
 ## [4.4.10] - 2026-11-16
 
 ### 🐛 Fixes

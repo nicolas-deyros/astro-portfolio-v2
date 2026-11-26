@@ -31,6 +31,8 @@ export async function setup(): Promise<void> {
 		...process.env,
 		NODE_ENV: 'development',
 		API_SECRET_KEY: TEST_SECRET_KEY,
+		// Astro daemonizes `dev` under AI agents; '0' keeps it a child we can kill.
+		ASTRO_DEV_BACKGROUND: '0',
 	}
 	delete env.VITEST
 
