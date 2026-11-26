@@ -32,7 +32,7 @@ The following security vulnerabilities were identified and patched as part of a 
 
 - **Centralized Guarding**: `middleware.ts` now acts as a global security layer, enforcing HSTS, CSP, and authentication BEFORE any page rendering begins.
 - **Hardened Headers**:
-  - `Content-Security-Policy`: Strict script and style source control.
+  - `Content-Security-Policy`: Strict script and style source control. `frame-src` allows only `'self'` (Partytown sandbox) and `https://vercel.live`.
   - `Strict-Transport-Security`: Enforced HTTPS.
 
 ---
