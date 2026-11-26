@@ -132,7 +132,7 @@ npm run check:full       # Full check (lint:all + all tests)
 ```bash
 npm run deps:check           # Check for outdated packages
 npm run deps:upgrade         # Upgrade Astro + all packages
-npm run deps:scan            # Full Socket.dev supply chain scan (creates report)
+npm run deps:scan            # Full Socket.dev supply chain scan (see the Socket note below)
 npm run deps:audit           # Quick Socket.dev audit of current dependencies
 ```
 
@@ -144,7 +144,11 @@ npm run deps:audit           # Quick Socket.dev audit of current dependencies
 > socket wrapper on        # intercepts every npm install system-wide
 > ```
 >
-> Verify the wrapper is active: `socket wrapper status`
+> Verify the wrapper is active: `alias npm` must show `socket npm` (open a new terminal first).
+>
+> Scans need an API token with the `full-scans:create` scope (`socket login --api-token`); browser sign-in is read-only.
+> With the wrapper on, run `socket scan create --report` directly: `npm run deps:scan` exits with an error. Never commit the token.
+>
 > The `~/.npmrc` setting `ignore-scripts=true` blocks lifecycle scripts globally — keep it.
 
 ```bash
