@@ -353,6 +353,20 @@ Comments that restate what the code does (violates clean-code "no obvious commen
 
 ---
 
+## ⚠️ Medium — Dependencies
+
+### ISSUE-34: `@vercel/og` 1.0 Upgrade Blocked
+
+|             |                                                                                                                                                                                                                                                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Files**   | `package.json`, `src/pages/api/og.png.ts`                                                                                                                                                                                                                                                                          |
+| **Problem** | `@vercel/og` 1.0.3 throws `Dynamic require of "fs" is not supported` when imported on Node.js ([vercel/satori#971](https://github.com/vercel/satori/issues/971)). The build succeeds, and the dev endpoint answers `200 image/png` with no image. Defining `globalThis.require` first does not help.               |
+| **Impact**  | The project stays on 0.8.6, whose `satori` 0.16.0 is affected by [GHSA-wx4j-mvgx-mqwp](https://github.com/advisories/GHSA-wx4j-mvgx-mqwp) (SVG escaping, medium). The endpoint returns PNG, not SVG.                                                                                                               |
+| **Fix**     | Upgrade once a release imports on Node.js; `test/e2e/og.test.ts` must pass. 1.0.3 also bundles `fflate` 0.7.3 ([CVE-2026-45820](https://github.com/advisories/GHSA-px8p-9vwx-vf98), `unzipSync`, absent from the bundle), so Socket needs the override `"satori": { "fflate": "0.7.5" }`. Re-check the new bundle. |
+| **Effort**  | Low (1 hour) once upstream is fixed                                                                                                                                                                                                                                                                                |
+
+---
+
 ## Priority Order
 
 ### Quick Wins (≤2 hours total)
