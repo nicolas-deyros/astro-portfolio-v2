@@ -157,7 +157,6 @@ export default defineConfig({
 
 - **Node.js**: Server-side testing environment
 - **Puppeteer**: Headless browser for performance testing
-- **Lighthouse**: Performance metrics collection
 - **Gray Matter**: Frontmatter parsing for content tests
 
 ## Performance Benchmarks

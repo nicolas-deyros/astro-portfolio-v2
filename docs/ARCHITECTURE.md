@@ -260,12 +260,12 @@ A per-client file-sharing portal with isolated content, custom interactive pages
 
 ### URL Structure
 
-| Pattern | Purpose |
-|---|---|
-| `/client/login` | Client login page |
-| `/client/` | File browser (identity from session, `?folder=X` for navigation) |
-| `/client/?folder=<id>` | Subfolder view |
-| `/clients/[slug]/[page]` | Custom interactive Astro/React pages per client |
+| Pattern                  | Purpose                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `/client/login`          | Client login page                                                |
+| `/client/`               | File browser (identity from session, `?folder=X` for navigation) |
+| `/client/?folder=<id>`   | Subfolder view                                                   |
+| `/clients/[slug]/[page]` | Custom interactive Astro/React pages per client                  |
 
 ### Database Tables
 
@@ -276,6 +276,7 @@ ClientNodes     — id, clientId (FK), parentId (self-ref), name, type, blobKey,
 ```
 
 `ClientNodes.type` values:
+
 - `folder` — folder container, parentId chains build the tree
 - `file` — Vercel Blob file; `blobKey` is the blob URL, `mimeType`/`size` set
 - `page` — custom Astro page; `pageSlug` maps to `src/pages/clients/[slug]/[pageSlug].astro`
@@ -325,7 +326,7 @@ POST /api/client/auth.json { action: 'login', email, password }
 
 #### Performance Testing
 
-- **Lighthouse Testing**: Automated performance scoring
+- **Load-time Smoke Tests**: Puppeteer checks of page load times
 - **Load Testing**: Performance under various loads
 - **Core Web Vitals**: Performance metric monitoring
 - **Regression Testing**: Performance regression detection

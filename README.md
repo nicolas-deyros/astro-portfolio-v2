@@ -5,7 +5,6 @@ A modern, high-performance portfolio built with **Astro 7**, featuring comprehen
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?Style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Performance](https://img.shields.io/badge/Lighthouse-91%2F100-green)](https://developers.google.com/web/tools/lighthouse)
 
 ## ✨ Overview
 
@@ -18,7 +17,7 @@ This portfolio showcases modern web development practices with a focus on perfor
 - **🤖 Stable On-Device AI** - Summarization and translation powered by Chrome's built-in AI with comprehensive error handling
 - **🔗 Smart Links Management** - Server-side tag filtering and free-text search with bookmarkable URLs, auto UTM-tagged outbound clicks
 - **🔐 Enterprise Admin Panel** - Secure authentication with session management
-- **🚀 Performance Optimized** - 91.3/100 Lighthouse score with Core Web Vitals optimization
+- **🚀 Performance Optimized** - Core Web Vitals optimization, with a Lighthouse 90+ target
 - **🧪 Comprehensive Testing** - Automated performance, SEO, accessibility, and AI stability testing
 
 ## 🚀 Quick Start

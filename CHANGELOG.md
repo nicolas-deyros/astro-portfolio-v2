@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.15] - 2026-11-27
+
+### ⬆️ Dependencies
+
+- `puppeteer` 24 to 25.
+- Removed `lighthouse`: nothing imported or ran it. This clears all high-severity `npm audit` findings.
+
+### 📝 Docs
+
+- `SECURITY.md`: corrected the rate limiting status and added the open `satori` advisory.
+- Removed claims that the performance tests run Lighthouse.
+
 ## [4.4.14] - 2026-11-27
 
 ### 🛠️ Tooling

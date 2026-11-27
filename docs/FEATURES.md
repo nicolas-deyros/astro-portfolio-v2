@@ -153,7 +153,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 - **LCP Optimization**: Largest Contentful Paint under 2.5s
 - **FID Optimization**: First Input Delay under 100ms
 - **CLS Optimization**: Cumulative Layout Shift under 0.1
-- **Lighthouse Score**: 91.3/100 performance score
+- **Lighthouse Target**: 90+ in every category
 
 ### 🖼️ Image Optimization
 
@@ -174,7 +174,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 
 ### 🎯 Performance Testing
 
-- **Automated Lighthouse**: Lighthouse scoring with 91.3/100 target
+- **Load-time Smoke Tests**: Puppeteer checks of page load times
 - **Core Web Vitals**: Automated monitoring of performance metrics
 - **Load Testing**: Performance under various load conditions
 - **Regression Testing**: Performance regression detection

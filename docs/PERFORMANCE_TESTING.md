@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project includes comprehensive Core Web Vitals testing using Google's Lighthouse and web-vitals libraries.
+`npm run test:performance` is a Puppeteer smoke test of page load times. It does not run Lighthouse: the accessibility, best practices and SEO scores are fixed values, and CLS and FID are always 0. To measure real scores, use Chrome DevTools or PageSpeed Insights (below).
 
 ## What it Tests
 
@@ -131,14 +131,6 @@ jobs:
    - Check browser extensions (disable for testing)
    - Ensure dev server isn't throttled
    - Test on production build for accurate results
-
-### Debug Mode
-
-Run tests with debug information:
-
-```bash
-DEBUG=lighthouse:* npm run test:performance
-```
 
 ## Performance Budget
 

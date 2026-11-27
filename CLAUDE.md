@@ -111,7 +111,7 @@ npm run test:watch       # Tests in watch mode
 npm run test:coverage    # Tests with coverage report
 npm run test:critical    # Critical tests only (grammar, mdx, seo)
 npm run test:integration # Integration + E2E tests
-npm run test:performance # Performance tests (Lighthouse)
+npm run test:performance # Load-time smoke tests (Puppeteer, not Lighthouse)
 npm run test:admin       # Admin interface tests
 ```
 
