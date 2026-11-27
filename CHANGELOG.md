@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.13] - 2026-11-27
+
+### 🧪 Tests
+
+- New end-to-end test: `/api/og.png` returns a 1200x630 PNG.
+
+### ⚠️ Known Issues
+
+- `@vercel/og` stays on 0.8.6. 1.0.3 fails to import on Node.js (see ISSUE-34 in `docs/ISSUES.md`).
+
 ## [4.4.12] - 2026-11-26
 
 ### 🐛 Fixes
