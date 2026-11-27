@@ -86,7 +86,7 @@ Centralized in `src/middleware.ts`:
 - `docs/` — Technical documentation
 - `config/` — ESLint, Prettier, Vitest, CSpell, textlint configs
 - `.agents/` — Skill definitions
-- `tools/` — Custom CLI scripts (git-start, session-init, docs-sync, git-flow)
+- `tools/` — Custom CLI scripts (git-start, session-init, docs-sync, git-flow, adv-review)
 
 ## Commands
 
@@ -155,6 +155,7 @@ npm run deps:audit           # Quick Socket.dev audit of current dependencies
 npm run session:init                     # Pull master + report outdated deps (no upgrade)
 npm run session:init -- --upgrade        # Same, plus deps:upgrade (dedicated deps branch only)
 npm run git:start <branch-name> "<desc>" # Create feature branch + Draft PR
+npm run review:adv -- <branch> [base]    # Run parallel adversarial review in detached worktrees (--wip, --judge)
 npm run docs:sync                        # Sync documentation and changelog
 npm run git:ship                         # Full check + ship (PR ready + auto-merge)
 ```

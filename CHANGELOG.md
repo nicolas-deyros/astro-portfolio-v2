@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.15] - 2026-11-27
+
+### ⬆️ Dependencies
+
+- `puppeteer` 24 to 25.
+- Removed `lighthouse`: nothing imported or ran it. This clears all high-severity `npm audit` findings.
+
+### 📝 Docs
+
+- `SECURITY.md`: corrected the rate limiting status and added the open `satori` advisory.
+- Removed claims that the performance tests run Lighthouse.
+
+## [4.4.14] - 2026-11-27
+
+### 🛠️ Tooling
+
+- Added `tools/adv-review.sh` (`npm run review:adv`) to automate multi-agent adversarial reviews using detached Git worktrees, isolated SQLite databases, parallel Antigravity CLI reviewers, optional uncommitted WIP snapshotting (`--wip`), and optional Phase 3 Judge verdict generation (`--judge`).
+- Added `GEMINI.md` workspace rules enforcing the `adversarial-review` protocol and `master` branch protection for Antigravity review sessions.
+
 ## [4.4.13] - 2026-11-27
 
 ### 🧪 Tests
