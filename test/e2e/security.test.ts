@@ -151,7 +151,10 @@ describe('Security Hardening Validation', () => {
 
 		test('Session validation should use server-side checks', async () => {
 			// Clear any session cookies leftover from previous tests
-			await page.deleteCookie({ name: 'admin_session' }, { name: 'admin_token' })
+			await page.deleteCookie(
+				{ name: 'admin_session' },
+				{ name: 'admin_token' },
+			)
 			// Try to validate a non-existent session
 			const response = await page.evaluate(async () => {
 				const res = await fetch('/api/auth.json', {
@@ -172,7 +175,10 @@ describe('Security Hardening Validation', () => {
 	describe('🚨 Client-Side Security Bypass Prevention', () => {
 		test('Disabling JavaScript should not grant access to admin content', async () => {
 			// Clear any session cookies leftover from previous tests
-			await page.deleteCookie({ name: 'admin_session' }, { name: 'admin_token' })
+			await page.deleteCookie(
+				{ name: 'admin_session' },
+				{ name: 'admin_token' },
+			)
 			// Disable JavaScript
 			await page.setJavaScriptEnabled(false)
 
@@ -206,6 +212,19 @@ describe('Security Hardening Validation', () => {
 
 			// Should still be redirected due to server-side validation
 			expect(page.url()).toBe(`${baseUrl}/admin/login`)
+		})
+	})
+
+	describe('🔒 Content Security Policy', () => {
+		test('frame-src should allow the same-origin Partytown sandbox', async () => {
+			const response = await fetch(`${baseUrl}/`)
+			const frameSrc = response.headers
+				.get('content-security-policy')
+				?.split(';')
+				.map(directive => directive.trim())
+				.find(directive => directive.startsWith('frame-src '))
+
+			expect(frameSrc?.split(' ')).toContain("'self'")
 		})
 	})
 
