@@ -65,7 +65,14 @@ A separate, per-client file portal (`/client/*`, `/clients/[slug]/*`) exists alo
 
 - Client files live in **Vercel Blob** as private objects; the app only ever hands out short-lived **signed download URLs**, never a public blob URL
 
-**Known gap:** no rate limiting yet on `/api/client/auth.json` (login) or `/api/client/forgot-password.json` — tracked as the top-priority item in [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md).
+**Rate limiting:** login on `/api/client/auth.json` allows 5 failed attempts per 15 minutes (`src/lib/rateLimit.ts`). **Known gap:** none yet on `/api/client/forgot-password.json` — see item 1b in [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md).
+
+---
+
+## Dependency Security
+
+- **Install screening:** the global Socket.dev npm wrapper checks packages on interactive installs; `ignore-scripts=true` in `~/.npmrc` blocks lifecycle scripts. Both are per-machine setup (see `CLAUDE.md`).
+- **Open advisory:** [GHSA-wx4j-mvgx-mqwp](https://github.com/advisories/GHSA-wx4j-mvgx-mqwp) (medium, SVG escaping) in `satori`, through `@vercel/og` 0.8.6. `/api/og.png` takes `title` and `desc` from the query string but returns PNG, not SVG. The upgrade is blocked: see ISSUE-34 in [`docs/ISSUES.md`](./docs/ISSUES.md).
 
 ---
 
@@ -179,7 +186,7 @@ Returns current authentication status and updates session activity.
 2. **HTTPS**: Always use HTTPS in production for secure cookie transmission
 3. **Regular Cleanup**: Expired sessions are automatically cleaned up
 4. **Session Monitoring**: Monitor AdminSessions table for suspicious activity
-5. **Rate Limiting**: Not yet implemented on admin or client auth endpoints — see [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md) item 1
+5. **Rate Limiting**: Admin and client logins are throttled; `forgot-password` is not yet — see [`docs/SECURITY-HARDENING-PLAN.md`](./docs/SECURITY-HARDENING-PLAN.md) item 1b
 
 ## Environment Variables
 
