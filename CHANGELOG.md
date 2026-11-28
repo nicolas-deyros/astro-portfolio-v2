@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.16] - 2026-11-27
+
+### 🛠️ Tooling
+
+- Added `tools/adv-review-watch.sh` (`npm run review:adv:watch`) to run independent background adversarial reviews on newly committed feature branches with `flock` locking, SHA deduplication, commit cooldown, `--seed`, `--dry-run`, and desktop notifications (`notify-send`).
+
 ## [4.4.15] - 2026-11-27
 
 ### ⬆️ Dependencies
