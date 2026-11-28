@@ -12,6 +12,7 @@ function fakeBrowser(
 	ok = true,
 ): Record<'page' | 'browser', Record<string, ReturnType<typeof vi.fn>>> {
 	const page = {
+		setCacheEnabled: vi.fn(),
 		setExtraHTTPHeaders: vi.fn(),
 		goto: vi.fn().mockResolvedValue({
 			ok: () => ok,
@@ -32,6 +33,8 @@ describe('Lighthouse CI preview authentication', () => {
 
 		await authenticate(browser, { url: `${PREVIEW}/blog` })
 
+		// A cached favicon from an earlier URL would answer 304, which is not "ok".
+		expect(page.setCacheEnabled).toHaveBeenCalledWith(false)
 		expect(page.setExtraHTTPHeaders).toHaveBeenCalledWith({
 			'x-vercel-protection-bypass': 'test-token',
 			'x-vercel-set-bypass-cookie': 'true',
@@ -60,6 +63,14 @@ describe('Lighthouse CI preview authentication', () => {
 			'Vercel protection bypass failed',
 		)
 		expect(page.close).toHaveBeenCalled()
+	})
+
+	it('reports the status and final path, without the query string', async () => {
+		const { browser } = fakeBrowser('https://vercel.com/login?nonce=abc', false)
+
+		await expect(authenticate(browser, { url: PREVIEW })).rejects.toThrow(
+			/got 401 from https:\/\/vercel\.com\/login$/,
+		)
 	})
 })
 
