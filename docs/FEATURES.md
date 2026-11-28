@@ -174,10 +174,7 @@ Comprehensive overview of all features and capabilities in the Nicolás Deyros P
 
 ### 🎯 Performance Testing
 
-- **Load-time Smoke Tests**: Puppeteer checks of page load times
-- **Core Web Vitals**: Automated monitoring of performance metrics
-- **Load Testing**: Performance under various load conditions
-- **Regression Testing**: Performance regression detection
+- **Lighthouse CI**: Every Vercel preview is audited, with warnings below 90
 
 ### 🔍 Quality Assurance
 

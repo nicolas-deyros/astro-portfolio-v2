@@ -48,6 +48,16 @@ export default [
 		},
 	},
 	{
+		files: ['config/**/*.cjs'],
+		languageOptions: {
+			sourceType: 'commonjs',
+			globals: globals.node,
+		},
+		rules: {
+			'@typescript-eslint/explicit-function-return-type': 'off',
+		},
+	},
+	{
 		files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
 		...jsxA11y.flatConfigs.recommended,
 	},

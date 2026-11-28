@@ -120,7 +120,6 @@ npm test
 # Run specific test suites
 npm run test:unit
 npm run test:integration
-npm run test:performance
 
 # Generate coverage report
 npm run test:coverage
@@ -209,10 +208,8 @@ config/
 tools/
 ├── grammar-checker.ts       # Grammar validation utilities
 ├── test-grammar.ts         # Grammar testing scripts
-├── run-performance-tests.ts # Performance testing utilities
 ├── test-clean.ts           # Test cleanup utilities
-├── test-fast.ts            # Fast test execution
-└── test-performance.ts     # Performance test runner
+└── test-fast.ts            # Fast test execution
 ```
 
 ### Key Directories

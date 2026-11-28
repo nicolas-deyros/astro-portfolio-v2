@@ -326,10 +326,7 @@ POST /api/client/auth.json { action: 'login', email, password }
 
 #### Performance Testing
 
-- **Load-time Smoke Tests**: Puppeteer checks of page load times
-- **Load Testing**: Performance under various loads
-- **Core Web Vitals**: Performance metric monitoring
-- **Regression Testing**: Performance regression detection
+- **Lighthouse CI**: Every Vercel preview is audited, with warnings below 90
 
 ## 🚀 Deployment Architecture
 

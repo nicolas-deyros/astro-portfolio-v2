@@ -69,6 +69,13 @@ A separate, per-client file portal (`/client/*`, `/clients/[slug]/*`) exists alo
 
 ---
 
+## CI Secrets
+
+- `VERCEL_AUTOMATION_BYPASS_SECRET` lets the Lighthouse workflow reach protected previews. `config/lighthouse-auth.cjs` sends it only with a request for a static asset on the preview, in exchange for a cookie. Never pass it in an audited URL or in Lighthouse `extraHeaders`. Rotate it in Vercel (Deployment Protection) and update the GitHub secret.
+- Third-party actions in `.github/workflows/lighthouse.yml` are pinned to commit SHAs.
+
+---
+
 ## Dependency Security
 
 - **Install screening:** the global Socket.dev npm wrapper checks packages on interactive installs; `ignore-scripts=true` in `~/.npmrc` blocks lifecycle scripts. Both are per-machine setup (see `CLAUDE.md`).
