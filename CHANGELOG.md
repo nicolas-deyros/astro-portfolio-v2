@@ -5,12 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.4.16] - 2026-11-27
+## [4.4.18] - 2026-11-28
 
 ### 🧪 Tests
 
 - Lighthouse CI audits every Vercel preview and warns below 90 in each category. Requires the `VERCEL_AUTOMATION_BYPASS_SECRET` repository secret.
 - Removed `test/performance.test.ts`, its two runner scripts and `npm run test:performance`: most of its scores were hardcoded.
+
+## [4.4.17] - 2026-11-28
+
+### 🛠️ Tooling
+
+- Removed the Claude Code `ask` rule for `git push`, so unattended work no longer stalls on it. The `deny` rules for force push and `--no-verify` stay, `gh pr merge` still asks, and the `master` ruleset still requires a pull request.
+
+## [4.4.16] - 2026-11-27
+
+### 🛠️ Tooling
+
+- Added `tools/adv-review-watch.sh` (`npm run review:adv:watch`) to run independent background adversarial reviews on newly committed feature branches with `flock` locking, SHA deduplication, commit cooldown, `--seed`, `--dry-run`, and desktop notifications (`notify-send`).
 
 ## [4.4.15] - 2026-11-27
 

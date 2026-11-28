@@ -10,6 +10,7 @@ Whenever you are asked to review, audit, verify, or inspect commits, branches, p
 - Direct commits to `master` are **forbidden** (enforced by `.husky/pre-commit` and `CLAUDE.md`). Whenever you make tracked changes, always work on a dedicated feature branch/worktree.
 - Never work inside or mutate the author agent's worktree (e.g., `.claude/worktrees/<branch>`).
 - For automated parallel reviews of a branch or WIP worktree, prefer `./tools/adv-review.sh <branch-or-commit> [base-branch] [--wip <author-worktree>] [--judge]`.
+- For unattended background audits of new commits on feature branches, use `./tools/adv-review-watch.sh --once` (typically triggered by a `systemd --user` timer).
 
 ### Role Boundaries
 

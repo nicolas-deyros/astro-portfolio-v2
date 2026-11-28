@@ -155,6 +155,7 @@ npm run session:init                     # Pull master + report outdated deps (n
 npm run session:init -- --upgrade        # Same, plus deps:upgrade (dedicated deps branch only)
 npm run git:start <branch-name> "<desc>" # Create feature branch + Draft PR
 npm run review:adv -- <branch> [base]    # Run parallel adversarial review in detached worktrees (--wip, --judge)
+npm run review:adv:watch -- --once       # Scan local branches for new commits and auto-run adversarial review
 npm run docs:sync                        # Sync documentation and changelog
 npm run git:ship                         # Full check + ship (PR ready + auto-merge)
 ```
