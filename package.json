@@ -1,7 +1,7 @@
 {
 	"name": "portfolio",
 	"type": "module",
-	"version": "4.4.15",
+	"version": "4.4.16",
 	"engines": {
 		"node": ">=22.23.4"
 	},
@@ -56,6 +56,7 @@
 		"git:ship": "npm run check:full && tsx tools/git-flow.ts ship",
 		"git:start": "tsx tools/git-start.ts",
 		"review:adv": "bash tools/adv-review.sh",
+		"review:adv:watch": "bash tools/adv-review-watch.sh",
 		"docs:sync": "tsx tools/docs-sync.ts",
 		"session:init": "tsx tools/session-init.ts",
 		"// === Dependency Management ===": "",
