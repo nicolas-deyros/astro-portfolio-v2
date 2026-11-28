@@ -9,7 +9,6 @@ const SERVER_TESTS = [
 	'test/admin-interface.test.ts',
 	'test/auth.test.ts',
 	'test/back-to-top.test.ts',
-	'test/performance.test.ts',
 	'test/e2e/security.test.ts',
 	'test/e2e/links-tag-filtering.test.ts',
 	'test/e2e/blog-slide-deck.test.ts',

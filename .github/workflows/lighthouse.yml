@@ -1,0 +1,41 @@
+name: Lighthouse
+
+# Vercel reports each deployment to GitHub; audit successful previews only.
+on: deployment_status
+
+jobs:
+  lighthouse:
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      startsWith(github.event.deployment_status.environment, 'Preview')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PREVIEW_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # The auth script only needs puppeteer; Chrome comes with the runner.
+      - run: npm ci --ignore-scripts
+
+      - uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # 12.6.2
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        with:
+          configPath: ./config/lighthouserc.cjs
+          uploadArtifacts: true
+          urls: |
+            ${{ env.PREVIEW_URL }}/
+            ${{ env.PREVIEW_URL }}/blog
+            ${{ env.PREVIEW_URL }}/blog/vibe-coding-productivity
+            ${{ env.PREVIEW_URL }}/contact
+            ${{ env.PREVIEW_URL }}/links

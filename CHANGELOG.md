@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.16] - 2026-11-27
+
+### 🧪 Tests
+
+- Lighthouse CI audits every Vercel preview and warns below 90 in each category. Requires the `VERCEL_AUTOMATION_BYPASS_SECRET` repository secret.
+- Removed `test/performance.test.ts`, its two runner scripts and `npm run test:performance`: most of its scores were hardcoded.
+
 ## [4.4.15] - 2026-11-27
 
 ### ⬆️ Dependencies

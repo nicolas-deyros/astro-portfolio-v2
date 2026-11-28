@@ -8,18 +8,7 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 
 ### 🚀 Performance Testing
 
-#### `test/performance-clean.test.ts`
-
-- **Core Web Vitals**: LCP, FID, CLS measurements
-- **Multi-page Testing**: Homepage, blog pages, static pages
-- **Clean Environment**: Isolated server setup for accurate measurements
-- **Thresholds**: Enforces production-ready performance standards
-
-#### `test/performance.test.ts`
-
-- **Alternative Performance Suite**: Different measurement approach
-- **Comprehensive Coverage**: All page types with detailed metrics
-- **CI/CD Integration**: Optimized for continuous integration
+Lighthouse CI runs against Vercel previews, not in Vitest. See [PERFORMANCE_TESTING.md](./PERFORMANCE_TESTING.md).
 
 ### 🔍 SEO & Content Validation
 
@@ -101,10 +90,6 @@ This project includes a comprehensive testing infrastructure with 11 specialized
 ### Individual Test Suites
 
 ```bash
-# Performance testing
-npm run test:performance        # Run performance tests
-npm run test:clean             # Run clean performance setup
-
 # UI component testing
 npm run test:back-to-top       # Back-to-top button tests
 
@@ -146,7 +131,7 @@ export default defineConfig({
 	test: {
 		environment: 'node',
 		globals: true,
-		timeout: 60000, // Extended timeout for performance tests
+		timeout: 60000, // Extended timeout for browser tests
 		include: ['test/**/*.test.ts'],
 		exclude: ['node_modules/', 'dist/', '.astro/'],
 	},
@@ -156,28 +141,8 @@ export default defineConfig({
 ### Test Environment
 
 - **Node.js**: Server-side testing environment
-- **Puppeteer**: Headless browser for performance testing
+- **Puppeteer**: Headless browser for end-to-end testing
 - **Gray Matter**: Frontmatter parsing for content tests
-
-## Performance Benchmarks
-
-### Current Metrics (Automated Testing)
-
-```
-📊 PERFORMANCE SUMMARY
-Average Performance Score: 68.8/100
-Average LCP: 0.55s ✅
-Average CLS: 0.000 ✅
-All Core Web Vitals: PASSING ✅
-```
-
-### Page-specific Results
-
-- **Homepage**: 75/100 (0.71s LCP)
-- **Blog listing**: 75/100 (0.17s LCP)
-- **Blog posts**: 50-75/100 (0.26-0.88s LCP)
-- **Contact page**: 50/100 (1.54s LCP)
-- **Links page**: 75/100 (0.20s LCP) ⭐
 
 ## CI/CD Integration
 
@@ -208,20 +173,12 @@ Quality checks run before each commit:
 4. **Performance Aware**: Optimize test execution time
 5. **Error Handling**: Graceful failure handling
 
-### Performance Testing
-
-1. **Clean Environment**: Isolated server instances
-2. **Consistent Conditions**: Stable testing environment
-3. **Multiple Measurements**: Average results over multiple runs
-4. **Threshold Enforcement**: Fail tests when performance degrades
-5. **Real-world Scenarios**: Test actual page loads and interactions
-
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Port Conflicts**: Server-dependent tests run in the `e2e` Vitest project (`SERVER_TESTS` in `config/vitest.config.ts`). Its `test/globalSetup.ts` starts one shared dev server on port 4321 with the test `API_SECRET_KEY` and stops it after the run. It refuses to start if 4321 is already in use, so stop your own dev server first (`npx astro dev stop`). Test files must not start or kill servers themselves. Unit-only runs (`test:critical`) never start a server.
-2. **Timeout Errors**: Extended timeouts for performance tests
+2. **Timeout Errors**: Extended timeouts for browser tests
 3. **Browser Issues**: Puppeteer setup and Chrome dependencies
 4. **Content Changes**: Update tests when content structure changes
 
@@ -232,10 +189,10 @@ Quality checks run before each commit:
 npm run test -- --reporter=verbose
 
 # Single test file
-npm run test test/performance-clean.test.ts
+npm run test test/video.test.ts
 
 # Debug specific functionality
-npm run test -- --grep "Core Web Vitals"
+npm run test -- -t "Video Component"
 ```
 
 ## Future Enhancements

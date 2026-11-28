@@ -1,143 +1,36 @@
 # Performance Testing Guide
 
-## Overview
+## Lighthouse CI
 
-`npm run test:performance` is a Puppeteer smoke test of page load times. It does not run Lighthouse: the accessibility, best practices and SEO scores are fixed values, and CLS and FID are always 0. To measure real scores, use Chrome DevTools or PageSpeed Insights (below).
+`.github/workflows/lighthouse.yml` audits every successful Vercel **preview** deployment with Lighthouse CI.
 
-## What it Tests
+| Setting   | Value                                                                |
+| --------- | -------------------------------------------------------------------- |
+| Pages     | `/`, `/blog`, `/blog/vibe-coding-productivity`, `/contact`, `/links` |
+| Runs      | 3 per page                                                           |
+| Threshold | 90 in Performance, Accessibility, Best Practices and SEO             |
+| Level     | `warn`: a low score adds a warning and does not fail the job         |
+| Reports   | Uploaded as the `lighthouse-results` artifact of the workflow run    |
 
-### Core Web Vitals (Google's Key Metrics)
+Change thresholds in `config/lighthouserc.cjs`. To make a category blocking, change its level from `warn` to `error`.
 
-- **LCP (Largest Contentful Paint)**: ≤ 2.5 seconds
-- **FID (First Input Delay)**: ≤ 100 milliseconds
-- **CLS (Cumulative Layout Shift)**: ≤ 0.1
-- **FCP (First Contentful Paint)**: ≤ 1.8 seconds
+### Preview differences
 
-### Lighthouse Scores
+- The `is-crawlable` audit is skipped, because Vercel previews send `x-robots-tag: noindex`.
+- The Vercel preview toolbar (`vercel.live`) is blocked, because it does not ship to production.
 
-- **Performance**: ≥ 90/100
-- **Accessibility**: ≥ 90/100
-- **Best Practices**: ≥ 90/100
-- **SEO**: ≥ 90/100
+## Setup
 
-### Pages Tested
+Previews are behind Vercel Deployment Protection, so the workflow needs a bypass secret.
 
-- Homepage (/)
-- Blog listing (/blog)
-- Individual blog posts (sample of 3)
-- Contact page (/contact)
-- Links page (/links)
+1. In Vercel: **Project Settings → Deployment Protection → Protection Bypass for Automation**. Generate the secret.
+2. Store it in GitHub: `gh secret set VERCEL_AUTOMATION_BYPASS_SECRET`.
 
-## How to Run Performance Tests
+Without the secret the job fails with `VERCEL_AUTOMATION_BYPASS_SECRET is not set`.
 
-### Method 1: Manual (Recommended)
+`config/lighthouse-auth.cjs` exchanges the secret for a cookie by requesting `/favicon.ico`. Do not pass the secret in Lighthouse `extraHeaders` or in an audited URL: third-party hosts such as Google Analytics would receive it.
 
-1. **Start the dev server:**
+## Manual checks
 
-   ```bash
-   npm run dev
-   ```
-
-2. **In another terminal, run performance tests:**
-   ```bash
-   npm run test:performance
-   ```
-
-### Method 2: Using Chrome DevTools
-
-1. Open your site in Chrome
-2. Open DevTools (F12)
-3. Go to "Lighthouse" tab
-4. Select "Performance", "Accessibility", "Best Practices", "SEO"
-5. Click "Generate report"
-
-### Method 3: Online Tools
-
-- **PageSpeed Insights**: https://pagespeed.web.dev/
-- **GTmetrix**: https://gtmetrix.com/
-- **WebPageTest**: https://www.webpagetest.org/
-
-## Understanding Results
-
-### Core Web Vitals Scoring
-
-- **Good**: Green scores (LCP ≤ 2.5s, FID ≤ 100ms, CLS ≤ 0.1)
-- **Needs Improvement**: Yellow scores
-- **Poor**: Red scores
-
-### Performance Optimization Tips
-
-If tests fail, consider these optimizations:
-
-#### For LCP (Largest Contentful Paint)
-
-- Optimize images (use WebP format, proper sizing)
-- Minimize render-blocking resources
-- Improve server response times
-- Use CDN for static assets
-
-#### For CLS (Cumulative Layout Shift)
-
-- Set size attributes on images and videos
-- Reserve space for dynamic content
-- Avoid inserting content above existing content
-- Use CSS aspect-ratio for responsive media
-
-#### For FCP (First Contentful Paint)
-
-- Minimize critical resource loading
-- Remove unused CSS/JavaScript
-- Optimize fonts loading
-- Enable text compression
-
-## Continuous Integration
-
-Add performance testing to your CI/CD pipeline:
-
-```yaml
-# .github/workflows/performance.yml
-name: Performance Tests
-
-on: [push, pull_request]
-
-jobs:
-  performance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm install
-      - run: npm run build
-      - run: npm run preview &
-      - run: sleep 10
-      - run: npm run test:performance
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Page not accessible" errors**
-   - Ensure dev server is running on http://localhost:4321
-   - Check if the page exists and loads correctly
-
-2. **Timeout errors**
-   - Increase timeout in test configuration
-   - Check internet connection for external resources
-
-3. **Low performance scores**
-   - Check browser extensions (disable for testing)
-   - Ensure dev server isn't throttled
-   - Test on production build for accurate results
-
-## Performance Budget
-
-Current thresholds are set for optimal user experience:
-
-- Mobile-first approach
-- Modern browser capabilities
-- Good network conditions
-
-Adjust thresholds in `test/performance.test.ts` based on your requirements.
+- **Chrome DevTools**: open the page, then DevTools → Lighthouse → Generate report.
+- **PageSpeed Insights**: <https://pagespeed.web.dev/> (production only).

@@ -111,7 +111,6 @@ npm run test:watch       # Tests in watch mode
 npm run test:coverage    # Tests with coverage report
 npm run test:critical    # Critical tests only (grammar, mdx, seo)
 npm run test:integration # Integration + E2E tests
-npm run test:performance # Load-time smoke tests (Puppeteer, not Lighthouse)
 npm run test:admin       # Admin interface tests
 ```
 
@@ -175,6 +174,10 @@ npm run fallow:fix        # Preview automatic dead-code removal (dry-run)
 
 > All rules are set to `warn` (never blocks CI). Flip to `"error"` in `.fallowrc.json` once the backlog is clean.
 > CI runs automatically on every PR via `.github/workflows/fallow.yml` — posts a summary comment and inline annotations.
+
+### Lighthouse CI
+
+`.github/workflows/lighthouse.yml` audits each successful Vercel preview (warns below 90). Needs the `VERCEL_AUTOMATION_BYPASS_SECRET` repository secret. See `docs/PERFORMANCE_TESTING.md`.
 
 ## Development Conventions
 

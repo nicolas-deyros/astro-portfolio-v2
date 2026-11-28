@@ -1,7 +1,7 @@
 {
 	"name": "portfolio",
 	"type": "module",
-	"version": "4.4.15",
+	"version": "4.4.16",
 	"engines": {
 		"node": ">=22.23.4"
 	},
@@ -32,7 +32,6 @@
 		"// === Testing - Suites ===": "",
 		"test:critical": "vitest run test/unit/grammar-checker.test.ts test/unit/mdx.test.ts test/unit/seo.test.ts --config ./config/vitest.config.ts",
 		"test:integration": "vitest run test/e2e/links.test.ts test/e2e/accessibility.test.ts test/admin-interface.test.ts --config ./config/vitest.config.ts",
-		"test:performance": "vitest run test/performance.test.ts --config ./config/vitest.config.ts",
 		"test:back-to-top": "vitest run back-to-top --config ./config/vitest.config.ts",
 		"test:related": "vitest related --run --config ./config/vitest.config.ts",
 		"// === Testing - Features ===": "",
