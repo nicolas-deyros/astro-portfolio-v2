@@ -75,7 +75,8 @@ describe('Lighthouse CI preview authentication', () => {
 })
 
 describe('Lighthouse CI configuration', () => {
-	it('warns below 90 in every category', () => {
+	// LHCI defaults to the best run, which hides a page that is slow in most runs.
+	it('warns when the median score is below 90 in any category', () => {
 		for (const category of [
 			'performance',
 			'accessibility',
@@ -84,7 +85,7 @@ describe('Lighthouse CI configuration', () => {
 		]) {
 			expect(ci.assert.assertions[`categories:${category}`]).toEqual([
 				'warn',
-				{ minScore: 0.9 },
+				{ minScore: 0.9, aggregationMethod: 'median' },
 			])
 		}
 	})

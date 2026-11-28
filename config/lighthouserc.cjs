@@ -1,5 +1,6 @@
 // Lighthouse CI, run against Vercel previews by .github/workflows/lighthouse.yml
-const minimum = ['warn', { minScore: 0.9 }]
+// The default aggregation is the best run, which hides a mostly slow page.
+const minimum = ['warn', { minScore: 0.9, aggregationMethod: 'median' }]
 
 module.exports = {
 	ci: {

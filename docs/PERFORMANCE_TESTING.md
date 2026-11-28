@@ -8,7 +8,7 @@
 | --------- | -------------------------------------------------------------------- |
 | Pages     | `/`, `/blog`, `/blog/vibe-coding-productivity`, `/contact`, `/links` |
 | Runs      | 3 per page                                                           |
-| Threshold | 90 in Performance, Accessibility, Best Practices and SEO             |
+| Threshold | Median of 3 runs: 90 in Performance, Accessibility, BP and SEO       |
 | Level     | `warn`: a low score adds a warning and does not fail the job         |
 | Reports   | Uploaded as the `lighthouse-results` artifact of the workflow run    |
 
