@@ -53,7 +53,6 @@
 			"PowerShell(npx --yes fallow *)"
 		],
 		"ask": [
-			"Bash(git push *)",
 			"Bash(git reset *)",
 			"Bash(git rebase *)",
 			"Bash(git merge *)",
@@ -62,7 +61,6 @@
 			"Bash(npm run db:migrate*)",
 			"Bash(npm run deps:upgrade*)",
 			"Bash(npm run git:ship*)",
-			"PowerShell(git push *)",
 			"PowerShell(git reset *)",
 			"PowerShell(git rebase *)",
 			"PowerShell(git merge *)",
